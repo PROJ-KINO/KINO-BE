@@ -24,10 +24,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
-
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();

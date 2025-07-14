@@ -1,15 +1,20 @@
 package com.hamss2.KINO.api.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -17,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class Movie {
+
     @Id
     private Long movieId;
 
@@ -27,11 +33,15 @@ public class Movie {
 
     private String teaserUrl;
 
+    @Column(nullable = false)
     private LocalDate releaseDate;
+
+    private String avgRating;
 
     @Column(columnDefinition = "TEXT")
     private String plot;
 
+    @Column(nullable = false)
     private Integer totalView;
 
     private String director;
@@ -58,6 +68,9 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DailyMovieView> dailyMovieViews;
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {

@@ -65,7 +65,7 @@ public class HomeService {
         homeResponseDto.setBoxOfficeMovieList(boxOfficeService.fetchRealBoxOfficeTop10());
 
         // 5. 일별 조회수 TOP 10 영화
-        List<DailyMovieView> topViews = dailymovieViewRepository.findTop10ByViewDateOrderByViewDesc(LocalDate.now());
+        List<DailyMovieView> topViews = dailymovieViewRepository.findTop10ByViewDateOrderByDailyViewDesc(LocalDate.now());
         List<MovieDto> dailyTopMovieList = topViews.stream()
                 .map(dmv -> {
                     Movie movie = dmv.getMovie();

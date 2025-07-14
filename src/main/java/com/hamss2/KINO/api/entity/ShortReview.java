@@ -20,11 +20,19 @@ public class ShortReview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long shortReviewId;
 
+    @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private int rating;
 
     @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean isDeleted;
+
+    @Column(nullable = false)
+    @ColumnDefault("true")
+    private Boolean isActive;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

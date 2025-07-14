@@ -16,7 +16,10 @@ import java.time.LocalDateTime;
 public class ReviewLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long reviewLikeId;
+
+    @Column(nullable = false)
+    private int likeCount = 0;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

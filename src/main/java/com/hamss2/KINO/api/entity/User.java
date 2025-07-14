@@ -21,7 +21,7 @@ public class User {
     private Long userId;
 
     @Column(nullable = false)
-    private String username;
+    private String nickname;
 
     private String image;
 
@@ -51,9 +51,6 @@ public class User {
     private List<Follow> followers;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<RefreshToken> refreshTokens;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserBan> userBans;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -76,6 +73,9 @@ public class User {
 
     @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Report> reports;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {
