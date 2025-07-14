@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,7 +21,7 @@ public class DailyMovieView {
     private Long id;
 
     @Column(nullable = false)
-    private String dailyView;
+    private LocalDate viewDate;
 
     @Column(nullable = false)
     @ColumnDefault("0")

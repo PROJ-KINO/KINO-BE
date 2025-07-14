@@ -49,6 +49,9 @@ public enum SuccessStatus {
     SUCCESS_USER_REPORT_FOUND(HttpStatus.OK, "신고된 사용자 조회 성공"),
     FIND_PENDING_USER_SUCCESS(HttpStatus.OK, "미처리 사용자 신고 조회 성공"),
     FIND_PENDING_POST_SUCCESS(HttpStatus.OK, "미처리 게시글 신고 조회 성공"),
+    SYNC_TMDB_MOVIES_SUCCESS(HttpStatus.OK, "TMDB 영화 동기화 성공"),
+    SYNC_TMDB_GENRES_SUCCESS(HttpStatus.OK, "TMDB 장르 동기화 성공"),
+    SEND_HOME_SUCCESS(HttpStatus.OK, "홈 데이터 조회 성공"),
 
     /**
      * 201

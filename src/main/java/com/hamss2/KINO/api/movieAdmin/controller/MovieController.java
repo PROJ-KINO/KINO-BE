@@ -10,24 +10,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/tmdb")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class MovieController {
 
     private final MovieService movieService;
 
-    @PostMapping("/movie")
+    @PostMapping("/tmdb-movie")
     public ApiResponse<Void> fetchAndSaveMovies(
             @RequestParam(defaultValue = "1") int start,
             @RequestParam(defaultValue = "1000") int end) {
         movieService.fetchAndSaveMovies(start, end);
-        return ApiResponse.success_only(SuccessStatus.SEND_HEALTH_SUCCESS).getBody();
+        return ApiResponse.success_only(SuccessStatus.SYNC_TMDB_MOVIES_SUCCESS).getBody();
     }
 
-    @PostMapping("/genre")
+    @PostMapping("/tmdb-genre")
     public ApiResponse<Void>  syncGenres() {
         movieService.fetchAndSaveGenres();
-        return ApiResponse.success_only(SuccessStatus.SEND_HEALTH_SUCCESS).getBody();
+        return ApiResponse.success_only(SuccessStatus.SYNC_TMDB_GENRES_SUCCESS).getBody();
     }
 
 }
