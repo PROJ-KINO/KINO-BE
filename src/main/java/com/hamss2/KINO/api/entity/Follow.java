@@ -1,14 +1,14 @@
 package com.hamss2.KINO.api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,10 +24,12 @@ public class Follow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followerId", nullable = false)
+    @JsonIgnore
     private User follower;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "followeeId", nullable = false)
+    @JsonIgnore
     private User followee;
 
     @PrePersist

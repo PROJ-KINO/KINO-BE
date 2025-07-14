@@ -5,24 +5,16 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Setter
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
-public class ShortReviewLike {
+public class MyPickMoive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long shortLikeId;
-
-    @Column(nullable = false)
-    private int likeCount = 0;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private Long myPickMoiveId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
@@ -30,12 +22,8 @@ public class ShortReviewLike {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shortReviewId", nullable = false)
+    @JoinColumn(name = "movieId", nullable = false)
     @JsonIgnore
-    private ShortReview shortReview;
+    private Movie movie;
 
-    @PrePersist
-    private void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-} 
+}
