@@ -21,7 +21,7 @@ public class User {
     private Long userId;
 
     @Column(nullable = false)
-    private String username;
+    private String nickname;
 
     private String image;
 

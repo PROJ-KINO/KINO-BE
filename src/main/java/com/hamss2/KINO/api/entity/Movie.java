@@ -25,10 +25,14 @@ public class Movie {
 
     private String posterUrl;
 
+    @Column(nullable = false)
     private String releaseDate;
+
+    private String avgRating;
 
     private String plot;
 
+    @Column(nullable = false)
     private Integer totalView;
 
     private String director;
@@ -36,10 +40,6 @@ public class Movie {
     private String actors;
 
     private String runningTime;
-
-    @Column(nullable = false)
-    @ColumnDefault("false")
-    private Boolean isDeleted;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
