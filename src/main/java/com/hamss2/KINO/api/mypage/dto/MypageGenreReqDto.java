@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class MypageGenreReqDto {
     private List<Long> genreIds = new ArrayList<>();
     
-    // null 안전성을 위한 커스텀 getter
     public List<Long> getGenreIds() {
         return genreIds != null ? genreIds : new ArrayList<>();
     }

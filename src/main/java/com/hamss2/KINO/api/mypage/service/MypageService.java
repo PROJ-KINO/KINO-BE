@@ -16,6 +16,7 @@ import com.hamss2.KINO.api.mypage.dto.MypagePickMovieResDto;
 import com.hamss2.KINO.api.mypage.dto.MypageUpdateProfileReqDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
+import com.hamss2.KINO.api.movieAdmin.repository.UserGenreRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,11 +32,11 @@ public class MypageService {
 
     private final UserRepository userRepository;
     private final GenreRepository genreRepository;
+    private final UserGenreRepository userGenreRepository;
     private final GcsUploader gcsUploader;
 
     @Transactional
     public void updateGenre(Long userId, MypageGenreReqDto mypageGenreReqDto) {
-        // 입력값 유효성 검증
         if (mypageGenreReqDto == null) {
             throw new IllegalArgumentException("MypageGenreReqDto cannot be null");
         }
@@ -43,19 +44,15 @@ public class MypageService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // 기존 UserGenre 모두 삭제
-        user.getUserGenres().clear();
+        userGenreRepository.deleteByUser_UserId(userId);
         
-        // genreIds가 null이거나 비어있는 경우 처리
         List<Long> genreIds = mypageGenreReqDto.getGenreIds();
         if (genreIds == null || genreIds.isEmpty()) {
-            // 장르를 모두 삭제하는 경우이므로 clear()만 하고 종료
             return;
         }
         
-        // 새로운 UserGenre 생성 및 추가
         List<UserGenre> newUserGenres = genreIds.stream()
-                .filter(genreId -> genreId != null) // null genreId 필터링
+                .filter(genreId -> genreId != null)
                 .map(genreId -> {
                     Genre genre = genreRepository.findById(genreId)
                             .orElseThrow(() -> new RuntimeException("Genre not found: " + genreId));
@@ -67,7 +64,7 @@ public class MypageService {
                 })
                 .collect(Collectors.toList());
         
-        user.getUserGenres().addAll(newUserGenres);
+        userGenreRepository.saveAll(newUserGenres);
     }
 
     public void updateNickname(User user, MypageUpdateProfileReqDto mypageUpdateProfileReqDto) {
