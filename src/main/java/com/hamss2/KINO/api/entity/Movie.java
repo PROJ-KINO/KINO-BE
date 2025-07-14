@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class Movie {
     private String teaserUrl;
 
     @Column(nullable = false)
-    private String releaseDate;
+    private LocalDate releaseDate;
 
     private String avgRating;
 
