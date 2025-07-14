@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import java.util.List;
 @Slf4j
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long movieId;
 
     @Column(nullable = false)
@@ -25,11 +25,16 @@ public class Movie {
 
     private String posterUrl;
 
+    private String teaserUrl;
+
+    private LocalDate releaseDate;
+
     @Column(nullable = false)
     private String releaseDate;
 
     private String avgRating;
 
+    @Column(columnDefinition = "TEXT")
     private String plot;
 
     @Column(nullable = false)
@@ -39,7 +44,11 @@ public class Movie {
 
     private String actors;
 
-    private String runningTime;
+    private Integer runningTime;
+
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean isDeleted = false;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

@@ -16,7 +16,6 @@ import java.util.List;
 @Slf4j
 public class Genre {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long genreId;
 
     @Column(nullable = false)
