@@ -66,7 +66,7 @@ public class MypageController {
         Long userId = 1L;
         MypageGenreResDto genreResDto = mypageService.genre(userId);
 
-        return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_PICKMOVIE_SUCCESS, genreResDto);
+        return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_GENRE_SUCCESS, genreResDto);
     }
 
     @PostMapping("/userGenres")
