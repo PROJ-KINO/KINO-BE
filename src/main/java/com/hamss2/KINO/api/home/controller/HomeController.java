@@ -5,6 +5,7 @@ import com.hamss2.KINO.api.home.service.HomeService;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +18,9 @@ public class HomeController {
     private final HomeService homeService;
 
     @GetMapping("/home")
-    public ApiResponse<HomeResponseDto> getHomeData(Long userId) {
+    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(Long userId) {
 //        Long userId = (userDetail != null) ? userDetail.getUserId() : null;
         HomeResponseDto homeResponseDto = homeService.getHomeData(userId);
-        return ApiResponse.success(SuccessStatus.SEND_HOME_SUCCESS, homeResponseDto).getBody();
+        return ApiResponse.success(SuccessStatus.SEND_HOME_SUCCESS, homeResponseDto);
     }
 }
