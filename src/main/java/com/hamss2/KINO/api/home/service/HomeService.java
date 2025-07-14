@@ -49,13 +49,10 @@ public class HomeService {
         );
 
         // 3. 사용자 찜 TOP 10 영화
-        List<Object[]> topPickMovies = myPickMovieRepository.findTop10MoviesByPickCount();
+        List<Movie> topPickMovies = myPickMovieRepository.findTop10MoviesByPickCount();
         List<MovieDto> topMovieList = topPickMovies.stream()
-                .map(objArr -> {
-                    Movie movie = (Movie) objArr[0];
-                    Long pickCount = (Long) objArr[1];
+                .map(movie -> {
                     MovieDto movieDto = toMovieDto(movie);
-                    movieDto.setPickCount(pickCount);
                     return movieDto;
                 })
                 .collect(Collectors.toList());

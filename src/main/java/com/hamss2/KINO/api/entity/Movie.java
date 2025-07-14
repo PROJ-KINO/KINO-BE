@@ -42,7 +42,7 @@ public class Movie {
     private String plot;
 
     @Column(nullable = false)
-    private Integer totalView;
+    private Integer totalView = 0;
 
     private String director;
 
