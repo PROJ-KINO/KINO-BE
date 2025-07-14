@@ -138,6 +138,7 @@ public class MypageService {
         int followingCount = user.getFollowing().size();
         
         List<MypageMainResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
+                .limit(5)
                 .map(mpm -> new MypageMainResDto.MyPickMovieDto(
                         mpm.getMyPickMoiveId(),
                         mpm.getMovie().getTitle(),
