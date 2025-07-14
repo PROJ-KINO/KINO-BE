@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class MovieGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long movieGenreId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

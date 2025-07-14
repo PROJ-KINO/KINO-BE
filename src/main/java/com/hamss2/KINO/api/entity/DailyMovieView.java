@@ -17,14 +17,11 @@ import java.time.LocalDateTime;
 public class DailyMovieView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String dailyView;
+    private Long dailyViewId;
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Integer view;
+    private Integer dailyView;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

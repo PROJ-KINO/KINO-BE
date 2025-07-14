@@ -29,9 +29,15 @@ public class Movie {
 
     private LocalDate releaseDate;
 
+    @Column(nullable = false)
+    private String releaseDate;
+
+    private String avgRating;
+
     @Column(columnDefinition = "TEXT")
     private String plot;
 
+    @Column(nullable = false)
     private Integer totalView;
 
     private String director;
