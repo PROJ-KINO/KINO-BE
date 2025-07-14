@@ -19,13 +19,13 @@ public class Report {
     private Long reportId;
 
     @Column(nullable = false)
-    private String reason;
-
     private String content;
 
-    private String targetType;
+    private int reportType;
 
-    private Long targetId;
+    private int relatedType;
+
+    private Long relatedId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -33,6 +33,10 @@ public class Report {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporterId", nullable = false)
     private User reporter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporteeId", nullable = false)
+    private User reported;
 
     @PrePersist
     private void prePersist() {

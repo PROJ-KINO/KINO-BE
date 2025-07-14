@@ -6,31 +6,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Data
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Slf4j
-public class MovieGenre {
+public class MyPickMoive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long movieGenreId;
+    private Long myPickMoiveId;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movieId", nullable = false)
     private Movie movie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genreId", nullable = false)
-    private Genre genre;
-
-    @PrePersist
-    private void prePersist() {
-        createdAt = LocalDateTime.now();
-    }
-} 
+}

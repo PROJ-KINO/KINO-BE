@@ -30,6 +30,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //    Web - Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 //    Security - Spring Security, OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

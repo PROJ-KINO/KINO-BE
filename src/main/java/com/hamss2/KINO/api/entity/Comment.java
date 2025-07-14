@@ -27,6 +27,10 @@ public class Comment {
     private Boolean isDeleted;
 
     @Column(nullable = false)
+    @ColumnDefault("true")
+    private Boolean isActive;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
