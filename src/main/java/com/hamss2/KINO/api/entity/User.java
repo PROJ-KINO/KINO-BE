@@ -77,6 +77,9 @@ public class User {
     @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Report> reports;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MyPickMoive> myPickMovies;
+
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();

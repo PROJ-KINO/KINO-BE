@@ -69,6 +69,9 @@ public class Movie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DailyMovieView> dailyMovieViews;
 
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MyPickMoive> myPickMoives;
+
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();
