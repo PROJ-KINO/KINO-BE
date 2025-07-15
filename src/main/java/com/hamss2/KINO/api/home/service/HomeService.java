@@ -1,16 +1,17 @@
 package com.hamss2.KINO.api.home.service;
 
-import com.hamss2.KINO.api.entity.DailyMovieView;
-import com.hamss2.KINO.api.entity.Movie;
-import com.hamss2.KINO.api.entity.Review;
+import com.hamss2.KINO.api.entity.*;
+import com.hamss2.KINO.api.home.dto.req.GenreSelectReq;
 import com.hamss2.KINO.api.home.dto.res.HomeResponseDto;
 import com.hamss2.KINO.api.home.dto.res.MovieDto;
 import com.hamss2.KINO.api.home.dto.res.ReviewDto;
 import com.hamss2.KINO.api.home.dto.res.TeaserDto;
-import com.hamss2.KINO.api.home.repository.DailyMovieViewRepository;
-import com.hamss2.KINO.api.home.repository.MyPickMovieRepository;
-import com.hamss2.KINO.api.home.repository.ReviewRepository;
+import com.hamss2.KINO.api.home.repository.*;
+import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
+import com.hamss2.KINO.common.exception.BadRequestException;
+import com.hamss2.KINO.common.exception.InternalServerException;
+import com.hamss2.KINO.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,9 @@ public class HomeService {
     private final BoxOfficeService boxOfficeService;
     private final DailyMovieViewRepository dailymovieViewRepository;
     private final RecommendationService recommendationService;
+    private final UserGenreRepository userGenreRepository;
+    private final UserRepository userRepository;
+    private final GenreRepository genreRepository;
 
     @Transactional(readOnly = true)
     public HomeResponseDto getHomeData(Long userId) {
@@ -59,7 +63,11 @@ public class HomeService {
         homeResponseDto.setTopPickMovieList(topMovieList);
 
         // 4. 박스 오피스 TOP 10
-        homeResponseDto.setBoxOfficeMovieList(boxOfficeService.fetchRealBoxOfficeTop10());
+        try {
+            homeResponseDto.setBoxOfficeMovieList(boxOfficeService.fetchRealBoxOfficeTop10());
+        } catch (Exception e) {
+            throw new InternalServerException("박스오피스 서버 오류");
+        }
 
         // 5. 일별 조회수 TOP 10 영화
         List<DailyMovieView> topViews = dailymovieViewRepository.findTop10ByViewDateOrderByDailyViewDesc(LocalDate.now());
@@ -85,9 +93,34 @@ public class HomeService {
         homeResponseDto.setMonthlyTopMovieList(movies);
 
         // 7. 사용자 기반 추천 TOP 10 영화
-        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
+//        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
+
+        try {
+            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+            homeResponseDto.setRecommendedMovieList(recommended);
+        } catch (Exception e) {
+            throw new InternalServerException("플라스크 서버 오류");
+        }
 
         return homeResponseDto;
+    }
+
+    @Transactional
+    public void saveUserGenres(GenreSelectReq req, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
+
+        if (!user.getIsFirstLogin()) {
+            throw new BadRequestException("이미 취향 장르를 선택하셨습니다.");
+        }
+
+        List<Genre> genres = genreRepository.findAllById(req.getGenreIds());
+
+        List<UserGenre> userGenres = genres.stream()
+                .map(genre -> new UserGenre(null, null, user, genre))
+                .toList();
+
+        userGenreRepository.saveAll(userGenres);
     }
 
     private TeaserDto toTeaserMovieDto(Movie movie) {

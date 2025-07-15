@@ -44,6 +44,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    @ColumnDefault("true")
+    private Boolean isFirstLogin = true;
+
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Follow> following;
 
