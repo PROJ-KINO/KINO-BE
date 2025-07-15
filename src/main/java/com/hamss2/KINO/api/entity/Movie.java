@@ -1,7 +1,12 @@
 package com.hamss2.KINO.api.entity;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,12 +38,11 @@ public class Movie {
 
     private String avgRating;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String plot = "";
 
     @Column(nullable = false)
-    private Integer totalView;
+    private Integer totalView = 0;
 
     private String director;
 

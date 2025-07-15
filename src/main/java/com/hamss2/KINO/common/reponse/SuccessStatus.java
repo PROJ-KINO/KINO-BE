@@ -31,6 +31,10 @@ public enum SuccessStatus {
     SEARCH_ADMIN_COMMENT_DETAIL_SUCCESS(HttpStatus.OK, "댓글 신고 상세 조회 성공"),
     USERBAN_DISABLE_SUCCESS(HttpStatus.OK, "정지 철회 성공"),
     PROCESS_REPORT_SUCCESS(HttpStatus.OK, "신고 처리 성공"),
+    SYNC_TMDB_MOVIES_SUCCESS(HttpStatus.OK, "TMDB 영화 동기화 성공"),
+    SYNC_TMDB_GENRES_SUCCESS(HttpStatus.OK, "TMDB 장르 동기화 성공"),
+    SEND_HOME_SUCCESS(HttpStatus.OK, "홈 데이터 조회 성공"),
+    SEND_USER_GENRE_SELECT_SUCCESS(HttpStatus.OK, "사용자 취향 장르 선택 저장 성공"),
 
     /**
      * 201
