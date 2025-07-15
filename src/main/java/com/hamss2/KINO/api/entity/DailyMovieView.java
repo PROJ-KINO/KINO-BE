@@ -1,17 +1,17 @@
 package com.hamss2.KINO.api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
@@ -32,6 +32,7 @@ public class DailyMovieView {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movieId", nullable = false)
+    @JsonIgnore
     private Movie movie;
 
     @PrePersist

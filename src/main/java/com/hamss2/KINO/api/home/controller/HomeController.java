@@ -26,6 +26,6 @@ public class HomeController {
     @PostMapping("/user/genre")
     public ResponseEntity<ApiResponse<Void>> selectGenre(@RequestBody GenreSelectReq req, Long userId) {
         homeService.saveUserGenres(req, userId);
-        return ApiResponse.success_only(SuccessStatus.SEND_USER_UPDATE_SUCCESS);
+        return ApiResponse.success_only(SuccessStatus.SEND_USER_GENRE_SELECT_SUCCESS);
     }
 }

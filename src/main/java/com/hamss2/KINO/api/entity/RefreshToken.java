@@ -1,14 +1,13 @@
 package com.hamss2.KINO.api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor

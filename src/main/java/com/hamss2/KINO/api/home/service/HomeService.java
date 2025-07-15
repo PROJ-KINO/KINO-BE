@@ -9,6 +9,8 @@ import com.hamss2.KINO.api.home.dto.res.TeaserDto;
 import com.hamss2.KINO.api.home.repository.*;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
+import com.hamss2.KINO.api.movieAdmin.repository.UserGenreRepository;
+import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
 import com.hamss2.KINO.common.exception.NotFoundException;
