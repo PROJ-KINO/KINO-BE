@@ -2,6 +2,7 @@ package com.hamss2.KINO.api.admin.service;
 
 import com.hamss2.KINO.api.admin.dto.*;
 import com.hamss2.KINO.api.admin.repository.*;
+import com.hamss2.KINO.api.home.repository.*;
 import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import lombok.RequiredArgsConstructor;
