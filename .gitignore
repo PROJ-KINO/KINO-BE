@@ -238,3 +238,6 @@ application.properties
 application-*.properties
 application.yml
 application-*.yml
+
+# .gitignore
+/src/main/resources/*.json

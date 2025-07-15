@@ -10,14 +10,14 @@ import jakarta.persistence.PrePersist;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
@@ -38,8 +38,8 @@ public class Movie {
 
     private String avgRating;
 
-    @Column(columnDefinition = "TEXT")
-    private String plot;
+    @Column(nullable = false)
+    private String plot = "";
 
     @Column(nullable = false)
     private Integer totalView;
