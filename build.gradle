@@ -32,9 +32,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 //    Security - Spring Security, OAuth2
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 //    SQL - Spring Data JPA, MySQL
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

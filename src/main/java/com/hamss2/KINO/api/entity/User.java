@@ -1,12 +1,22 @@
 package com.hamss2.KINO.api.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.ColumnDefault;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -15,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -24,11 +35,11 @@ public class User {
 
     private String image;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String socialType;
+    private String socialType; // KAKAO, NAVER, GOOGLE
 
     @Column(nullable = false)
     private String providerId;
@@ -38,7 +49,7 @@ public class User {
     private Boolean isDeleted;
 
     @Column(nullable = false)
-    private String role;
+    private String role; // USER, ADMIN, BAN_USER
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
