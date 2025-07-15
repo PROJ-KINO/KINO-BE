@@ -16,7 +16,7 @@ import com.hamss2.KINO.api.mypage.dto.MypagePickMovieResDto;
 import com.hamss2.KINO.api.mypage.dto.MypageUpdateProfileReqDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
-import com.hamss2.KINO.api.movieAdmin.repository.UserGenreRepository;
+import com.hamss2.KINO.api.mypage.repository.UserGenreRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
