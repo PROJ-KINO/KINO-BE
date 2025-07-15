@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyPickMoive {
+public class MyPickMovie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long myPickMoiveId;
+    private Long myPickMovieId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)

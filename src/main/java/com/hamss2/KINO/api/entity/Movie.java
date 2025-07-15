@@ -1,12 +1,7 @@
 package com.hamss2.KINO.api.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +33,7 @@ public class Movie {
 
     private String avgRating;
 
+    @Lob
     @Column(nullable = false)
     private String plot = "";
 
@@ -70,7 +66,7 @@ public class Movie {
     private List<DailyMovieView> dailyMovieViews;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MyPickMoive> myPickMoives;
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {

@@ -22,6 +22,15 @@ public enum SuccessStatus {
     SEARCH_MYPAGE_GENRE_SUCCESS(HttpStatus.OK, "마이페이지 장르 조회 성공"),
     UPDATE_USERGENRE_SUCCESS(HttpStatus.OK, "사용자 장르 업데이트 성공"),
     UPDATE_PROFILE_SUCCESS(HttpStatus.OK, "사용자 정보 업데이트 성공"),
+    SEARCH_ADMIN_ALLUSER_SUCCESS(HttpStatus.OK, "모든 사용자 정보 조회 성공"),
+    SEARCH_ADMIN_REVIEW_SUCCESS(HttpStatus.OK, "신고 상세 리뷰 조회 성공"),
+    SEARCH_ADMIN_SHORTREVIEW_SUCCESS(HttpStatus.OK, "신고 한줄평 조회 성공"),
+    SEARCH_ADMIN_COMMENT_SUCCESS(HttpStatus.OK, "신고 댓글 조회 성공"),
+    SEARCH_ADMIN_REVIEW_DETAIL_SUCCESS(HttpStatus.OK, "상세 리뷰 신고 조회 성공"),
+    SEARCH_ADMIN_SHORTREVIEW_DETAIL_SUCCESS(HttpStatus.OK, "한줄평 신고 상세 조회 성공"),
+    SEARCH_ADMIN_COMMENT_DETAIL_SUCCESS(HttpStatus.OK, "댓글 신고 상세 조회 성공"),
+    USERBAN_DISABLE_SUCCESS(HttpStatus.OK, "정지 철회 성공"),
+    PROCESS_REPORT_SUCCESS(HttpStatus.OK, "신고 처리 성공"),
 
     /**
      * 201

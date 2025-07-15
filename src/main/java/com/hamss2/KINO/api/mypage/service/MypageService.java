@@ -5,7 +5,6 @@ import com.hamss2.KINO.api.entity.UserGenre;
 import com.hamss2.KINO.api.entity.Genre;
 import com.hamss2.KINO.api.entity.ShortReview;
 import com.hamss2.KINO.api.entity.Review;
-import com.hamss2.KINO.api.entity.MyPickMoive;
 import com.hamss2.KINO.api.image.GcsUploader;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreReqDto;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreResDto;
@@ -16,7 +15,7 @@ import com.hamss2.KINO.api.mypage.dto.MypagePickMovieResDto;
 import com.hamss2.KINO.api.mypage.dto.MypageUpdateProfileReqDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
-import com.hamss2.KINO.api.movieAdmin.repository.UserGenreRepository;
+import com.hamss2.KINO.api.mypage.repository.UserGenreRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -140,7 +139,7 @@ public class MypageService {
         List<MypageMainResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
                 .limit(5)
                 .map(mpm -> new MypageMainResDto.MyPickMovieDto(
-                        mpm.getMyPickMoiveId(),
+                        mpm.getMyPickMovieId(),
                         mpm.getMovie().getTitle(),
                         mpm.getMovie().getPosterUrl()
                 ))
@@ -209,7 +208,7 @@ public class MypageService {
         
         List<MypagePickMovieResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
                 .map(myPickMovie -> new MypagePickMovieResDto.MyPickMovieDto(
-                        myPickMovie.getMyPickMoiveId(),
+                        myPickMovie.getMyPickMovieId(),
                         myPickMovie.getMovie().getTitle(),
                         myPickMovie.getMovie().getPosterUrl()
                 ))

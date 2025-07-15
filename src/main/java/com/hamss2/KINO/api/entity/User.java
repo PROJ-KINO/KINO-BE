@@ -74,7 +74,7 @@ public class User {
     private List<Report> reports;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MyPickMoive> myPickMovies;
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {
