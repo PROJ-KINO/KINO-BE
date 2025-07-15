@@ -39,6 +39,8 @@ public class HomeService {
     @Transactional(readOnly = true)
     public HomeResponseDto getHomeData(Long userId) {
 
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
+
         HomeResponseDto homeResponseDto = new HomeResponseDto();
 
         // 1. 상단 티저 영화
@@ -123,6 +125,9 @@ public class HomeService {
                 .toList();
 
         userGenreRepository.saveAll(userGenres);
+
+        user.setIsFirstLogin(false);
+        userRepository.save(user);
     }
 
     private TeaserDto toTeaserMovieDto(Movie movie) {
