@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +19,9 @@ public class DailyMovieView {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dailyViewId;
+
+    @Column(nullable = false)
+    private LocalDate viewDate;
 
     @Column(nullable = false)
     @ColumnDefault("0")

@@ -8,6 +8,7 @@ import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieGenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MovieService {
 
+    @Qualifier("tmdbWebClient")
+    private final WebClient tmdbWebClient;
+
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final MovieGenreRepository movieGenreRepository;
-
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("https://api.themoviedb.org/3")
-            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024)) // 10MB
-            .build();
 
     @Value("${tmdb.api-key}")
     private String apiKey;
@@ -41,7 +40,7 @@ public class MovieService {
         for (int page = startPage; page <= endPage; page++) {
             System.out.println("== TMDB 영화 상세 수집: " + page + " 페이지 ==");
             final int currentPage = page;
-            Map<String, Object> result = webClient.get()
+            Map<String, Object> result = tmdbWebClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/discover/movie")
                             .queryParam("language", "ko")
@@ -61,7 +60,7 @@ public class MovieService {
                 if (movieRepository.existsById(movieId)) continue;
 
                 // 1. 영화 상세정보
-                Map<String, Object> detail = webClient.get()
+                Map<String, Object> detail = tmdbWebClient.get()
                         .uri("/movie/{id}?language=ko&api_key={key}", movieId, apiKey)
                         .retrieve().bodyToMono(Map.class).block();
 
@@ -77,7 +76,7 @@ public class MovieService {
                 }
 
                 // 3. 예고편/티저 영상
-                Map<String, Object> videos = webClient.get()
+                Map<String, Object> videos = tmdbWebClient.get()
                         .uri("/movie/{id}/videos?language=ko&api_key={key}", movieId, apiKey)
                         .retrieve().bodyToMono(Map.class).block();
 
@@ -98,7 +97,7 @@ public class MovieService {
                 }
 
                 // 4. 배우/감독(credits)
-                Map<String, Object> credits = webClient.get()
+                Map<String, Object> credits = tmdbWebClient.get()
                         .uri("/movie/{id}/credits?api_key={key}", movieId, apiKey)
                         .retrieve().bodyToMono(Map.class).block();
 
@@ -151,7 +150,7 @@ public class MovieService {
     }
 
     public void fetchAndSaveGenres() {
-        Map<String, Object> result = webClient.get()
+        Map<String, Object> result = tmdbWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/genre/movie/list")
                         .queryParam("language", "ko")

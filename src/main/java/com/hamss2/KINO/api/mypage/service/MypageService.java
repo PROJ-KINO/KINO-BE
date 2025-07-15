@@ -5,7 +5,7 @@ import com.hamss2.KINO.api.entity.UserGenre;
 import com.hamss2.KINO.api.entity.Genre;
 import com.hamss2.KINO.api.entity.ShortReview;
 import com.hamss2.KINO.api.entity.Review;
-import com.hamss2.KINO.api.entity.MyPickMoive;
+import com.hamss2.KINO.api.entity.MyPickMovie;
 import com.hamss2.KINO.api.image.GcsUploader;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreReqDto;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreResDto;
@@ -140,7 +140,7 @@ public class MypageService {
         List<MypageMainResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
                 .limit(5)
                 .map(mpm -> new MypageMainResDto.MyPickMovieDto(
-                        mpm.getMyPickMoiveId(),
+                        mpm.getMyPickMovieId(),
                         mpm.getMovie().getTitle(),
                         mpm.getMovie().getPosterUrl()
                 ))
@@ -209,7 +209,7 @@ public class MypageService {
         
         List<MypagePickMovieResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
                 .map(myPickMovie -> new MypagePickMovieResDto.MyPickMovieDto(
-                        myPickMovie.getMyPickMoiveId(),
+                        myPickMovie.getMyPickMovieId(),
                         myPickMovie.getMovie().getTitle(),
                         myPickMovie.getMovie().getPosterUrl()
                 ))
