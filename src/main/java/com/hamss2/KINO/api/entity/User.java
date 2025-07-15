@@ -43,6 +43,10 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    @ColumnDefault("true")
+    private Boolean isFirstLogin = true;
+
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Follow> following;
 
@@ -74,7 +78,7 @@ public class User {
     private List<Report> reports;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MyPickMoive> myPickMovies;
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {

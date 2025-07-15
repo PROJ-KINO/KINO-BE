@@ -20,7 +20,7 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
@@ -54,8 +54,10 @@ dependencies {
 //    GCP - 이미지 저장소
     implementation 'com.google.cloud:google-cloud-storage:2.53.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.107.Final:osx-aarch_64'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }

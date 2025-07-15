@@ -38,11 +38,11 @@ public class Movie {
 
     private String avgRating;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String plot = "";
 
     @Column(nullable = false)
-    private Integer totalView;
+    private Integer totalView = 0;
 
     private String director;
 
@@ -70,7 +70,7 @@ public class Movie {
     private List<DailyMovieView> dailyMovieViews;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MyPickMoive> myPickMoives;
+    private List<MyPickMovie> myPickMovies;
 
     @PrePersist
     private void prePersist() {

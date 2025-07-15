@@ -22,6 +22,10 @@ public enum SuccessStatus {
     SEARCH_MYPAGE_GENRE_SUCCESS(HttpStatus.OK, "마이페이지 장르 조회 성공"),
     UPDATE_USERGENRE_SUCCESS(HttpStatus.OK, "사용자 장르 업데이트 성공"),
     UPDATE_PROFILE_SUCCESS(HttpStatus.OK, "사용자 정보 업데이트 성공"),
+    SYNC_TMDB_MOVIES_SUCCESS(HttpStatus.OK, "TMDB 영화 동기화 성공"),
+    SYNC_TMDB_GENRES_SUCCESS(HttpStatus.OK, "TMDB 장르 동기화 성공"),
+    SEND_HOME_SUCCESS(HttpStatus.OK, "홈 데이터 조회 성공"),
+    SEND_USER_GENRE_SELECT_SUCCESS(HttpStatus.OK, "사용자 취향 장르 선택 저장 성공"),
 
     /**
      * 201
