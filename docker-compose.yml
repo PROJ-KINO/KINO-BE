@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: kino-db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_SECRET_KEY}
+      MYSQL_DATABASE: kino
+    ports:
+      - "3306:3306"
+    networks:
+      - kino-net
+
+  spring:
+    image: kino-spring
+    container_name: kino-spring-container
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    networks:
+      - kino-net
+
+networks:
+  kino-net:
