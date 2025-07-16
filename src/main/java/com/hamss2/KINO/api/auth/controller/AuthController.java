@@ -36,9 +36,7 @@ public class AuthController {
 
     // OAuth2.0 로그인 페이지로 리다이렉트
     @GetMapping("/login/{provider}")
-    public ResponseEntity<ApiResponse<String>> getLoginPage(
-        @PathVariable String provider
-    ) {
+    public ResponseEntity<ApiResponse<String>> getLoginPage(@PathVariable String provider) {
         if (KAKAO.getType().equalsIgnoreCase(provider)) {
             String kakaoAuthUrl = kakaoOAuthService.getKakaoAuthUrl();
             return ApiResponse.success(SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS, kakaoAuthUrl);
@@ -47,8 +45,7 @@ public class AuthController {
             return ApiResponse.success(SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS, naverAuthUrl);
         } else if (GOOGLE.getType().equalsIgnoreCase(provider)) {
             String googleAuthUrl = googleOAuthService.getGoogleAuthUrl();
-            return ApiResponse.success(SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS,
-                googleAuthUrl);
+            return ApiResponse.success(SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS, googleAuthUrl);
         }
         throw new BadRequestException("지원하지 않는 로그인 제공자입니다.\n현재 제공자 : " + provider);
     }
@@ -58,11 +55,8 @@ public class AuthController {
     // accessToken, refreshToken 발급
     // refreshToken은 DB에 저장
     @GetMapping("/oauth/{provider}")
-    public void socialLogin(
-        @PathVariable String provider,
-        @RequestParam String code, // 인증 코드
-        @RequestParam(required = false) String state
-    ) {
+    public void socialLogin(@PathVariable String provider, @RequestParam String code, // 인증 코드
+        @RequestParam(required = false) String state) {
         log.info("google login code={}, state={}", code, state);
         if (code == null || code.isEmpty()) {
             throw new InternalServerException(provider + "에서 인증 코드가 전송되지 않았습니다.");
@@ -71,14 +65,17 @@ public class AuthController {
         if (KAKAO.getType().equalsIgnoreCase(provider)) {
             KakaoOAuthResDto result = kakaoOAuthService.getKakaoAccessToken(code);
             log.info("kakao login result={}", result);
+            log.info("사용자 정보 : {}", kakaoOAuthService.getUserInfo(result.getAccess_token()));
             return;
         } else if (NAVER.getType().equalsIgnoreCase(provider)) {
             NaverOAuthResDto result = naverOAuthService.issueNaverAccessToken(code, state);
             log.info("naver login result={}", result);
+            log.info("사용자 정보 : {}", naverOAuthService.getUserInfo(result.getAccess_token()));
             return;
         } else if (GOOGLE.getType().equalsIgnoreCase(provider)) {
             GoogleOAuthResDto result = googleOAuthService.issueGoogleAccessToken(code, state);
             log.info("google login result={}", result);
+            log.info("사용자 정보 : {}", googleOAuthService.getUserInfo(result.getAccess_token()));
             return;
         }
         throw new BadRequestException("지원하지 않는 로그인 제공자입니다.\n현재 제공자 : " + provider);

@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.auth.service;
 
+import com.hamss2.KINO.api.auth.dto.GoogleDto;
 import com.hamss2.KINO.api.auth.dto.GoogleOAuthResDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -12,9 +13,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class GoogleOAuthService {
 
-    private final static String BASE_URL = "https://oauth2.googleapis.com";
-    private final static WebClient webClient = WebClient.builder()
-        .baseUrl(BASE_URL)
+    private final static WebClient oauthWebClient = WebClient.builder()
+        .baseUrl("https://oauth2.googleapis.com")
+        .build();
+    private final static WebClient apiWebClient = WebClient.builder()
+        .baseUrl("https://www.googleapis.com")
         .build();
 
     @Value("${google.client-id}")
@@ -26,7 +29,7 @@ public class GoogleOAuthService {
 
     public String getGoogleAuthUrl() {
         return UriComponentsBuilder
-            .fromUriString(BASE_URL + "/o/oauth2/v2/auth")
+            .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
             .queryParam("client_id", googleClientId)
             .queryParam("redirect_uri", googleRedirectUri)
             .queryParam("response_type", "code")
@@ -45,12 +48,23 @@ public class GoogleOAuthService {
         formData.add("client_secret", googleClientSecret);
 //        formData.add("state", state);
 
-        return webClient.post()
-            .uri("https://oauth2.googleapis.com/token")
+        return oauthWebClient.post()
+            .uri("/token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
             .bodyToMono(GoogleOAuthResDto.class)
+            .block(); // 동기적으로 반환
+    }
+
+    public GoogleDto getUserInfo(String accessToken) {
+
+        return apiWebClient.get()
+            .uri("/userinfo/v2/me")
+            .headers(headers -> headers.setBearerAuth(accessToken))
+            .retrieve()
+//            .bodyToMono(String.class)
+            .bodyToMono(GoogleDto.class)
             .block(); // 동기적으로 반환
     }
 

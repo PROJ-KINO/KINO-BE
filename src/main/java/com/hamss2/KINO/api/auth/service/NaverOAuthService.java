@@ -1,6 +1,9 @@
 package com.hamss2.KINO.api.auth.service;
 
+import com.hamss2.KINO.api.auth.dto.NaverDto;
 import com.hamss2.KINO.api.auth.dto.NaverOAuthResDto;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -12,9 +15,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class NaverOAuthService {
 
-    private final static String BASE_URL = "https://nid.naver.com/oauth2.0";
-    private final static WebClient webClient = WebClient.builder()
+    private final static String BASE_URL = "https://nid.naver.com";
+    private final static WebClient oauthWebClient = WebClient.builder()
         .baseUrl(BASE_URL)
+        .build();
+    private final static WebClient apiWebClient = WebClient.builder()
+        .baseUrl("https://openapi.naver.com")
         .build();
 
     @Value("${naver.client-id}")
@@ -26,7 +32,7 @@ public class NaverOAuthService {
 
     public String getNaverAuthUrl() {
         return UriComponentsBuilder
-            .fromUriString(BASE_URL + "/authorize")
+            .fromUriString(BASE_URL + "/oauth2.0/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", naverClientId)
             .queryParam("redirect_uri", naverRedirectUri)
@@ -44,12 +50,31 @@ public class NaverOAuthService {
         formData.add("code", code); // 프론트에서 받은 code
         formData.add("state", state); // 프론트에서 받은 state
 
-        return webClient.post()
-            .uri("/token")
+        return oauthWebClient.post()
+            .uri("/oauth2.0/token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
             .bodyToMono(NaverOAuthResDto.class) // 응답을 String으로 변환
+            .block(); // 동기적으로 반환
+    }
+
+    //    public String getUserInfo(String accessToken) {
+    public NaverDto getUserInfo(String accessToken) {
+        // 사용자 정보 요청을 위한 엔드포인트
+        String userInfoUrl = "/v1/nid/me";
+
+        // 헤더 설정
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + accessToken);
+
+        // 사용자 정보 요청
+        return apiWebClient.get()
+            .uri(userInfoUrl)
+            .headers(httpHeaders -> httpHeaders.setAll(headers))
+            .retrieve()
+//            .bodyToMono(String.class) // 응답을 String으로 변환
+            .bodyToMono(NaverDto.class)
             .block(); // 동기적으로 반환
     }
 

@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.auth.service;
 
+import com.hamss2.KINO.api.auth.dto.KakaoDto;
 import com.hamss2.KINO.api.auth.dto.KakaoOAuthResDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -13,8 +14,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KakaoOAuthService {
 
     private final static String BASE_URL = "https://kauth.kakao.com/oauth";
-    private final static WebClient webClient = WebClient.builder()
+    private final static WebClient oauthWebClient = WebClient.builder()
         .baseUrl(BASE_URL)
+        .build();
+    private final static WebClient apiWebClient = WebClient.builder()
+        .baseUrl("https://kapi.kakao.com")
         .build();
 
     @Value("${kakao.client-id}")
@@ -30,12 +34,11 @@ public class KakaoOAuthService {
             .queryParam("response_type", "code")
             .queryParam("client_id", kakaoClientId)
             .queryParam("redirect_uri", kakaoRedirectUri)
-            .queryParam("scope", "profile_nickname,profile_image") // TODO: account_email 추가해야함
+            .queryParam("scope", "profile_nickname,profile_image,account_email")
             .build()
             .toUriString();
 
     }
-
 
     public KakaoOAuthResDto getKakaoAccessToken(String code) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -45,12 +48,24 @@ public class KakaoOAuthService {
         formData.add("code", code); // 프론트에서 받은 code
         formData.add("client_secret", kakaoClientSecret);
 
-        return webClient.post()
+        return oauthWebClient.post()
             .uri("https://kauth.kakao.com/oauth/token")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(formData)
             .retrieve()
             .bodyToMono(KakaoOAuthResDto.class) // 응답을 String으로 변환
+            .block(); // 동기적으로 반환
+    }
+
+    public KakaoDto getUserInfo(String accessToken) {
+
+        String userInfoUrl = "/v2/user/me";
+
+        return apiWebClient.get()
+            .uri(userInfoUrl)
+            .headers(headers -> headers.setBearerAuth(accessToken)) // Bearer 토큰 설정
+            .retrieve()
+            .bodyToMono(KakaoDto.class) // 응답을 String으로 변환
             .block(); // 동기적으로 반환
     }
 }
