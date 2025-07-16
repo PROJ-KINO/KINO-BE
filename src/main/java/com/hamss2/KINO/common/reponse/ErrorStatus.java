@@ -27,6 +27,7 @@ public enum ErrorStatus {
     /**
      * 401 UNAUTHORIZED
      */
+    JWT_TOKEN_EXPIRED_EXCEPTION(HttpStatus.UNAUTHORIZED, "JWT 토큰이 만료되었습니다."),
     USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
 
     /**
