@@ -33,7 +33,11 @@ public enum SuccessStatus {
     CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "게시글 등록 성공"),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "신고 등록 성공"),
 
-    ;
+    /**
+     * 302 Found
+     */
+    REDIRECT_OAUTH_PAGE_SUCCESS(HttpStatus.FOUND, "OAuth 인증 페이지로 리다이렉트"),
+    REDIRECT_OAUTH_SUCCESS(HttpStatus.FOUND, "OAuth 인증 성공");
 
     private final HttpStatus httpStatus;
     private final String message;
