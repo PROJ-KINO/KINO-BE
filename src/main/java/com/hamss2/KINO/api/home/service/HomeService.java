@@ -9,7 +9,7 @@ import com.hamss2.KINO.api.home.dto.res.TeaserDto;
 import com.hamss2.KINO.api.home.repository.*;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
-import com.hamss2.KINO.api.movieAdmin.repository.UserGenreRepository;
+import com.hamss2.KINO.api.mypage.repository.UserGenreRepository;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
@@ -99,12 +99,12 @@ public class HomeService {
         // 7. 사용자 기반 추천 TOP 10 영화
 //        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
 
-        try {
-            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
-            homeResponseDto.setRecommendedMovieList(recommended);
-        } catch (Exception e) {
-            throw new InternalServerException("플라스크 서버 오류");
-        }
+//        try {
+//            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+//            homeResponseDto.setRecommendedMovieList(recommended);
+//        } catch (Exception e) {
+//            throw new InternalServerException("플라스크 서버 오류");
+//        }
 
         return homeResponseDto;
     }
@@ -128,6 +128,14 @@ public class HomeService {
 
         user.setIsFirstLogin(false);
         userRepository.save(user);
+    }
+
+    public List<MovieDto> searchMovies(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+        List<Movie> movies = movieRepository.findByTitleContaining(keyword);
+        return movies.stream().map(this::toMovieDto).toList();
     }
 
     private TeaserDto toTeaserMovieDto(Movie movie) {

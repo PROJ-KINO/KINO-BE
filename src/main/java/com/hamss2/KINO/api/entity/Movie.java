@@ -46,9 +46,14 @@ public class Movie {
 
     private String director;
 
-    private String actors;
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MovieActor> actors;
 
     private Integer runningTime;
+
+    private String stillCutUrl;
+
+    private String ageRating;
 
     @Column(nullable = false)
     @ColumnDefault("false")
@@ -71,6 +76,9 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MyPickMovie> myPickMovies;
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MovieOtt> otts;
 
     @PrePersist
     private void prePersist() {

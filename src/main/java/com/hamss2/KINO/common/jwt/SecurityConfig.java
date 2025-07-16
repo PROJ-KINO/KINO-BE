@@ -57,9 +57,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173"
-        ));  // 프론트엔드 서버 Origin 명시
+        configuration.setAllowedOrigins(
+            List.of("http://localhost:5173", "http://192.168.202.230:5173/"));
+        configuration.setAllowedOrigins(
+            List.of("http://kino-hd.s3-website.ap-northeast-2.amazonaws.com"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));  // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(
