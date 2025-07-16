@@ -6,6 +6,8 @@ import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,26 +21,38 @@ public class AdminController {
     private final AdminService adminService;
 
     @GetMapping("/user")
-    public ResponseEntity<ApiResponse<List<AdminUserResDto>>> user() {
-        List<AdminUserResDto> dtos = adminService.getUsers();
+    public ResponseEntity<ApiResponse<Page<AdminUserResDto>>> user(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        Page<AdminUserResDto> dtos = adminService.getUsers(PageRequest.of(page, size));
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_ALLUSER_SUCCESS, dtos);
     }
 
     @GetMapping("/review")
-    public ResponseEntity<ApiResponse<List<AdminReviewResDto>>> review() {
-        List<AdminReviewResDto> dtos = adminService.getReportReviews();
+    public ResponseEntity<ApiResponse<Page<AdminReviewResDto>>> review(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        Page<AdminReviewResDto> dtos = adminService.getReportReviews(PageRequest.of(page, size));
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_REVIEW_SUCCESS, dtos);
     }
 
     @GetMapping("/shortreview")
-    public ResponseEntity<ApiResponse<List<AdminReviewResDto>>> shortreview() {
-        List<AdminReviewResDto> dtos = adminService.getReportShortReviews();
+    public ResponseEntity<ApiResponse<Page<AdminReviewResDto>>> shortreview(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        Page<AdminReviewResDto> dtos = adminService.getReportShortReviews(PageRequest.of(page, size));
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_SHORTREVIEW_SUCCESS, dtos);
     }
 
     @GetMapping("/comment")
-    public ResponseEntity<ApiResponse<List<AdminReviewResDto>>> commnet() {
-        List<AdminReviewResDto> dtos = adminService.getReportComments();
+    public ResponseEntity<ApiResponse<Page<AdminReviewResDto>>> commnet(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        Page<AdminReviewResDto> dtos = adminService.getReportComments(PageRequest.of(page, size));
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_COMMENT_SUCCESS, dtos);
     }
 

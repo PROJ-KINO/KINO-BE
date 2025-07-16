@@ -7,6 +7,8 @@ import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.movieDetail.repository.ShortReviewRepository;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,51 +26,47 @@ public class AdminService {
     private final CommentRepository commentRepository;
     private final UserBanRepoitory userBanRepository;
 
-    public List<AdminUserResDto> getUsers() {
-        return userRepository.findAll().stream()
+    public Page<AdminUserResDto> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
                 .map(u -> new AdminUserResDto(
                         u.getUserId(),
                         u.getNickname(),
                         u.getEmail(),
                         u.getRole(),
-                        u.getCreatedAt()))
-                .toList();
+                        u.getCreatedAt()));
     }
 
-    public List<AdminReviewResDto> getReportShortReviews() {
-        return reportRepository.findByRelatedType(-2).stream()
+    public Page<AdminReviewResDto> getReportShortReviews(Pageable pageable) {
+        return reportRepository.findByRelatedType(-2, pageable)
                 .map(r -> new AdminReviewResDto(
                         r.getReportId(),
                         r.getReporter().getEmail(),
                         r.getReported().getEmail(),
                         r.getReported().getRole(),
                         r.getCreatedAt()
-                ))
-                .toList();
+                ));
     }
 
-    public List<AdminReviewResDto> getReportComments() {
-        return reportRepository.findByRelatedTypeNotIn(List.of(-1, -2)).stream()
+    public Page<AdminReviewResDto> getReportComments(Pageable pageable) {
+        return reportRepository.findByRelatedTypeNotIn(List.of(-1, -2), pageable)
                 .map(r -> new AdminReviewResDto(
                         r.getReportId(),
                         r.getReporter().getEmail(),
                         r.getReported().getEmail(),
                         r.getReported().getRole(),
                         r.getCreatedAt()
-                ))
-                .toList();
+                ));
     }
 
-    public List<AdminReviewResDto> getReportReviews() {
-        return reportRepository.findByRelatedType(-1).stream()
+    public Page<AdminReviewResDto> getReportReviews(Pageable pageable) {
+        return reportRepository.findByRelatedType(-1, pageable)
                 .map(r -> new AdminReviewResDto(
                         r.getReportId(),
                         r.getReporter().getEmail(),
                         r.getReported().getEmail(),
                         r.getReported().getRole(),
                         r.getCreatedAt()
-                ))
-                .toList();
+                ));
     }
 
     public AdminReportShortReviewDetailResDto getReportShortReviewDetail(Long reportId) {
