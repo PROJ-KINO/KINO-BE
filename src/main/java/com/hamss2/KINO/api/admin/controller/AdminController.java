@@ -15,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("localhost:6173")
 public class AdminController {
     private final AdminService adminService;
 
