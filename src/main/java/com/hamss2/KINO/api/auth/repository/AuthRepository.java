@@ -15,6 +15,8 @@ public interface AuthRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email); // 사용자가 이메일로 가입했는지 확인
 
-    Optional<User> findBySocialTypeandProviderId(SocialType socialType, String providerId);
+    Optional<User> findBySocialTypeAndProviderId(SocialType socialType, String providerId);
+
+    boolean existsBySocialTypeAndProviderId(SocialType socialType, String providerId);
 
 }

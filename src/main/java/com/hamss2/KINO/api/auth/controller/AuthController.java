@@ -1,9 +1,11 @@
 package com.hamss2.KINO.api.auth.controller;
 
+import com.hamss2.KINO.api.auth.dto.LoginResDto;
 import com.hamss2.KINO.api.auth.dto.SocialType;
 import com.hamss2.KINO.api.auth.service.AuthService;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
+import com.hamss2.KINO.common.jwt.TokenDto;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ public class AuthController {
     @GetMapping("/login/{provider}")
     public ResponseEntity<ApiResponse<String>> getLoginPage(@PathVariable String provider) {
         try {
-            SocialType socialType = SocialType.valueOf(provider);
+            SocialType socialType = SocialType.fromString(provider);
             return ApiResponse.success(
                 SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS,
                 authService.getLoginPage(socialType)
@@ -38,7 +40,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth/{provider}")
-    public void socialLogin(
+    public ResponseEntity<ApiResponse<LoginResDto>> socialLogin(
         @PathVariable String provider,
         @RequestParam String code, // 인증 코드
         @RequestParam(required = false) String state
@@ -50,7 +52,8 @@ public class AuthController {
 
         try {
             SocialType socialType = SocialType.fromString(provider);
-            authService.socialLogin(socialType, code, state);
+            return ApiResponse.success(SuccessStatus.SEND_LOGIN_SUCCESS,
+                authService.socialLogin(socialType, code, state));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("지원하지 않는 로그인 제공자입니다." + e.getMessage());
         }
@@ -66,6 +69,12 @@ public class AuthController {
     public void refresh() {
         // 토큰 갱신
         // accessToken, refreshToken 재발급
+    }
+
+    @GetMapping("/token")
+    public ResponseEntity<ApiResponse<TokenDto>> createToken(
+    ) {
+        return ApiResponse.success(SuccessStatus.CREATE_TOKEN_SUCCESS, authService.createToken());
     }
 
 }
