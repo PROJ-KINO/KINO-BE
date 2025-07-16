@@ -37,7 +37,7 @@ public class MovieService {
     private String apiKey;
 
     @Transactional
-    public void fetchAndSaveMovies(int startPage, int endPage) {
+    public void fetchAndSaveMovies(int startPage, int endPage, String sortBy) {
         for (int page = startPage; page <= endPage; page++) {
             System.out.println("== TMDB 영화 상세 수집: " + page + " 페이지 ==");
             final int currentPage = page;
@@ -46,7 +46,7 @@ public class MovieService {
                             .path("/discover/movie")
                             .queryParam("language", "ko")
                             .queryParam("api_key", apiKey)
-                            .queryParam("sort_by", "popularity.desc")
+                            .queryParam("sort_by", sortBy)
                             .queryParam("page", currentPage)
                             .build())
                     .retrieve()
@@ -58,7 +58,6 @@ public class MovieService {
 
             for (Map<String, Object> movie : movies) {
                 Long movieId = ((Number) movie.get("id")).longValue();
-                if (movieRepository.existsById(movieId)) continue;
 
                 // 1. 영화 상세정보
                 Map<String, Object> detail = tmdbWebClient.get()
@@ -69,6 +68,12 @@ public class MovieService {
                 String overview = (String) detail.get("overview");
                 String posterPath = (String) detail.get("poster_path");
                 String releaseDate = (String) detail.get("release_date");
+
+                // releaseDate가 null이거나 빈 값이면, 저장하지 않고 건너뜀
+                if (releaseDate == null || releaseDate.isEmpty()) {
+                    System.out.println("release_date 없는 영화 SKIP: " + title + " (" + movieId + ")");
+                    continue;
+                }
 
                 // == 평점 ==
                 String avgRating = null;
@@ -152,8 +157,8 @@ public class MovieService {
                     }
                 }
 
-                // 7. 저장
-                Movie entity = new Movie();
+                // 7. 영화 존재하면 update, 없으면 insert
+                Movie entity = movieRepository.findById(movieId).orElseGet(Movie::new);
                 entity.setMovieId(movieId);
                 entity.setTitle(title);
                 entity.setPlot(overview);
