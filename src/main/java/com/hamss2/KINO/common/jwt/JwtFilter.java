@@ -9,14 +9,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final TokenProvider tokenProvider;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(
@@ -25,8 +27,8 @@ public class JwtFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         String jwt = resolveToken(request); // 헤더에서 JWT 추출
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
+            Authentication authentication = jwtUtils.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication); // 인증 객체 설정
         }
         filterChain.doFilter(request, response); // 다음 필터로 요청 전달

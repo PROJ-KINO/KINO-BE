@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 // TokenProvider 클래스는 JWT 토큰을 생성하고 검증하는 역할을 합니다.
 @Component
 @Slf4j
-public class TokenProvider {
+public class JwtUtils {
 
     private static final String AUTHORITIES_KEY = "auth"; // 권한 정보를 저장하는 키
     private static final String TOKEN_TYPE = "Bearer";
@@ -34,7 +34,7 @@ public class TokenProvider {
     private final long refreshTokenValidityInMs; // Refresh Token 유효 기간 (밀리초 단위)
 
     // 비밀키를 기반으로 키 객체 초기화
-    public TokenProvider(
+    public JwtUtils(
         @Value("${jwt.secret.key}") String secretKey,
         @Value("${jwt.access-token.expiration:3600000}") long accessTokenValidityInMs,
         @Value("${jwt.refresh-token.expiration:604800000}") long refreshTokenValidityInMs
