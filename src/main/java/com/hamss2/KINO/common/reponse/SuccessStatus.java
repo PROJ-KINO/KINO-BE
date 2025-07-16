@@ -35,12 +35,23 @@ public enum SuccessStatus {
     SYNC_TMDB_GENRES_SUCCESS(HttpStatus.OK, "TMDB 장르 동기화 성공"),
     SEND_HOME_SUCCESS(HttpStatus.OK, "홈 데이터 조회 성공"),
     SEND_USER_GENRE_SELECT_SUCCESS(HttpStatus.OK, "사용자 취향 장르 선택 저장 성공"),
+    SEARCH_MYPICK_SUCCESS(HttpStatus.OK, "찜 여부 조회 성공"),
+    DELETE_MYPICK_SUCCESS(HttpStatus.OK, "찜 해제 성공"),
+    SEARCH_MOVIE_DETAIL_SUCCESS(HttpStatus.OK, "영화 상세정보 조회 성공"),
+    SEARCH_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 조회 성공"),
+    UPDATE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 수정 성공"),
+    DELETE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 삭제 성공"),
+    REPORT_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 신고 성공"),
+    SEARCH_REVIEW_LIST_SUCCESS(HttpStatus.OK, "상세리뷰 조회 성공"),
+    SEARCH_REVIEW_COUNT_SUCCESS(HttpStatus.OK, "상세리뷰 개수 조회 성공"),
 
     /**
      * 201
      */
     CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "게시글 등록 성공"),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "신고 등록 성공"),
+    CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
+    CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
 
     ;
 
