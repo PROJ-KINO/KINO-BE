@@ -44,6 +44,7 @@ public enum SuccessStatus {
     REPORT_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 신고 성공"),
     SEARCH_REVIEW_LIST_SUCCESS(HttpStatus.OK, "상세리뷰 조회 성공"),
     SEARCH_REVIEW_COUNT_SUCCESS(HttpStatus.OK, "상세리뷰 개수 조회 성공"),
+    SEARCH_MOVIE_SUCCESS(HttpStatus.OK, "영화 검색 성공"),
 
     /**
      * 201

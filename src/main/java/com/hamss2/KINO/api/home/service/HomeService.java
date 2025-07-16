@@ -99,12 +99,12 @@ public class HomeService {
         // 7. 사용자 기반 추천 TOP 10 영화
 //        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
 
-        try {
-            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
-            homeResponseDto.setRecommendedMovieList(recommended);
-        } catch (Exception e) {
-            throw new InternalServerException("플라스크 서버 오류");
-        }
+//        try {
+//            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+//            homeResponseDto.setRecommendedMovieList(recommended);
+//        } catch (Exception e) {
+//            throw new InternalServerException("플라스크 서버 오류");
+//        }
 
         return homeResponseDto;
     }
@@ -128,6 +128,14 @@ public class HomeService {
 
         user.setIsFirstLogin(false);
         userRepository.save(user);
+    }
+
+    public List<MovieDto> searchMovies(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+        List<Movie> movies = movieRepository.findByTitleContaining(keyword);
+        return movies.stream().map(this::toMovieDto).toList();
     }
 
     private TeaserDto toTeaserMovieDto(Movie movie) {
