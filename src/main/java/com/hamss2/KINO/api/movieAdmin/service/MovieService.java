@@ -36,7 +36,6 @@ public class MovieService {
     @Value("${tmdb.api-key}")
     private String apiKey;
 
-    @Transactional
     public void fetchAndSaveMovies(int startPage, int endPage, String sortBy) {
         for (int page = startPage; page <= endPage; page++) {
             System.out.println("== TMDB 영화 상세 수집: " + page + " 페이지 ==");
