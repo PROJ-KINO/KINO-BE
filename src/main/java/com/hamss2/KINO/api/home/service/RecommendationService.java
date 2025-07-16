@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RecommendationService {
 
-    private final WebClient recommenderWebClient;
+//    private final WebClient recommenderWebClient;
 
 //    public List<MovieDto> getRecommendations(Long userId, int n) {
 //        Map<String, Object> request = new HashMap<>();

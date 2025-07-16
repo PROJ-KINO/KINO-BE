@@ -22,10 +22,10 @@ public class WebClientConfig {
                 .build();
     }
     // 3. Flask 서버
-    @Bean
-    public WebClient recommenderWebClient() {
-        return WebClient.builder()
-                .baseUrl("http://localhost:5001") // Flask 서버 주소
-                .build();
-    }
+//    @Bean
+//    public WebClient recommenderWebClient() {
+//        return WebClient.builder()
+//                .baseUrl("http://localhost:5001") // Flask 서버 주소
+//                .build();
+//    }
 }
