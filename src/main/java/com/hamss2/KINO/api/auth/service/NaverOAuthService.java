@@ -59,7 +59,6 @@ public class NaverOAuthService {
             .block(); // 동기적으로 반환
     }
 
-    //    public String getUserInfo(String accessToken) {
     public NaverDto getUserInfo(String accessToken) {
         // 사용자 정보 요청을 위한 엔드포인트
         String userInfoUrl = "/v1/nid/me";
@@ -73,7 +72,6 @@ public class NaverOAuthService {
             .uri(userInfoUrl)
             .headers(httpHeaders -> httpHeaders.setAll(headers))
             .retrieve()
-//            .bodyToMono(String.class) // 응답을 String으로 변환
             .bodyToMono(NaverDto.class)
             .block(); // 동기적으로 반환
     }

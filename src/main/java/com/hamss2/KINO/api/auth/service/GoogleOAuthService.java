@@ -63,7 +63,6 @@ public class GoogleOAuthService {
             .uri("/userinfo/v2/me")
             .headers(headers -> headers.setBearerAuth(accessToken))
             .retrieve()
-//            .bodyToMono(String.class)
             .bodyToMono(GoogleDto.class)
             .block(); // 동기적으로 반환
     }

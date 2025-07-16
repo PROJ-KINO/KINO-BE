@@ -65,7 +65,7 @@ public class KakaoOAuthService {
             .uri(userInfoUrl)
             .headers(headers -> headers.setBearerAuth(accessToken)) // Bearer 토큰 설정
             .retrieve()
-            .bodyToMono(KakaoDto.class) // 응답을 String으로 변환
+            .bodyToMono(KakaoDto.class)
             .block(); // 동기적으로 반환
     }
 }
