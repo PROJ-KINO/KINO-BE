@@ -10,4 +10,6 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByRelatedType(int relatedTy);
     List<Report> findByRelatedTypeNotIn(List<Integer> excludedTypes);
+    // 신고 중복 방지: 같은 사람이 같은 대상에 이미 신고했는지
+    boolean existsByReporterUserIdAndRelatedTypeAndRelatedId(Long reporterId, int relatedType, Long relatedId);
 }

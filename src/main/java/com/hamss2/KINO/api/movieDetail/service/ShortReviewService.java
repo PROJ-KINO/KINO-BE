@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.movieDetail.service;
 
+import com.hamss2.KINO.api.admin.repository.ReportRepository;
 import com.hamss2.KINO.api.entity.Movie;
 import com.hamss2.KINO.api.entity.Report;
 import com.hamss2.KINO.api.entity.ShortReview;
@@ -8,7 +9,6 @@ import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.ShortReviewResDto;
-import com.hamss2.KINO.api.movieDetail.repository.ReportRepository;
 import com.hamss2.KINO.api.movieDetail.repository.ShortReviewLikeRepository;
 import com.hamss2.KINO.api.movieDetail.repository.ShortReviewRepository;
 import com.hamss2.KINO.api.testPackage.UserRepository;
