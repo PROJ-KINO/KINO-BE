@@ -10,6 +10,8 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.List;
+
 
 @Configuration
 public class SwaggerConfig {
@@ -30,17 +32,17 @@ public class SwaggerConfig {
 //         SecurityRequirement 설정 - 각 토큰별 인증 요구사항 추가
         SecurityRequirement accessTokenRequirement = new SecurityRequirement().addList(accessTokenHeader);
 
-        Server server = new Server();
-        server.setUrl("http://localhost:8080");
-
         return new OpenAPI()
                 .info(new Info()
                         .title("KINO")
                         .description("KINO REST API Document")
                         .version("1.0.0"))
+                .servers(List.of(
+                        new Server().url("http://43.203.218.183:8080").description("개발 서버 (배포)"),
+                        new Server().url("http://localhost:8080").description("개발 서버 (localhost)")
+                ))
                 .components(new Components()
                         .addSecuritySchemes(accessTokenHeader, accessTokenScheme))
-                .addServersItem(server)
                 .addSecurityItem(accessTokenRequirement);
     }
 
