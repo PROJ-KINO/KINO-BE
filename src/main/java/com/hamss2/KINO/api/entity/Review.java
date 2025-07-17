@@ -68,6 +68,15 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ReviewLike> reviewLikes;
 
+    public static Review createReview(String title, String content, User user, Movie movie) {
+        Review review = new Review();
+        review.setTitle(title);
+        review.setContent(content);
+        review.setUser(user);
+        review.setMovie(movie);
+        return review;
+    }
+
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();

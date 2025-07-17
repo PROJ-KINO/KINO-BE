@@ -61,6 +61,7 @@ public enum SuccessStatus {
     CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "액세스 토큰 생성 성공"),
     CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
     CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
+    CREATE_REVIEW_SUCCESS(HttpStatus.CREATED, "리뷰 등록 성공"),
 
     /**
      * 302 Found

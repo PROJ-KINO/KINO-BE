@@ -44,9 +44,17 @@ public class ReviewController {
 
     // 리뷰 작성하기
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> createReview(@RequestBody ReviewReqDto reviewReqDto) {
+    public ResponseEntity<ApiResponse<Boolean>> createReview(
+        @AuthenticationPrincipal String userId,
+        @RequestBody ReviewReqDto reviewReqDto
+    ) {
 
-        return ApiResponse.success_only(SuccessStatus.REVIEW_WRITING_PAGE_SUCCESS);
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.CREATE_REVIEW_SUCCESS,
+            reviewService.createReview(id, reviewReqDto));
     }
 
     // 리뷰 페이지

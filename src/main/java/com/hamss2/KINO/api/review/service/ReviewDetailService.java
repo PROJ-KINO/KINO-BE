@@ -7,9 +7,11 @@ import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
+import com.hamss2.KINO.api.review.dto.ReviewReqDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.NotFoundException;
+import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.utils.TimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,5 +84,25 @@ public class ReviewDetailService {
         review.incrementViews();
 
         return response;
+    }
+
+    public Boolean createReview(Long userId, ReviewReqDto reviewReqDto) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        if (user.getRole() == Role.BAN_USER) {
+            throw new UnauthorizedException("Only Not Ban Users can create review");
+        }
+
+        Movie movie = movieRepository.findById(reviewReqDto.getMovieId())
+            .orElseThrow(() -> new NotFoundException(
+                "Movie not found with id: " + reviewReqDto.getMovieId()));
+
+        Review review = Review.createReview(reviewReqDto.getReviewTitle(),
+            reviewReqDto.getReviewContent(), user, movie);
+
+        reviewRepository.save(review);
+
+        return true;
     }
 }
