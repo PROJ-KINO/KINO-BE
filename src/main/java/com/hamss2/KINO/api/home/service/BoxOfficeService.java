@@ -59,7 +59,7 @@ public class BoxOfficeService {
                 MovieDto dto = new MovieDto();
                 dto.setMovieId(movie.getMovieId());
                 dto.setTitle(movie.getTitle());
-                dto.setPosterUrl(movie.getPosterUrl());
+                dto.setPosterUrl(movie.getStillCutUrl());
                 movieDtos.add(dto);
             }
 
