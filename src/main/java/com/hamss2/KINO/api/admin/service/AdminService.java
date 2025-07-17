@@ -155,7 +155,7 @@ public class AdminService {
 
     public void process(AdminReqDto adminReqDto) {
         userRepository.findById(adminReqDto.getReportedId()).ifPresent(user -> {
-            user.setRole(Role.BAN);
+            user.setRole(Role.BAN_USER);
 
             LocalDateTime bannedUntil = LocalDateTime.now()
                 .plusDays(adminReqDto.getResult());
