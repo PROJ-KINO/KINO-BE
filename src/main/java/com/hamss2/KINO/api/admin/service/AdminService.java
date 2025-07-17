@@ -141,7 +141,7 @@ public class AdminService {
     }
 
     public void active(List<Long> userIds) {
-        for(Long id : userIds){
+        for (Long id : userIds) {
             userRepository.findById(id).ifPresent(user -> {
                 user.setRole(Role.USER);
             });
@@ -155,7 +155,7 @@ public class AdminService {
 
     public void process(AdminReqDto adminReqDto) {
         userRepository.findById(adminReqDto.getReportedId()).ifPresent(user -> {
-            user.setRole(Role.BAN_USER);
+            user.setRole(Role.BAN);
 
             LocalDateTime bannedUntil = LocalDateTime.now()
                 .plusDays(adminReqDto.getResult());
