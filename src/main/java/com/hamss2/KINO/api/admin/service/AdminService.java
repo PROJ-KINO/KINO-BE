@@ -104,7 +104,7 @@ public class AdminService {
         return dto;
     }
 
-    public AdminReportReviewDetailResDto getReportReviewDetail(Long reportId) {
+    public AdminReportReviewDetailResDto getReportReviewDetail(Long reportId, String lang) {
         Report report = reportRepository.findById(reportId).orElseThrow(() -> new RuntimeException("Report not found"));
         Review review = reviewRepository.findById((long) report.getRelatedId()).orElseThrow(() -> new RuntimeException("Review not found"));
         AdminReportReviewDetailResDto dto = new AdminReportReviewDetailResDto(
