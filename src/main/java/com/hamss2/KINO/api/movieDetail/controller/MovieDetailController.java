@@ -56,7 +56,6 @@ public class MovieDetailController {
 
     // 한줄평 조회
     @GetMapping("/{movieId}/short-reviews")
-    @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
              @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
@@ -88,7 +87,7 @@ public class MovieDetailController {
         return ApiResponse.success_only(SuccessStatus.DELETE_SHORT_REVIEW_SUCCESS);
     }
 
-    // 신
+    // 신고
     @PostMapping("/report")
     public ResponseEntity<ApiResponse<Void>> report(@RequestBody ReportReqDto reportReqDto, @AuthenticationPrincipal String userId) {
         reviewService.report(reportReqDto, Long.valueOf(userId));
@@ -97,7 +96,6 @@ public class MovieDetailController {
 
     // 상세 리뷰 조회
     @GetMapping("/{movieId}/reviews")
-    @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
