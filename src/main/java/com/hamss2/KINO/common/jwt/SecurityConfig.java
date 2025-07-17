@@ -35,7 +35,7 @@ public class SecurityConfig {
             .httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 인증 비활성화
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll() // 인증 관련 API는 모두 허용
-                .requestMatchers("/api/allow").permitAll() // TODO 삭제
+                .requestMatchers("**").permitAll() // TODO 삭제
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/admin/**")
                 .hasRole(Role.ADMIN.toString()) // ADMIN 권한이 필요한 API
