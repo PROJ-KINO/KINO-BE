@@ -31,8 +31,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://192.168.202.230:5173/"));
-        config.setAllowedOrigins(List.of("http://kino-hd.s3-website.ap-northeast-2.amazonaws.com"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://192.168.202.230:5173",
+                "http://kino-hd.s3-website.ap-northeast-2.amazonaws.com"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
