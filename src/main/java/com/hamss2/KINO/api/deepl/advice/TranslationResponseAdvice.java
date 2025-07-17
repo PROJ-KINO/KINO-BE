@@ -25,7 +25,7 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
-        log.debug("supports() called: converterType={}", converterType);
+        log.info("supports() called: converterType={}", converterType);
         return returnType.getContainingClass().isAnnotationPresent(Translate.class)
                 || returnType.hasMethodAnnotation(Translate.class);
     }
