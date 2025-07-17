@@ -38,22 +38,30 @@ public class ReviewService {
 
     // 리뷰 목록
     @Transactional(readOnly = true)
-    public Page<ReviewResDto> getReviewList(Long movieId, int page, int size) {
+    public Page<ReviewResDto> getReviewList(Long movieId, int page, int size, Long userId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Review> reviewPage = reviewRepository.findAllByMovieAndIsDeletedFalseOrderByCreatedAtDesc(movie, pageable);
 
-        return reviewPage.map(r -> ReviewResDto.builder()
-                .reviewId(r.getReviewId())
-                .userNickname(r.getUser().getNickname())
-                .userProfile(r.getUser().getImage())
-                .title(r.getTitle())
-                .content(r.getContent())
-                .totalViews(r.getTotalViews() != null ? r.getTotalViews() : 0)
-                .commentCount(r.getComments() != null ? r.getComments().size() : 0)
-                .createdAt(r.getCreatedAt())
-                .build()
+        return reviewPage.map(r -> {
+            boolean mine = r.getUser().getUserId().equals(userId);
+            boolean liked = r.getReviewLikes() != null && r.getReviewLikes().stream()
+                            .anyMatch(like -> like.getUser().getUserId().equals(userId));
+            return ReviewResDto.builder()
+                    .reviewId(r.getReviewId())
+                    .userNickname(r.getUser().getNickname())
+                    .userProfile(r.getUser().getImage())
+                    .title(r.getTitle())
+                    .content(r.getContent())
+                    .totalViews(r.getTotalViews() != null ? r.getTotalViews() : 0)
+                    .commentCount(r.getComments() != null ? r.getComments().size() : 0)
+                    .likeCount(r.getReviewLikes() != null ? r.getReviewLikes().size() : 0)
+                    .mine(mine)
+                    .liked(liked)
+                    .createdAt(r.getCreatedAt())
+                    .build();
+                }
         );
     }
 

@@ -96,8 +96,8 @@ public class MovieDetailController {
     @GetMapping("/{movieId}/reviews")
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size);
+            @RequestParam(defaultValue = "20") int size, @RequestParam Long userId) {
+        Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, userId);
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }
 
