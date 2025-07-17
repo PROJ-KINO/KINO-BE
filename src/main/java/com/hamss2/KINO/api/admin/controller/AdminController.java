@@ -2,10 +2,12 @@ package com.hamss2.KINO.api.admin.controller;
 
 import com.hamss2.KINO.api.admin.dto.*;
 import com.hamss2.KINO.api.admin.service.AdminService;
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.ManyToAny;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @Slf4j
+@Translate
 public class AdminController {
     private final AdminService adminService;
 
@@ -63,8 +66,9 @@ public class AdminController {
     }
 
     @GetMapping("/reviewdetail/{reportId}")
-    public ResponseEntity<ApiResponse<AdminReportReviewDetailResDto>> reviewdetail(@PathVariable Long reportId) {
-        AdminReportReviewDetailResDto dtos = adminService.getReportReviewDetail(reportId);
+    public ResponseEntity<ApiResponse<AdminReportReviewDetailResDto>> reviewdetail(@PathVariable Long reportId, @RequestParam(defaultValue = "EN") String lang) {
+        AdminReportReviewDetailResDto dtos = adminService.getReportReviewDetail(reportId, lang);
+        System.out.println("====================" + dtos);
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_REVIEW_DETAIL_SUCCESS, dtos);
     }
 
@@ -74,9 +78,9 @@ public class AdminController {
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_COMMENT_DETAIL_SUCCESS, dtos);
     }
 
-    @PostMapping("/active/{id}")
-    public ResponseEntity<ApiResponse<Void>> active(@PathVariable Long id) {
-        adminService.active(id);
+    @PostMapping("/active")
+    public ResponseEntity<ApiResponse<Void>> active(@RequestBody List<Long> ids) {
+        adminService.active(ids);
         return ApiResponse.success_only(SuccessStatus.USERBAN_DISABLE_SUCCESS);
     }
 
