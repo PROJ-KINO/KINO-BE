@@ -118,7 +118,9 @@ public class MypageService {
                         sr.getShortReviewId(),
                         sr.getContent(),
                         sr.getMovie().getTitle(),
-                        sr.getCreatedAt()
+                        sr.getCreatedAt(),
+                        sr.getRating(),
+                        sr.getShortReviewLikes().size()
                 ))
                 .orElse(null);
         
@@ -130,7 +132,10 @@ public class MypageService {
                         r.getTitle(),
                         r.getContent(),
                         r.getMovie().getTitle(),
-                        r.getCreatedAt()
+                        r.getCreatedAt(),
+                        r.getReviewLikes().size(),
+                        r.getTotalViews(),
+                        r.getComments().size()
                 ))
                 .orElse(null);
         
@@ -142,7 +147,9 @@ public class MypageService {
                 .map(mpm -> new MypageMainResDto.MyPickMovieDto(
                         mpm.getMyPickMovieId(),
                         mpm.getMovie().getTitle(),
-                        mpm.getMovie().getPosterUrl()
+                        mpm.getMovie().getPosterUrl(),
+                        mpm.getMovie().getDirector(),
+                        mpm.getMovie().getReleaseDate()
                 ))
                 .collect(Collectors.toList());
         

@@ -26,6 +26,7 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
     public boolean supports(MethodParameter returnType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
         log.info("supports() called: converterType={}", converterType);
+
         return returnType.getContainingClass().isAnnotationPresent(Translate.class)
                 || returnType.hasMethodAnnotation(Translate.class);
     }
@@ -42,6 +43,7 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
         List<String> langs = request.getHeaders().getOrDefault("X-Target-Lang",
                 request.getHeaders().getOrDefault("Accept-Language", List.of("EN")));
         String targetLang = langs.get(0).toUpperCase();
+        if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7")) return body;
         translateFields(body, targetLang);
         return body;
     }
