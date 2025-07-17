@@ -23,6 +23,7 @@ public class MovieDetailDto {
     private List<ActorDto> actors;
     private List<OttDto> otts;
     private String teaserUrl;
+    private String avgRating;
 
     @Getter
     @Builder
