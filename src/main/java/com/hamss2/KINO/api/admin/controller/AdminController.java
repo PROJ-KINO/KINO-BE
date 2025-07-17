@@ -67,8 +67,7 @@ public class AdminController {
 
     @GetMapping("/reviewdetail/{reportId}")
     public ResponseEntity<ApiResponse<AdminReportReviewDetailResDto>> reviewdetail(@PathVariable Long reportId, @RequestParam(defaultValue = "EN") String lang) {
-        AdminReportReviewDetailResDto dtos = adminService.getReportReviewDetail(reportId, lang);
-        System.out.println("====================" + dtos);
+        AdminReportReviewDetailResDto dtos = adminService.getReportReviewDetail(reportId);
         return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_REVIEW_DETAIL_SUCCESS, dtos);
     }
 

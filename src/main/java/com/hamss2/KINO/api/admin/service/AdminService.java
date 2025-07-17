@@ -140,11 +140,13 @@ public class AdminService {
         return dto;
     }
 
-    public void active(Long id) {
-        userRepository.findById(id).ifPresent(user -> {
-            user.setRole(Role.USER);
-        });
-        userBanRepository.deleteById(id);
+    public void active(List<Long> userIds) {
+        for(Long id : userIds){
+            userRepository.findById(id).ifPresent(user -> {
+                user.setRole(Role.USER);
+            });
+            userBanRepository.deleteById(id);
+        }
     }
 
     public void deleteReport(Long id) {
