@@ -56,10 +56,11 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.107.Final:osx-aarch_64'
+
+    // deepl
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
-// deepl
-implementation 'org.springframework.boot:spring-boot-configuration-processor'
-annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
 tasks.named('test') {
     useJUnitPlatform()

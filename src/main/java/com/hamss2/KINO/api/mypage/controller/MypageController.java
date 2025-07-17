@@ -43,7 +43,7 @@ public class MypageController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal UserDetails userDetails, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal UserDetails userDetails) {
 //        Long userId = userDetails.getUserId();
         Long userId = 1L;
         MypageReviewResDto reviewResDto = mypageService.review(userId);
