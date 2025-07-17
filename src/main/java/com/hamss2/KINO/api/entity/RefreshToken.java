@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -31,9 +33,14 @@ public class RefreshToken {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public static RefreshToken create(String token) {
+    @OneToOne
+    @JoinColumn(name = "user_id") // FK 컬럼
+    private User user;
+
+    public static RefreshToken create(String token, User user) {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(token);
+        refreshToken.setUser(user);
         return refreshToken;
     }
 

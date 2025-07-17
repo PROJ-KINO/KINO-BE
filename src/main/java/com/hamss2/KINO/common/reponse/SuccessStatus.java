@@ -15,6 +15,7 @@ public enum SuccessStatus {
     SEND_REGISTER_SUCCESS(HttpStatus.OK, "회원가입 성공"),
     SEND_HEALTH_SUCCESS(HttpStatus.OK, "서버 상태 OK"),
     SEND_LOGIN_SUCCESS(HttpStatus.OK, "로그인 성공"),
+    SEND_LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃 성공"),
 
     SEARCH_MYPAGE_MAIN_SUCCESS(HttpStatus.OK, "마이페이지 메인 조회 성공"),
     SEARCH_MYPAGE_SHORTREVIEW_SUCCESS(HttpStatus.OK, "마이페이지 한줄평 조회 성공"),

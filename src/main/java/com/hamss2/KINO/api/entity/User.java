@@ -60,6 +60,7 @@ public class User {
     @ColumnDefault("false")
     private Boolean isDeleted = false;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER; // USER, ADMIN, BAN_USER
 
