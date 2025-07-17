@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReportReqDto {
-    private Long reporterId;   // 신고자
+//    private Long reporterId;   // 신고자
     private Long reporteeId;   // 피신고자
     private int reportType;    // 신고 카테고리
     private String content;    // 신고 상세 내용
