@@ -1,10 +1,14 @@
 package com.hamss2.KINO.common.jwt;
 
+import com.hamss2.KINO.common.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
@@ -18,7 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 // TokenProvider 클래스는 JWT 토큰을 생성하고 검증하는 역할을 합니다.
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
 
     private static final String AUTHORITIES_KEY = "auth"; // 권한 정보를 저장하는 키
+    private static final String TOKEN_TYPE_KEY = "type"; // 토큰 종류를 저장하는 키
     private static final String TOKEN_TYPE = "Bearer";
 
     private final Key key; // JWT 서명에 사용할 비밀키
@@ -69,6 +74,7 @@ public class JwtUtils {
         // Access Token 생성
         String accessToken = Jwts.builder()
             .setSubject(authentication.getName()) // 사용자명 설정, 이메일이 들어 있음
+            .claim(TOKEN_TYPE_KEY, TokenType.ACCESS.toString())
             .claim(AUTHORITIES_KEY, authorities)  // 권한 정보 저장
             .setIssuedAt(Date.from(now))
             .setExpiration(accessTokenExpiresIn)  // 만료 시간 설정
@@ -78,6 +84,7 @@ public class JwtUtils {
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
             .setSubject(authentication.getName()) // 사용자명 설정, 이메일이 들어 있음
+            .claim(TOKEN_TYPE_KEY, TokenType.REFRESH.toString())
             .claim(AUTHORITIES_KEY, authorities)  // 권한 정보 저장
             .setIssuedAt(Date.from(now))
             .setExpiration(refreshTokenExpiresIn)  // 만료 시간 설정
@@ -94,6 +101,28 @@ public class JwtUtils {
             .build();
     }
 
+    public String reissueAccessToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String authorities = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
+
+        // 현재 시간과 만료 시간 계산
+        Instant now = Instant.now();
+        Date accessTokenExpiresIn = Date.from(now.plus(Duration.ofMillis(accessTokenValidityInMs)));
+
+        // Access Token 생성
+        return Jwts.builder()
+            .setSubject(authentication.getName()) // 사용자명 설정, 이메일이 들어 있음
+            .claim(TOKEN_TYPE_KEY, TokenType.ACCESS.toString())
+            .claim(AUTHORITIES_KEY, authorities)  // 권한 정보 저장
+            .setIssuedAt(Date.from(now))
+            .setExpiration(accessTokenExpiresIn)  // 만료 시간 설정
+            .signWith(key, SignatureAlgorithm.HS512) // 서명 방식 설정
+            .compact();
+    }
+
     // 토큰에서 인증 객체 생성
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
@@ -105,8 +134,8 @@ public class JwtUtils {
                 .collect(Collectors.toList());
 
         // 인증 객체 생성 후 반환
-        User principal = new User(claims.getSubject(), "", authorities);
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+//        User principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
     // 토큰 유효성 검증
@@ -114,8 +143,16 @@ public class JwtUtils {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            log.info("JWT 검증 실패: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            throw new UnauthorizedException("JWT 만료됨: " + e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.info("지원하지 않는 JWT: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.info("잘못된 JWT: {}", e.getMessage());
+        } catch (SecurityException | SignatureException e) {
+            log.info("서명 검증 실패: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.info("JWT claims 문자열이 비어 있음: {}", e.getMessage());
         }
         return false;
     }
@@ -127,5 +164,39 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public UserDetail getUserInfo(String token) {
+        try {
+            String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+            Long userId = Long.parseLong(subject);
+
+            return new UserDetail(userId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid user ID in token");
+        }
+    }
+
+    public Long getUserId(String token) {
+        try {
+            String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+            return Long.parseLong(subject);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid user ID in token");
+        }
+    }
+
+    public String getRole(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
+            .get("role", String.class);
+    }
+
+    public Boolean isExpired(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
+            .getExpiration().before(new Date());
     }
 }

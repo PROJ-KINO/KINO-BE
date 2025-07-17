@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,11 +80,19 @@ public class AuthService {
             });
 
         // TODO : 로그인 성공 시 토큰 발급 로직 추가
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUserId(),
-            null, List.of(() -> "ROLE_USER")); // 실제 권한 정보로 변경 필요
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            user.getUserId(),
+            null, List.of(() -> "ROLE_USER"
+        )); // 실제 권한 정보로 변경 필요
         TokenDto tokenDto = jwtUtils.generateTokenDto(authentication);
 
-        RefreshToken.create(tokenDto.getRefreshToken());
+        if (tokenRepository.existsByUserUserId(user.getUserId())) {
+            RefreshToken refreshToken = tokenRepository.findByUserUserId(user.getUserId());
+            refreshToken.setToken(tokenDto.getRefreshToken());
+        } else {
+            RefreshToken refreshToken = RefreshToken.create(tokenDto.getRefreshToken(), user);
+            tokenRepository.save(refreshToken);
+        }
 
         return new LoginResDto(
             tokenDto.getAccessToken(),
@@ -91,10 +100,22 @@ public class AuthService {
         );
     }
 
-    public TokenDto createToken() {
-//        return tokenProvider.generateTokenDto();
-        return null;
+    public String reissueAccessToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info(authentication.getName());
+        return jwtUtils.reissueAccessToken();
     }
 
-
+    public Boolean logout(Long userId) {
+        // 로그아웃 시 토큰 삭제
+        if (tokenRepository.existsByUserUserId(userId)) {
+            RefreshToken refreshToken = tokenRepository.findByUserUserId(userId);
+            tokenRepository.delete(refreshToken);
+            SecurityContextHolder.clearContext(); // SecurityContext 초기화
+            return true;
+        } else {
+            log.warn("로그아웃 실패: 존재하지 않는 사용자 ID={}", userId);
+            throw new IllegalArgumentException("로그아웃할 사용자의 토큰이 존재하지 않습니다.");
+        }
+    }
 }
