@@ -88,6 +88,7 @@ public class MovieDetailService {
                                 .build())
                         .collect(Collectors.toList()))
                 .teaserUrl(movie.getTeaserUrl())
+                .avgRating(movie.getAvgRating())
                 .build();
     }
 

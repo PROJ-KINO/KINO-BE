@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -42,8 +43,8 @@ public class SecurityConfig {
             )
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 적용
-//            .addFilter() // 필터 추가하는 방법
+//            .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 적용
+            .cors(Customizer.withDefaults())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -57,14 +58,17 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(
-            List.of("http://localhost:5173", "http://192.168.202.230:5173/"));
-        configuration.setAllowedOrigins(
-            List.of("http://kino-hd.s3-website.ap-northeast-2.amazonaws.com"));
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://192.168.202.230:3000",
+            "http://192.168.202.230:5173",
+            "http://kino-hd.s3-website.ap-northeast-2.amazonaws.com"
+        ));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));  // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(
-            Arrays.asList("Authorization", "Content-Type", "Refresh-Token"));  // 허용할 헤더
+            Arrays.asList("Authorization", "Content-Type", "*"));  // 허용할 헤더
         configuration.setAllowCredentials(true);  // 쿠키 및 인증 정보 허용
         configuration.setMaxAge(3600L);  // 1시간 동안 preflight 요청 캐싱
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
