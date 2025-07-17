@@ -74,8 +74,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public void report(ReportReqDto reportReqDto) {
-        User reporter = userRepository.findById(reportReqDto.getReporterId())
+    public void report(ReportReqDto reportReqDto, Long userId) {
+        User reporter = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("신고자가 존재하지 않습니다."));
         User reportee = userRepository.findById(reportReqDto.getReporteeId())
                 .orElseThrow(() -> new NotFoundException("피신고자가 존재하지 않습니다."));
@@ -101,7 +101,7 @@ public class ReviewService {
 
         // 중복 신고 방지
         boolean already = reportRepository.existsByReporterUserIdAndRelatedTypeAndRelatedId(
-                reportReqDto.getReporterId(), reportReqDto.getRelatedType(), reportReqDto.getRelatedId());
+                userId, reportReqDto.getRelatedType(), reportReqDto.getRelatedId());
         if (already) throw new BadRequestException("이미 신고한 대상입니다.");
 
         // 신고 저장
