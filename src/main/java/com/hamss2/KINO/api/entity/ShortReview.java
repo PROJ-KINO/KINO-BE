@@ -24,7 +24,7 @@ public class ShortReview {
     private String content;
 
     @Column(nullable = false)
-    private int rating;
+    private int rating = 0;
 
     @Column(nullable = false)
     @ColumnDefault("false")

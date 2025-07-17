@@ -3,6 +3,8 @@ package com.hamss2.KINO.api.mypage.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -26,6 +28,8 @@ public class MypageMainResDto {
         private String content;
         private String movieTitle;
         private LocalDateTime createdAt;
+        private int rating;
+        private int likes;
     }
 
     @Data
@@ -37,6 +41,9 @@ public class MypageMainResDto {
         private String content;
         private String movieTitle;
         private LocalDateTime createdAt;
+        private int likes;
+        private int views;
+        private int comments;
     }
 
     @Data
@@ -46,5 +53,7 @@ public class MypageMainResDto {
         private Long myPickId;
         private String movieTitle;
         private String posterUrl;
+        private String director;
+        private LocalDate releasedAt;
     }
 }
