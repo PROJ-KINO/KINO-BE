@@ -23,6 +23,10 @@ public class Comment {
     private String content;
 
     @Column(nullable = false)
+    private int likes = 0;
+
+
+    @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean isDeleted;
 
