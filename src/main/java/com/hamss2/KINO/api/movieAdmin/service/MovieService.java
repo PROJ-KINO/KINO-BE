@@ -3,6 +3,7 @@ package com.hamss2.KINO.api.movieAdmin.service;
 
 import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.movieAdmin.repository.*;
+import com.hamss2.KINO.api.searchMovie.MovieResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -280,5 +281,14 @@ public class MovieService {
                 genreRepository.save(genreEntity);
             }
         }
+    }
+
+    public List<MovieResDto> allMovie(){
+        return movieRepository.findAll().stream()
+                .map(m -> new MovieResDto(
+                        m.getTitle(),
+                        m.getMovieId(),
+                        m.getPosterUrl()
+                )).toList();
     }
 }
