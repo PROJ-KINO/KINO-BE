@@ -1,7 +1,7 @@
 package com.hamss2.KINO.api.searchMovie.controller;
 
 import com.hamss2.KINO.api.movieAdmin.service.MovieService;
-import com.hamss2.KINO.api.searchMovie.MovieResDto;
+import com.hamss2.KINO.api.searchMovie.dto.MovieResDto;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import static com.hamss2.KINO.common.reponse.SuccessStatus.SEARCH_ALL_MOVIE_SUCC
 @RequestMapping("/api/movie")
 @RequiredArgsConstructor
 @Slf4j
-public class searchMovieContoller {
+public class SearchMovieContoller {
     private final MovieService movieService;
 
     @GetMapping("/all")

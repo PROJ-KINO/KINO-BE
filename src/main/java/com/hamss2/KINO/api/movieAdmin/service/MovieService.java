@@ -3,17 +3,16 @@ package com.hamss2.KINO.api.movieAdmin.service;
 
 import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.movieAdmin.repository.*;
-import com.hamss2.KINO.api.searchMovie.MovieResDto;
+import com.hamss2.KINO.api.searchMovie.dto.MovieResDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MovieService {
 
     @Qualifier("tmdbWebClient")
@@ -288,7 +288,9 @@ public class MovieService {
                 .map(m -> new MovieResDto(
                         m.getTitle(),
                         m.getMovieId(),
-                        m.getPosterUrl()
+                        m.getPosterUrl(),
+                        movieGenreRepository.findByMovie_MovieId(m.getMovieId()).stream()
+                                .map(mG -> mG.getGenre().getGenreName()).toList()
                 )).toList();
     }
 }

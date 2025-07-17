@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@Translate
 public class MovieDetailController {
 
     private final MovieDetailService movieDetailService;
@@ -56,6 +55,7 @@ public class MovieDetailController {
 
     // 한줄평 조회
     @GetMapping("/{movieId}/short-reviews")
+    @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
              @RequestParam(defaultValue = "20") int size, Long userId,
@@ -97,6 +97,7 @@ public class MovieDetailController {
 
     // 상세 리뷰 조회
     @GetMapping("/{movieId}/reviews")
+    @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
