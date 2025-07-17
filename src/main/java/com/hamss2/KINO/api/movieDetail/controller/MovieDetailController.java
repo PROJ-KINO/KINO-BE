@@ -12,6 +12,7 @@ import com.hamss2.KINO.api.movieDetail.service.ShortReviewService;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class MovieDetailController {
 
     private final MovieDetailService movieDetailService;
@@ -99,6 +101,7 @@ public class MovieDetailController {
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
+        log.info("========================== userId : " + userId + "==========================");
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }

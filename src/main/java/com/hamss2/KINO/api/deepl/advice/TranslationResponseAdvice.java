@@ -43,7 +43,9 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
         List<String> langs = request.getHeaders().getOrDefault("X-Target-Lang",
                 request.getHeaders().getOrDefault("Accept-Language", List.of("EN")));
         String targetLang = langs.get(0).toUpperCase();
+        log.info("============================== targetLang : " + targetLang + "=============================");
         if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7")) return body;
+        log.info("============================== targetLang : " + targetLang + "=============================");
         translateFields(body, targetLang);
         return body;
     }
