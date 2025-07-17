@@ -59,8 +59,7 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
-             @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
         Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
     }
@@ -101,8 +100,7 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
-            @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+            @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }
