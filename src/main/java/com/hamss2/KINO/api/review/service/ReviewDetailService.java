@@ -6,8 +6,10 @@ import com.hamss2.KINO.api.entity.Role;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
+import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
 import com.hamss2.KINO.api.review.dto.ReviewReqDto;
+import com.hamss2.KINO.api.review.dto.ReviewResDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.NotFoundException;
@@ -15,6 +17,9 @@ import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.utils.TimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,5 +109,24 @@ public class ReviewDetailService {
         reviewRepository.save(review);
 
         return true;
+    }
+
+    public PageResDto<ReviewResDto> getReviews(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        Page<ReviewResDto> response = reviews.map(review -> {
+            return ReviewResDto.builder()
+                .reviewId(review.getReviewId())
+                .reviewTitle(review.getTitle())
+                .reviewContent(review.getContent())
+                .reviewViewCount(review.getTotalViews())
+                .reviewCreatedAt(TimeFormatter.formatLocalDateTime(review.getCreatedAt()))
+                .reviewCommentCount(review.getComments().size())
+                .build();
+        });
+
+        return new PageResDto<>(response);
     }
 }

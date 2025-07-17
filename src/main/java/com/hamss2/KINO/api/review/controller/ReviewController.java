@@ -1,7 +1,9 @@
 package com.hamss2.KINO.api.review.controller;
 
+import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
 import com.hamss2.KINO.api.review.dto.ReviewReqDto;
+import com.hamss2.KINO.api.review.dto.ReviewResDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.review.service.ReviewDetailService;
 import com.hamss2.KINO.common.exception.BadRequestException;
@@ -69,5 +71,14 @@ public class ReviewController {
         Long id = Long.parseLong(userId);
         return ApiResponse.success(SuccessStatus.REVIEW_DETAIL_PAGE_SUCCESS,
             reviewService.getReviewDetail(id, reviewId));
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<ApiResponse<PageResDto<ReviewResDto>>> getReviews(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "30") int size
+    ) {
+        return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS,
+            reviewService.getReviews(page, size));
     }
 }
