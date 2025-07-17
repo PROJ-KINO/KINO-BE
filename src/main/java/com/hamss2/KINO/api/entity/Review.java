@@ -72,4 +72,8 @@ public class Review {
     private void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+    public void incrementViews() {
+        this.totalViews++;
+    }
 } 
