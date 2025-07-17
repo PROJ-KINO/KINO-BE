@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.movieDetail.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Translate
 public class MovieDetailController {
 
     private final MovieDetailService movieDetailService;
@@ -56,7 +58,8 @@ public class MovieDetailController {
     @GetMapping("/{movieId}/short-reviews")
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "20") int size, Long userId) {
+             @RequestParam(defaultValue = "20") int size, Long userId,
+             @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size, userId);
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
     }
@@ -96,7 +99,8 @@ public class MovieDetailController {
     @GetMapping("/{movieId}/reviews")
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size, @RequestParam Long userId) {
+            @RequestParam(defaultValue = "20") int size, @RequestParam Long userId,
+            @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, userId);
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }

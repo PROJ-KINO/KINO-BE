@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.mypage.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.mypage.dto.*;
 import com.hamss2.KINO.api.mypage.service.MypageService;
