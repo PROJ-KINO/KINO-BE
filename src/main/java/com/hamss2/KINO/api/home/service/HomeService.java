@@ -83,7 +83,7 @@ public class HomeService {
                     MovieDto dto = new MovieDto();
                     dto.setMovieId(movie.getMovieId());
                     dto.setTitle(movie.getTitle());
-                    dto.setPosterUrl(movie.getPosterUrl());
+                    dto.setPosterUrl(movie.getStillCutUrl());
                     return dto;
                 })
                 .toList();
@@ -162,7 +162,7 @@ public class HomeService {
         MovieDto movieDto = new MovieDto();
         movieDto.setMovieId(movie.getMovieId());
         movieDto.setTitle(movie.getTitle());
-        movieDto.setPosterUrl(movie.getPosterUrl());
+        movieDto.setPosterUrl(movie.getStillCutUrl());
         return movieDto;
     }
 }
