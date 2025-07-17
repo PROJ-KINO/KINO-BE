@@ -1,10 +1,12 @@
 package com.hamss2.KINO.api.movieDetail.service;
 
+import com.hamss2.KINO.api.admin.repository.CommentRepository;
 import com.hamss2.KINO.api.admin.repository.ReportRepository;
 import com.hamss2.KINO.api.entity.Movie;
 import com.hamss2.KINO.api.entity.Report;
 import com.hamss2.KINO.api.entity.ShortReview;
 import com.hamss2.KINO.api.entity.User;
+import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
@@ -126,36 +128,6 @@ public class ShortReviewService {
         // Soft delete 처리
         shortReview.setIsDeleted(true);
         shortReviewRepository.save(shortReview);
-    }
-
-    // 한줄평 신고
-    @Transactional
-    public void reportShortReview(ReportReqDto reportReqDto) {
-        ShortReview review = shortReviewRepository.findByShortReviewIdAndIsDeletedFalse(reportReqDto.getRelatedId())
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 한줄평입니다."));
-        User reporter = userRepository.findById(reportReqDto.getReporterId())
-                .orElseThrow(() -> new NotFoundException("신고자가 존재하지 않습니다."));
-        User reported = userRepository.findById(reportReqDto.getReporteeId())
-                .orElseThrow(() -> new NotFoundException("피신고자가 존재하지 않습니다."));
-
-        // 2. 중복 신고 방지(이미 신고한 내역 있는지)
-        boolean alreadyReported = reportRepository.existsByReporterUserIdAndRelatedTypeAndRelatedId(
-                reportReqDto.getReporterId(), reportReqDto.getRelatedType(), reportReqDto.getRelatedId());
-        if (alreadyReported) {
-            throw new BadRequestException("이미 신고한 한줄평입니다.");
-        }
-
-        // 3. 신고 엔티티 저장
-        Report report = new Report();
-        report.setReporter(reporter);
-        report.setReported(reported);
-        report.setReportType(reportReqDto.getReportType());  // 카테고리 번호 (ex. 욕설/광고/기타)
-        report.setContent(reportReqDto.getContent());
-        report.setRelatedType(reportReqDto.getRelatedType());   // ex) 1: ShortReview
-        report.setRelatedId(reportReqDto.getRelatedId());
-        report.setCreatedAt(LocalDateTime.now());
-
-        reportRepository.save(report);
     }
 
     // 한줄평 DTO 변환 메서드

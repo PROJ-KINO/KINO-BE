@@ -14,6 +14,8 @@ public enum SuccessStatus {
      */
     SEND_REGISTER_SUCCESS(HttpStatus.OK, "회원가입 성공"),
     SEND_HEALTH_SUCCESS(HttpStatus.OK, "서버 상태 OK"),
+    SEND_LOGIN_SUCCESS(HttpStatus.OK, "로그인 성공"),
+    SEND_LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃 성공"),
 
     SEARCH_MYPAGE_MAIN_SUCCESS(HttpStatus.OK, "마이페이지 메인 조회 성공"),
     SEARCH_MYPAGE_SHORTREVIEW_SUCCESS(HttpStatus.OK, "마이페이지 한줄평 조회 성공"),
@@ -41,20 +43,26 @@ public enum SuccessStatus {
     SEARCH_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 조회 성공"),
     UPDATE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 수정 성공"),
     DELETE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 삭제 성공"),
-    REPORT_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 신고 성공"),
     SEARCH_REVIEW_LIST_SUCCESS(HttpStatus.OK, "상세리뷰 조회 성공"),
     SEARCH_REVIEW_COUNT_SUCCESS(HttpStatus.OK, "상세리뷰 개수 조회 성공"),
     SEARCH_MOVIE_SUCCESS(HttpStatus.OK, "영화 검색 성공"),
+    REPORT_SUCCESS(HttpStatus.OK, "신고 성공"),
 
     /**
      * 201
      */
     CREATE_RECRUIT_ARTICLE_SUCCESS(HttpStatus.CREATED, "게시글 등록 성공"),
     CREATE_REPORT_SUCCESS(HttpStatus.CREATED, "신고 등록 성공"),
+    CREATE_TOKEN_SUCCESS(HttpStatus.CREATED, "토큰 생성 성공"),
+    CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "액세스 토큰 생성 성공"),
     CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
     CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
 
-    ;
+    /**
+     * 302 Found
+     */
+    REDIRECT_OAUTH_PAGE_SUCCESS(HttpStatus.FOUND, "OAuth 인증 페이지로 리다이렉트"),
+    REDIRECT_OAUTH_SUCCESS(HttpStatus.FOUND, "OAuth 인증 성공");
 
     private final HttpStatus httpStatus;
     private final String message;

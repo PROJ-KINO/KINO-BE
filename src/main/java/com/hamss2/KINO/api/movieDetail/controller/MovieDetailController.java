@@ -88,10 +88,10 @@ public class MovieDetailController {
     }
 
     // 한줄평 신고
-    @PostMapping("/short-reviews/report")
-    public ResponseEntity<ApiResponse<Void>> reportShortReview(@RequestBody ReportReqDto reportReqDto) {
-        shortReviewService.reportShortReview(reportReqDto);
-        return ApiResponse.success_only(SuccessStatus.REPORT_SHORT_REVIEW_SUCCESS);
+    @PostMapping("/report")
+    public ResponseEntity<ApiResponse<Void>> report(@RequestBody ReportReqDto reportReqDto) {
+        reviewService.report(reportReqDto);
+        return ApiResponse.success_only(SuccessStatus.REPORT_SUCCESS);
     }
 
     // 상세 리뷰 조회

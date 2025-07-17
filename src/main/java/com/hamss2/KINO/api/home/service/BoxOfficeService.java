@@ -11,8 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,34 +47,24 @@ public class BoxOfficeService {
         Map<String, Object> boxOfficeResult = (Map<String, Object>) result.get("boxOfficeResult");
         List<Map<String, Object>> dailyList = (List<Map<String, Object>>) boxOfficeResult.get("dailyBoxOfficeList");
 
-        // 3. 영화명 + 개봉일로 우리 DB와 매칭해서 DTO
-        return dailyList.stream().limit(10)
-                .map(item -> {
-                    String koficTitle = (String) item.get("movieNm");
-                    String koficOpenDate = (String) item.get("openDt"); // "yyyy-MM-dd"
-                    LocalDate releaseDate = null;
-                    if (koficOpenDate != null && !koficOpenDate.isBlank()) {
-                        releaseDate = LocalDate.parse(koficOpenDate);
-                    }
+        // 3. 영화명으로 우리 DB와 매칭해서 DTO
+        List<MovieDto> movieDtos = new ArrayList<>();
 
-                    Movie movie = null;
-                    if (releaseDate != null) {
-                        movie = movieRepository.findByTitleAndReleaseDate(koficTitle, releaseDate)
-                                .orElse(null);
-                    }
+        for (Map<String, Object> item : dailyList) {
+            String koficTitle = (String) item.get("movieNm");
+            List<Movie> movies = movieRepository.findAllByTitle(koficTitle);
 
-                    MovieDto dto = new MovieDto();
-                    dto.setTitle(koficTitle);
+            if (!movies.isEmpty()) {
+                Movie movie = movies.get(0); // 제일 먼저 나온 영화 사용
+                MovieDto dto = new MovieDto();
+                dto.setMovieId(movie.getMovieId());
+                dto.setTitle(movie.getTitle());
+                dto.setPosterUrl(movie.getPosterUrl());
+                movieDtos.add(dto);
+            }
 
-                    if (movie != null) {
-                        dto.setMovieId(movie.getMovieId());
-                        dto.setPosterUrl(movie.getPosterUrl());
-                    } else {
-                        dto.setMovieId(null);
-                        dto.setPosterUrl(null);
-                    }
-                    return dto;
-                })
-                .toList();
+            if (movieDtos.size() >= 10) break;
+        }
+        return movieDtos;
     }
 }

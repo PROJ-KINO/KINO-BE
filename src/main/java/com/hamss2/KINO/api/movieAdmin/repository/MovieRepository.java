@@ -10,7 +10,6 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     // 티저 영상이 있는 최신 영화 1개
     Movie findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
-    Optional<Movie> findByTitleAndReleaseDate(String title, LocalDate releaseDate);
-
     List<Movie> findByTitleContaining(String keyword);
+    List<Movie> findAllByTitle(String title);
 }
