@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.mypage.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.mypage.dto.*;
 import com.hamss2.KINO.api.mypage.service.MypageService;
@@ -42,7 +43,7 @@ public class MypageController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal UserDetails userDetails, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
 //        Long userId = userDetails.getUserId();
         Long userId = 1L;
         MypageReviewResDto reviewResDto = mypageService.review(userId);

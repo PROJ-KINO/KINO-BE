@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.movieDetail.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Translate
 public class MovieDetailController {
 
     private final MovieDetailService movieDetailService;
