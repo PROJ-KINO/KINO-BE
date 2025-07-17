@@ -43,6 +43,14 @@ public class Comment {
     @JsonIgnore
     private Review review;
 
+    public static Comment createComment(String content, User user, Review review) {
+        Comment comment = new Comment();
+        comment.setContent(content);
+        comment.setUser(user);
+        comment.setReview(review);
+        return comment;
+    }
+
     @PrePersist
     private void prePersist() {
         createdAt = LocalDateTime.now();

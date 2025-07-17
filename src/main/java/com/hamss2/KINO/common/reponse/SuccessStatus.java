@@ -62,6 +62,7 @@ public enum SuccessStatus {
     CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
     CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
     CREATE_REVIEW_SUCCESS(HttpStatus.CREATED, "리뷰 등록 성공"),
+    CREATE_REVIEW_COMMENT_SUCCESS(HttpStatus.CREATED, "리뷰 댓글 생성 성공"),
 
     /**
      * 302 Found
