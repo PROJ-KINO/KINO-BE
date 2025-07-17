@@ -38,22 +38,30 @@ public class ReviewService {
 
     // 리뷰 목록
     @Transactional(readOnly = true)
-    public Page<ReviewResDto> getReviewList(Long movieId, int page, int size) {
+    public Page<ReviewResDto> getReviewList(Long movieId, int page, int size, Long userId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Review> reviewPage = reviewRepository.findAllByMovieAndIsDeletedFalseOrderByCreatedAtDesc(movie, pageable);
 
-        return reviewPage.map(r -> ReviewResDto.builder()
-                .reviewId(r.getReviewId())
-                .userNickname(r.getUser().getNickname())
-                .userProfile(r.getUser().getImage())
-                .title(r.getTitle())
-                .content(r.getContent())
-                .totalViews(r.getTotalViews() != null ? r.getTotalViews() : 0)
-                .commentCount(r.getComments() != null ? r.getComments().size() : 0)
-                .createdAt(r.getCreatedAt())
-                .build()
+        return reviewPage.map(r -> {
+            boolean mine = r.getUser().getUserId().equals(userId);
+            boolean liked = r.getReviewLikes() != null && r.getReviewLikes().stream()
+                            .anyMatch(like -> like.getUser().getUserId().equals(userId));
+            return ReviewResDto.builder()
+                    .reviewId(r.getReviewId())
+                    .userNickname(r.getUser().getNickname())
+                    .userProfile(r.getUser().getImage())
+                    .title(r.getTitle())
+                    .content(r.getContent())
+                    .totalViews(r.getTotalViews() != null ? r.getTotalViews() : 0)
+                    .commentCount(r.getComments() != null ? r.getComments().size() : 0)
+                    .likeCount(r.getReviewLikes() != null ? r.getReviewLikes().size() : 0)
+                    .mine(mine)
+                    .liked(liked)
+                    .createdAt(r.getCreatedAt())
+                    .build();
+                }
         );
     }
 
@@ -66,8 +74,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public void report(ReportReqDto reportReqDto) {
-        User reporter = userRepository.findById(reportReqDto.getReporterId())
+    public void report(ReportReqDto reportReqDto, Long userId) {
+        User reporter = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("신고자가 존재하지 않습니다."));
         User reportee = userRepository.findById(reportReqDto.getReporteeId())
                 .orElseThrow(() -> new NotFoundException("피신고자가 존재하지 않습니다."));
@@ -93,7 +101,7 @@ public class ReviewService {
 
         // 중복 신고 방지
         boolean already = reportRepository.existsByReporterUserIdAndRelatedTypeAndRelatedId(
-                reportReqDto.getReporterId(), reportReqDto.getRelatedType(), reportReqDto.getRelatedId());
+                userId, reportReqDto.getRelatedType(), reportReqDto.getRelatedId());
         if (already) throw new BadRequestException("이미 신고한 대상입니다.");
 
         // 신고 저장

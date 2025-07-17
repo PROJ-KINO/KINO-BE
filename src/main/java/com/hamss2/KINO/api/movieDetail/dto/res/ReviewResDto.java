@@ -15,5 +15,8 @@ public class ReviewResDto {
     private String content;
     private Integer totalViews;
     private int commentCount;
+    private int likeCount;
+    private boolean mine;
+    private boolean liked;
     private LocalDateTime createdAt;
 }

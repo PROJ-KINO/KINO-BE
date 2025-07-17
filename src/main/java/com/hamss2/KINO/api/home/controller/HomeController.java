@@ -8,6 +8,7 @@ import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,15 +21,14 @@ public class HomeController {
     private final HomeService homeService;
 
     @GetMapping("/home")
-    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(Long userId) {
-//        Long userId = (userDetail != null) ? userDetail.getUserId() : null;
-        HomeResponseDto homeResponseDto = homeService.getHomeData(userId);
+    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(@AuthenticationPrincipal String userId) {
+        HomeResponseDto homeResponseDto = homeService.getHomeData(Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEND_HOME_SUCCESS, homeResponseDto);
     }
 
     @PostMapping("/user/genre")
-    public ResponseEntity<ApiResponse<Void>> selectGenre(@RequestBody GenreSelectReq req, Long userId) {
-        homeService.saveUserGenres(req, userId);
+    public ResponseEntity<ApiResponse<Void>> selectGenre(@RequestBody GenreSelectReq req, @AuthenticationPrincipal String userId) {
+        homeService.saveUserGenres(req, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.SEND_USER_GENRE_SELECT_SUCCESS);
     }
 

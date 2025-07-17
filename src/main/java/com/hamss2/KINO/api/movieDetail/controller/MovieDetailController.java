@@ -14,6 +14,7 @@ import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,22 +28,22 @@ public class MovieDetailController {
 
     // 찜 여부 확인
     @GetMapping("/mypick/{movieId}")
-    public ResponseEntity<ApiResponse<Boolean>> isMyPick(@PathVariable Long movieId, Long userId) {
-        boolean result = movieDetailService.isMyPick(movieId, userId);
+    public ResponseEntity<ApiResponse<Boolean>> isMyPick(@PathVariable Long movieId, @AuthenticationPrincipal String userId) {
+        boolean result = movieDetailService.isMyPick(movieId, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_MYPICK_SUCCESS, result);
     }
 
     // 찜 등록
     @PostMapping("/mypick/{movieId}")
-    public ResponseEntity<ApiResponse<Void>> addMyPick(@PathVariable Long movieId, Long userId) {
-        movieDetailService.addMyPick(movieId, userId);
+    public ResponseEntity<ApiResponse<Void>> addMyPick(@PathVariable Long movieId, @AuthenticationPrincipal String userId) {
+        movieDetailService.addMyPick(movieId, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.CREATE_MYPICK_SUCCESS);
     }
 
     // 찜 해제
     @DeleteMapping("/mypick/{movieId}")
-    public ResponseEntity<ApiResponse<Void>> removeMyPick(@PathVariable Long movieId, Long userId) {
-        movieDetailService.removeMyPick(movieId, userId);
+    public ResponseEntity<ApiResponse<Void>> removeMyPick(@PathVariable Long movieId, @AuthenticationPrincipal String userId) {
+        movieDetailService.removeMyPick(movieId, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.DELETE_MYPICK_SUCCESS);
     }
 
@@ -58,40 +59,40 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "20") int size, Long userId,
+             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
              @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
-        Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size, userId);
+        Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
     }
 
     // 한줄평 등록
     @PostMapping("/{movieId}/short-reviews")
     public ResponseEntity<ApiResponse<Void>> createShortReview
-    (@PathVariable Long movieId, @RequestBody ShortReviewReqDto shortReviewReqDto, @RequestParam Long userId) {
-        shortReviewService.createShortReview(movieId, shortReviewReqDto, userId);
+    (@PathVariable Long movieId, @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
+        shortReviewService.createShortReview(movieId, shortReviewReqDto, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.CREATE_SHORT_REVIEW_SUCCESS);
     }
 
     // 한줄평 수정
     @PutMapping("/{movieId}/short-reviews/{shortReviewId}")
     public ResponseEntity<ApiResponse<Void>> updateShortReview(@PathVariable Long movieId, @PathVariable Long shortReviewId,
-            @RequestBody ShortReviewReqDto shortReviewReqDto, @RequestParam Long userId) {
-        shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, userId);
+            @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
+        shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS);
     }
 
     // 한줄평 삭제
     @DeleteMapping("/{movieId}/short-reviews/{shortReviewId}")
     public ResponseEntity<ApiResponse<Void>> deleteShortReview(@PathVariable Long movieId,
-                                                               @PathVariable Long shortReviewId, @RequestParam Long userId) {
-        shortReviewService.deleteShortReview(shortReviewId, movieId, userId);
+                                                               @PathVariable Long shortReviewId, @AuthenticationPrincipal String userId) {
+        shortReviewService.deleteShortReview(shortReviewId, movieId, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.DELETE_SHORT_REVIEW_SUCCESS);
     }
 
-    // 한줄평 신고
+    // 신
     @PostMapping("/report")
-    public ResponseEntity<ApiResponse<Void>> report(@RequestBody ReportReqDto reportReqDto) {
-        reviewService.report(reportReqDto);
+    public ResponseEntity<ApiResponse<Void>> report(@RequestBody ReportReqDto reportReqDto, @AuthenticationPrincipal String userId) {
+        reviewService.report(reportReqDto, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.REPORT_SUCCESS);
     }
 
@@ -100,9 +101,9 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
             @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
-        Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size);
+        Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }
 
