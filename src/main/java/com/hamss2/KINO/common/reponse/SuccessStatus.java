@@ -67,6 +67,9 @@ public enum SuccessStatus {
     CREATE_REVIEW_SUCCESS(HttpStatus.CREATED, "리뷰 등록 성공"),
     CREATE_REVIEW_COMMENT_SUCCESS(HttpStatus.CREATED, "리뷰 댓글 생성 성공"),
     STORE_IMG_SUCCESS(HttpStatus.OK, "이미지 저장 성공"),
+    SEARCH_ALL_FOLLOWER_SUCCESS(HttpStatus.OK, "팔로워 리스트 조회 성공"),
+    SEARCH_ALL_FOLLOWING_SUCCESS(HttpStatus.OK, "팔로잉 리스트 조회 성공"),
+    SEARCH_STATUS_FOLLOW_SUCCESS(HttpStatus.OK, "팔로우 상태 조회 성공"),
 
     /**
      * 302 Found

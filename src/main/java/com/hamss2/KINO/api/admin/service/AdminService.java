@@ -20,6 +20,8 @@ import com.hamss2.KINO.api.movieDetail.repository.ShortReviewRepository;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.hamss2.KINO.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -143,6 +145,7 @@ public class AdminService {
     public void active(List<Long> userIds) {
         for (Long id : userIds) {
             userRepository.findById(id).ifPresent(user -> {
+                if(!user.getRole().equals(Role.BAN_USER)) throw new BadRequestException("정지되지 않은 사용자는 접근할 수 없습니다.");
                 user.setRole(Role.USER);
             });
             userBanRepository.deleteById(id);
