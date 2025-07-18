@@ -1,8 +1,9 @@
 package com.hamss2.KINO.api.mypage.controller;
 
-import com.hamss2.KINO.api.deepl.annotation.Translate;
+import com.hamss2.KINO.api.entity.Follow;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.mypage.dto.*;
+import com.hamss2.KINO.api.follow.repository.FollowRepository;
 import com.hamss2.KINO.api.mypage.service.MypageService;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.reponse.ApiResponse;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MypageController {
     private final UserRepository userRepository;
     private final MypageService mypageService;
+    private final FollowRepository followRepository;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(@AuthenticationPrincipal String userId) {

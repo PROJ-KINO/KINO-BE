@@ -49,6 +49,12 @@ public enum SuccessStatus {
     REPORT_SUCCESS(HttpStatus.OK, "신고 성공"),
     SEARCH_ALL_MOVIE_SUCCESS(HttpStatus.OK, "전체 영화 조회 성공"),
     LIKE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 좋아요가 처리되었습니다."),
+    REVIEW_WRITING_PAGE_SUCCESS(HttpStatus.OK, "리뷰 작성 페이지 조회 성공"),
+    REVIEW_DETAIL_PAGE_SUCCESS(HttpStatus.OK, "리뷰 상세 페이지 조회 성공"),
+    REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 조회 성공"),
+    DELETE_REVIEW_SUCCESS(HttpStatus.OK, "리뷰 삭제 성공"),
+    UPDATE_REVIEW_LIKE_SUCCESS(HttpStatus.OK, "리뷰 좋아요/싫어요 성공"),
+    DELETE_REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 삭제 성공"),
 
     /**
      * 201
@@ -59,7 +65,12 @@ public enum SuccessStatus {
     CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "액세스 토큰 생성 성공"),
     CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
     CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
+    CREATE_REVIEW_SUCCESS(HttpStatus.CREATED, "리뷰 등록 성공"),
+    CREATE_REVIEW_COMMENT_SUCCESS(HttpStatus.CREATED, "리뷰 댓글 생성 성공"),
     STORE_IMG_SUCCESS(HttpStatus.OK, "이미지 저장 성공"),
+    SEARCH_ALL_FOLLOWER_SUCCESS(HttpStatus.OK, "팔로워 리스트 조회 성공"),
+    SEARCH_ALL_FOLLOWING_SUCCESS(HttpStatus.OK, "팔로잉 리스트 조회 성공"),
+    SEARCH_STATUS_FOLLOW_SUCCESS(HttpStatus.OK, "팔로우 상태 조회 성공"),
 
     /**
      * 302 Found

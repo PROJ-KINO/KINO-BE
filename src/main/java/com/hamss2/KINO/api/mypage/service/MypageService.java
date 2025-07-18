@@ -1,10 +1,6 @@
 package com.hamss2.KINO.api.mypage.service;
 
-import com.hamss2.KINO.api.entity.User;
-import com.hamss2.KINO.api.entity.UserGenre;
-import com.hamss2.KINO.api.entity.Genre;
-import com.hamss2.KINO.api.entity.ShortReview;
-import com.hamss2.KINO.api.entity.Review;
+import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.image.config.GcsUploader;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreReqDto;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreResDto;

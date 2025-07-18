@@ -19,7 +19,7 @@ public class MovieController {
 
     @PostMapping("/tmdb-movie")
     public ResponseEntity<ApiResponse<Void>> fetchAndSaveMovies() {
-        movieService.fetchAndSaveMovies(227, 500, "popularity.desc");
+        movieService.fetchAndSaveMovies(1, 500, "popularity.desc");
         movieService.fetchAndSaveMovies(1, 20, "release_date.desc");
         return ApiResponse.success_only(SuccessStatus.SYNC_TMDB_MOVIES_SUCCESS);
     }

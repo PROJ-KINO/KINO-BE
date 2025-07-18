@@ -1,11 +1,21 @@
 package com.hamss2.KINO.api.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Getter
@@ -14,6 +24,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Slf4j
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
@@ -21,9 +32,9 @@ public class Report {
     @Column(nullable = false)
     private String content;
 
-    private int reportType;
+    private Integer reportType;
 
-    private int relatedType;
+    private Long relatedType;
 
     private Long relatedId;
 
@@ -39,6 +50,24 @@ public class Report {
     @JoinColumn(name = "reporteeId", nullable = false)
     @JsonIgnore
     private User reported;
+
+    public static Report createReport(
+        String content,
+        int reportType,
+        Long relatedType,
+        Long relatedId,
+        User reporter,
+        User reported
+    ) {
+        Report report = new Report();
+        report.setContent(content);
+        report.setReportType(reportType);
+        report.setRelatedType(relatedType);
+        report.setRelatedId(relatedId);
+        report.setReporter(reporter);
+        report.setReported(reported);
+        return report;
+    }
 
     @PrePersist
     private void prePersist() {
