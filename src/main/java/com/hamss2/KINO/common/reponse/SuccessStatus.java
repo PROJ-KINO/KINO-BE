@@ -48,6 +48,7 @@ public enum SuccessStatus {
     SEARCH_MOVIE_SUCCESS(HttpStatus.OK, "영화 검색 성공"),
     REPORT_SUCCESS(HttpStatus.OK, "신고 성공"),
     SEARCH_ALL_MOVIE_SUCCESS(HttpStatus.OK, "전체 영화 조회 성공"),
+    LIKE_SHORT_REVIEW_SUCCESS(HttpStatus.OK, "한줄평 좋아요가 처리되었습니다."),
     REVIEW_WRITING_PAGE_SUCCESS(HttpStatus.OK, "리뷰 작성 페이지 조회 성공"),
     REVIEW_DETAIL_PAGE_SUCCESS(HttpStatus.OK, "리뷰 상세 페이지 조회 성공"),
     REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 조회 성공"),

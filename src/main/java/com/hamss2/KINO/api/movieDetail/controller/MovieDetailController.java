@@ -3,6 +3,7 @@ package com.hamss2.KINO.api.movieDetail.controller;
 import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
+import com.hamss2.KINO.api.movieDetail.dto.res.LikeStatusDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.ReviewResDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.ShortReviewResDto;
@@ -67,18 +68,18 @@ public class MovieDetailController {
 
     // 한줄평 등록
     @PostMapping("/{movieId}/short-reviews")
-    public ResponseEntity<ApiResponse<Void>> createShortReview
+    public ResponseEntity<ApiResponse<ShortReviewResDto>> createShortReview
     (@PathVariable Long movieId, @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
-        shortReviewService.createShortReview(movieId, shortReviewReqDto, Long.valueOf(userId));
-        return ApiResponse.success_only(SuccessStatus.CREATE_SHORT_REVIEW_SUCCESS);
+        ShortReviewResDto shortReviewResDto = shortReviewService.createShortReview(movieId, shortReviewReqDto, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.CREATE_SHORT_REVIEW_SUCCESS, shortReviewResDto);
     }
 
     // 한줄평 수정
     @PutMapping("/{movieId}/short-reviews/{shortReviewId}")
-    public ResponseEntity<ApiResponse<Void>> updateShortReview(@PathVariable Long movieId, @PathVariable Long shortReviewId,
+    public ResponseEntity<ApiResponse<ShortReviewResDto>> updateShortReview(@PathVariable Long movieId, @PathVariable Long shortReviewId,
             @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
-        shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, Long.valueOf(userId));
-        return ApiResponse.success_only(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS);
+        ShortReviewResDto shortReviewResDto = shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS, shortReviewResDto);
     }
 
     // 한줄평 삭제
@@ -87,6 +88,13 @@ public class MovieDetailController {
                                                                @PathVariable Long shortReviewId, @AuthenticationPrincipal String userId) {
         shortReviewService.deleteShortReview(shortReviewId, movieId, Long.valueOf(userId));
         return ApiResponse.success_only(SuccessStatus.DELETE_SHORT_REVIEW_SUCCESS);
+    }
+
+    // 좋아요 토글
+    @PostMapping("/{shortReviewId}/like")
+    public ResponseEntity<ApiResponse<LikeStatusDto>> likeShortReview(@PathVariable Long shortReviewId, @AuthenticationPrincipal String userId) {
+        boolean liked = shortReviewService.toggleLike(shortReviewId, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.LIKE_SHORT_REVIEW_SUCCESS, new LikeStatusDto(liked));
     }
 
     // 신고
