@@ -16,9 +16,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     LEFT JOIN r.reviewLikes rl
     WHERE r.isDeleted = false
     GROUP BY r
-    ORDER BY COUNT(rl) DESC
-    """)
-    List<Review> findTopByLikeCount(Pageable pageable);
+    ORDER BY COUNT(rl) DESC, r.createdAt DESC
+""")
+    List<Review> findTop10ByReviewLikes(Pageable pageable);
     // 영화별 리뷰 리스트
     Page<Review> findAllByMovieAndIsDeletedFalseOrderByCreatedAtDesc(Movie movie, Pageable pageable);
     // 영화별 리뷰 총 개수

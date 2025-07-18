@@ -53,7 +53,7 @@ public class HomeService {
 
         // 2. 사용자 좋아요 TOP 10 리뷰
         homeResponseDto.setTopLikeReviewList(
-                reviewRepository.findTopByLikeCount(PageRequest.of(0, 10)).stream()
+                reviewRepository.findTop10ByReviewLikes(PageRequest.of(0, 10)).stream()
                         .map(this::toReviewDto)
                         .toList()
         );
