@@ -99,14 +99,14 @@ public class HomeService {
         homeResponseDto.setMonthlyTopMovieList(movies);
 
         // 7. 사용자 기반 추천 TOP 10 영화
-//        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
+        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
 
-//        try {
-//            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
-//            homeResponseDto.setRecommendedMovieList(recommended);
-//        } catch (Exception e) {
-//            throw new InternalServerException("플라스크 서버 오류");
-//        }
+        try {
+            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+            homeResponseDto.setRecommendedMovieList(recommended);
+        } catch (Exception e) {
+            throw new InternalServerException("플라스크 서버 오류");
+        }
 
         return homeResponseDto;
     }
