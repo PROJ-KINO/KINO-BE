@@ -13,7 +13,6 @@ import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.reponse.ErrorStatus;
-import com.hamss2.KINO.common.utils.TimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,7 @@ public class ReviewCommentService {
             return ReviewCommentResDto.builder()
                 .commentId(comment.getCommentId())
                 .commentContent(comment.getContent())
-                .commentCreatedAt(TimeFormatter.formatLocalDateTime(comment.getCreatedAt()))
+                .commentCreatedAt(comment.getCreatedAt().toString())
                 .isActive(comment.getIsActive())
                 .writerId(writer.getUserId())
                 .writerUserNickname(writer.getNickname())
