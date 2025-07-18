@@ -30,9 +30,6 @@ public class ReviewLike {
     private Long reviewLikeId;
 
     @Column(nullable = false)
-    private int likeCount = 0;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
