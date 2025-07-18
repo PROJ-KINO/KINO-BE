@@ -1,6 +1,7 @@
 package com.hamss2.KINO.api.image.controller;
 
 import com.hamss2.KINO.api.image.config.GcsUploader;
+import com.hamss2.KINO.api.image.dto.ImgResDto;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,8 @@ public class ImageController {
     private final GcsUploader gcsUploader;
 
     @PostMapping(value = "/img", consumes = "multipart/form-data")
-    public ResponseEntity<ApiResponse<String>> img(
+    public ImgResDto img(
             @RequestPart(value = "file", required = true) MultipartFile file) {
-        String newUrl = gcsUploader.uploadFile(file);
-        return ApiResponse.success(SuccessStatus.STORE_IMG_SUCCESS, newUrl);
+        return new ImgResDto(gcsUploader.uploadFile(file));
     }
 }
