@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    // 티저 영상이 있는 최신 영화 1개
-    Movie findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
+    // plot이 null이 아니고 빈 문자열이 아닌, teaserUrl이 있는, releaseDate 최신 영화 1개
+    Movie findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc(String plot);
+
     List<Movie> findByTitleContaining(String keyword);
     List<Movie> findAllByTitle(String title);
 
