@@ -185,7 +185,9 @@ public class MypageService {
                         review.getContent(),
                         review.getMovie().getTitle(),
                         review.getTotalViews(),
-                        review.getCreatedAt()
+                        review.getCreatedAt(),
+                        review.getReviewLikes().size(),
+                        review.getComments().size()
                 ))
                 .collect(Collectors.toList());
         
@@ -202,7 +204,10 @@ public class MypageService {
                         shortReview.getContent(),
                         shortReview.getRating(),
                         shortReview.getMovie().getTitle(),
-                        shortReview.getCreatedAt()
+                        shortReview.getCreatedAt(),
+                        shortReview.getShortReviewLikes().size(),
+                        shortReview.getUser().getNickname(),
+                        shortReview.getUser().getImage()
                 ))
                 .collect(Collectors.toList());
         
@@ -217,7 +222,9 @@ public class MypageService {
                 .map(myPickMovie -> new MypagePickMovieResDto.MyPickMovieDto(
                         myPickMovie.getMyPickMovieId(),
                         myPickMovie.getMovie().getTitle(),
-                        myPickMovie.getMovie().getPosterUrl()
+                        myPickMovie.getMovie().getPosterUrl(),
+                        myPickMovie.getMovie().getDirector(),
+                        myPickMovie.getMovie().getReleaseDate()
                 ))
                 .collect(Collectors.toList());
         
