@@ -79,11 +79,16 @@ public class ReviewController {
     // 리뷰 목록 페이지(페이지네이션)
     @GetMapping("/reviews")
     public ResponseEntity<ApiResponse<PageResDto<ReviewResDto>>> getReviews(
+        @AuthenticationPrincipal String userId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "30") int size
     ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS,
-            reviewService.getReviews(page, size));
+            reviewService.getReviews(id, page, size));
     }
 
     // 리뷰 삭제하기

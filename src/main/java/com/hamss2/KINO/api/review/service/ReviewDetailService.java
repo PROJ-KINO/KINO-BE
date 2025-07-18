@@ -106,17 +106,27 @@ public class ReviewDetailService {
         return true;
     }
 
-    public PageResDto<ReviewResDto> getReviews(int page, int size) {
+    public PageResDto<ReviewResDto> getReviews(Long userId, int page, int size) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         Page<ReviewResDto> response = reviews.map(review -> {
-            return ReviewResDto.builder().reviewId(review.getReviewId())
-                .reviewTitle(review.getTitle()).reviewContent(review.getContent())
+            return ReviewResDto.builder()
+                .reviewId(review.getReviewId())
+                .reviewTitle(review.getTitle())
+                .reviewContent(review.getContent())
                 .reviewViewCount(review.getTotalViews())
-                .reviewCreatedAt(TimeFormatter.formatLocalDateTime(review.getCreatedAt()))
-                .reviewCommentCount(review.getComments().size()).build();
+                .reviewCreatedAt(review.getCreatedAt().toString())
+                .reviewCommentCount(review.getComments().size())
+                .reviewLikeCount(review.getReviewLikes().size())
+                .isMine(review.getUser().getUserId().equals(user.getUserId()))
+                .isHeart(review.getReviewLikes().stream()
+                    .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
+                .build();
         });
 
         return new PageResDto<>(response);

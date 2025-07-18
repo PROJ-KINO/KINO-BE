@@ -17,4 +17,7 @@ public class ReviewResDto {
     private Integer reviewLikeCount;
     private Integer reviewCommentCount;
 
+    private Boolean isMine;
+    private Boolean isHeart;
+
 }
