@@ -58,10 +58,11 @@ public class MovieDetailService {
     }
 
     // 작품 정보
-    @Transactional(readOnly = true)
+    @Transactional
     public MovieDetailDto getMovieDetail(Long movieId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
+        movie.setTotalView(movie.getTotalView() + 1);
         return MovieDetailDto.builder()
                 .movieId(movie.getMovieId())
                 .title(movie.getTitle())
