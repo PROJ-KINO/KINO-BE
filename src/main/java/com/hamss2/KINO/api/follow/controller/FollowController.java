@@ -31,14 +31,14 @@ public class FollowController {
         followService.unfollow(Long.valueOf(userId), targetUserId);
     }
 
-    @GetMapping("/followers/{userId}")
-    public ResponseEntity<ApiResponse<List<FollowUserDto>>> getFollowers(@PathVariable String userId) {
-        return ApiResponse.success(SuccessStatus.SEARCH_ALL_FOLLOWER_SUCCESS, followService.getFollowers(Long.valueOf(userId)));
+    @GetMapping("/followers/{targetId}")
+    public ResponseEntity<ApiResponse<List<FollowUserDto>>> getFollowers(@AuthenticationPrincipal String userId, @PathVariable int targetId) {
+        return ApiResponse.success(SuccessStatus.SEARCH_ALL_FOLLOWER_SUCCESS, followService.getFollowers(Long.valueOf(userId), (long) targetId));
     }
 
-    @GetMapping("/following/{userId}")
-    public ResponseEntity<ApiResponse<List<FollowUserDto>>> getFollowings(@PathVariable String userId) {
-        return ApiResponse.success(SuccessStatus.SEARCH_ALL_FOLLOWING_SUCCESS, followService.getFollowings(Long.valueOf(userId)));
+    @GetMapping("/following/{targetId}")
+    public ResponseEntity<ApiResponse<List<FollowUserDto>>> getFollowings(@AuthenticationPrincipal String userId, @PathVariable int targetId) {
+        return ApiResponse.success(SuccessStatus.SEARCH_ALL_FOLLOWING_SUCCESS, followService.getFollowings(Long.valueOf(userId), (long) targetId));
     }
 
     @GetMapping("/status/{targetUserId}")
