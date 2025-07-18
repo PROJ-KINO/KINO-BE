@@ -48,22 +48,32 @@ public class FollowService {
     }
 
     @Transactional(readOnly = true)
-    public List<FollowUserDto> getFollowers(Long userId) {
+    public List<FollowUserDto> getFollowers(Long userId, Long targetId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
+        User target = userRepository.findById(targetId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
+
         return followRepository.findAllByFollowee(user).stream()
-                .map(f -> new FollowUserDto(f.getFollower().getUserId(), f.getFollower().getNickname()))
+                .map(f -> new FollowUserDto(f.getFollower().getUserId(), f.getFollower().getNickname(), isFollow))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<FollowUserDto> getFollowings(Long userId) {
+    public List<FollowUserDto> getFollowings(Long userId, Long targetId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
+        User target = userRepository.findById(targetId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
+
         return followRepository.findAllByFollower(user).stream()
-                .map(f -> new FollowUserDto(f.getFollowee().getUserId(), f.getFollowee().getNickname()))
+                .map(f -> new FollowUserDto(f.getFollowee().getUserId(), f.getFollowee().getNickname(), isFollow))
                 .collect(Collectors.toList());
     }
 
