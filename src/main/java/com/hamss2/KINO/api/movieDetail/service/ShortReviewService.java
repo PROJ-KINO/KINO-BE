@@ -105,6 +105,7 @@ public class ShortReviewService {
 
         shortReview.setContent(shortReviewReqDto.getContent());
         shortReview.setRating(shortReviewReqDto.getRating());
+        shortReview.setCreatedAt(LocalDateTime.now());
         shortReviewRepository.save(shortReview);
 
         // 좋아요 리뷰ID 목록 한 번에 미리 가져와서 N+1 방지

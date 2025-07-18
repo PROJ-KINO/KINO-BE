@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, Long> {
     // 오늘 기준 TOP 10 조회수
@@ -24,4 +25,6 @@ public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, 
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    Optional<DailyMovieView> findByMovieAndViewDate(Movie movie, LocalDate viewDate);
 }
