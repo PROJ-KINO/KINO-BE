@@ -10,6 +10,6 @@ public class MovieDto {
     @JsonProperty("movie_id")
     private Long movieId;
     private String title;
-    @JsonProperty("poster_url")
+    @JsonProperty("still_cut_url")
     private String posterUrl;
 }
