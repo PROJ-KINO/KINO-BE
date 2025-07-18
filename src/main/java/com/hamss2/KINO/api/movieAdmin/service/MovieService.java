@@ -1,17 +1,19 @@
 package com.hamss2.KINO.api.movieAdmin.service;
 
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hamss2.KINO.api.cache.service.CacheRefreshService;
 import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.movieAdmin.repository.*;
 import com.hamss2.KINO.api.searchMovie.dto.MovieResDto;
+import com.hamss2.KINO.common.exception.BadRequestException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +37,11 @@ public class MovieService {
     private final MovieActorRepository movieActorRepository;
     private final OttRepository ottRepository;
     private final MovieOttRepository movieOttRepository;
+
+    @Value("${cache.key.all-movies}")
+    private String cacheKey;
+    private final RedisTemplate redisTemplate;
+    private final CacheRefreshService cacheRefreshService;
 
     @Value("${tmdb.api-key}")
     private String apiKey;
@@ -287,18 +294,21 @@ public class MovieService {
         }
     }
 
-    //Fetch join
     public List<MovieResDto> allMovie() {
-        log.info("============================================== 총 영화 개수: " + movieRepository.findAllWithGenres().size());
-        return movieRepository.findAllWithGenres().stream()
-                .map(m -> new MovieResDto(
-                        m.getTitle(),
-                        m.getMovieId(),
-                        m.getPosterUrl(),
-                        m.getMovieGenres().stream()
-                                .map(mg -> mg.getGenre().getGenreName())
-                                .distinct() // 혹시 중복 제거
-                                .toList()
-                )).toList();
+        // 1. 캐시에서 JSON 문자열을 꺼내서 List<MovieResDto>로 변환
+        List<MovieResDto> cachedMovies = cacheRefreshService.getMoviesFromCache();
+        if (cachedMovies != null && !cachedMovies.isEmpty()) {
+            return cachedMovies;
+        }
+
+        // 2. 캐시가 없으면 갱신 후 다시 조회
+        cacheRefreshService.refreshMovieCache();
+
+        cachedMovies = cacheRefreshService.getMoviesFromCache();
+        if (cachedMovies != null && !cachedMovies.isEmpty()) {
+            return cachedMovies;
+        }
+
+        throw new BadRequestException("영화 데이터를 불러올 수 없습니다.");
     }
 }
