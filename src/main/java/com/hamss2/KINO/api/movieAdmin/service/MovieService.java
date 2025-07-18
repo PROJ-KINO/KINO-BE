@@ -6,6 +6,7 @@ import com.hamss2.KINO.api.movieAdmin.repository.*;
 import com.hamss2.KINO.api.searchMovie.dto.MovieResDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MovieService {
 
     @Qualifier("tmdbWebClient")
@@ -283,14 +285,18 @@ public class MovieService {
         }
     }
 
-    public List<MovieResDto> allMovie(){
-        return movieRepository.findAll().stream()
+    //Fetch join
+    public List<MovieResDto> allMovie() {
+        log.info("============================================== 총 영화 개수: " + movieRepository.findAllWithGenres().size());
+        return movieRepository.findAllWithGenres().stream()
                 .map(m -> new MovieResDto(
                         m.getTitle(),
                         m.getMovieId(),
                         m.getPosterUrl(),
-                        movieGenreRepository.findByMovie_MovieId(m.getMovieId()).stream()
-                                .map(mG -> mG.getGenre().getGenreName()).toList()
+                        m.getMovieGenres().stream()
+                                .map(mg -> mg.getGenre().getGenreName())
+                                .distinct() // 혹시 중복 제거
+                                .toList()
                 )).toList();
     }
 }
