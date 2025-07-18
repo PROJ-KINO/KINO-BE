@@ -10,4 +10,5 @@ public class TeaserDto {
     private String title;
     private String teaserUrl;
     private String plot;
+    private String stillCutUrl;
 }

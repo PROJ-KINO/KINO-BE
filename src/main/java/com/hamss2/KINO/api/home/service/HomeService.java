@@ -148,10 +148,11 @@ public class HomeService {
         String originalUrl = movie.getTeaserUrl();
         String videoId = originalUrl.substring(originalUrl.indexOf("v=") + 2);
         String embedUrl = "https://www.youtube.com/embed/" + videoId
-                + "?autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&mute=1";
+                + "?autoplay=1&controls=0&showinfo=0&rel=0" + "&modestbranding=1" + "&loop=1&playlist=" + videoId;
 
         teaserDto.setTeaserUrl(embedUrl);
         teaserDto.setPlot(movie.getPlot());
+        teaserDto.setStillCutUrl(movie.getStillCutUrl());
         return teaserDto;
     }
 
