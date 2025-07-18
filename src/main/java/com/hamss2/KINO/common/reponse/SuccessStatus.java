@@ -59,6 +59,9 @@ public enum SuccessStatus {
     CREATE_MYPICK_SUCCESS(HttpStatus.CREATED, "찜 등록 성공"),
     CREATE_SHORT_REVIEW_SUCCESS(HttpStatus.CREATED, "한줄평 등록 성공"),
     STORE_IMG_SUCCESS(HttpStatus.OK, "이미지 저장 성공"),
+    SEARCH_ALL_FOLLOWER_SUCCESS(HttpStatus.OK, "팔로워 리스트 조회 성공"),
+    SEARCH_ALL_FOLLOWING_SUCCESS(HttpStatus.OK, "팔로잉 리스트 조회 성공"),
+    SEARCH_STATUS_FOLLOW_SUCCESS(HttpStatus.OK, "팔로우 상태 조회 성공"),
 
     /**
      * 302 Found
