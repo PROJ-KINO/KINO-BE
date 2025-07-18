@@ -7,6 +7,7 @@ import com.hamss2.KINO.api.home.dto.res.MovieDto;
 import com.hamss2.KINO.api.home.dto.res.ReviewDto;
 import com.hamss2.KINO.api.home.dto.res.TeaserDto;
 import com.hamss2.KINO.api.home.repository.*;
+import com.hamss2.KINO.api.image.controller.ImageController;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.mypage.repository.UserGenreRepository;
@@ -15,6 +16,7 @@ import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +53,7 @@ public class HomeService {
 
         // 2. 사용자 좋아요 TOP 10 리뷰
         homeResponseDto.setTopLikeReviewList(
-                reviewRepository.findTop10ByLikeCount().stream()
+                reviewRepository.findTop10ByReviewLikes(PageRequest.of(0, 10)).stream()
                         .map(this::toReviewDto)
                         .toList()
         );
@@ -81,7 +83,7 @@ public class HomeService {
                     MovieDto dto = new MovieDto();
                     dto.setMovieId(movie.getMovieId());
                     dto.setTitle(movie.getTitle());
-                    dto.setPosterUrl(movie.getPosterUrl());
+                    dto.setPosterUrl(movie.getStillCutUrl());
                     return dto;
                 })
                 .toList();
@@ -160,7 +162,7 @@ public class HomeService {
         MovieDto movieDto = new MovieDto();
         movieDto.setMovieId(movie.getMovieId());
         movieDto.setTitle(movie.getTitle());
-        movieDto.setPosterUrl(movie.getPosterUrl());
+        movieDto.setPosterUrl(movie.getStillCutUrl());
         return movieDto;
     }
 }

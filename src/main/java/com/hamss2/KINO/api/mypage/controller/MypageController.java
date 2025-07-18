@@ -25,72 +25,57 @@ public class MypageController {
     private final MypageService mypageService;
 
     @GetMapping("/main")
-    public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(@AuthenticationPrincipal UserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-        Long userId = 1L;
-        MypageMainResDto mainResDto = mypageService.mypage(userId);
+    public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(@AuthenticationPrincipal String userId) {
+        MypageMainResDto mainResDto = mypageService.mypage(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_MAIN_SUCCESS, mainResDto);
     }
 
     @GetMapping("/shortReview")
-    public ResponseEntity<ApiResponse<MypageShortReviewResDto>> shortReview(@AuthenticationPrincipal UserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-        Long userId = 1L;
-        MypageShortReviewResDto shortReviewResDto = mypageService.shortReview(userId);
+    public ResponseEntity<ApiResponse<MypageShortReviewResDto>> shortReview(@AuthenticationPrincipal String userId) {
+        MypageShortReviewResDto shortReviewResDto = mypageService.shortReview(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_SHORTREVIEW_SUCCESS, shortReviewResDto);
     }
 
     @GetMapping("/review")
-    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal UserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-        Long userId = 1L;
-        MypageReviewResDto reviewResDto = mypageService.review(userId);
+    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal String userId) {
+        MypageReviewResDto reviewResDto = mypageService.review(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_REVIEW_SUCCESS, reviewResDto);
     }
 
     @GetMapping("/myPickMovie")
-    public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(@AuthenticationPrincipal UserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-        Long userId = 1L;
-        MypagePickMovieResDto pickMovieResDto = mypageService.myPickMovie(userId);
+    public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(@AuthenticationPrincipal String userId) {
+        MypagePickMovieResDto pickMovieResDto = mypageService.myPickMovie(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_PICKMOVIE_SUCCESS, pickMovieResDto);
     }
 
     @GetMapping("/userGenres")
-    public ResponseEntity<ApiResponse<MypageGenreResDto>> genre(@AuthenticationPrincipal UserDetails userDetails) {
-//        Long userId = userDetails.getUserId();
-        System.out.println(userRepository.findAll());
-        Long userId = 1L;
-        MypageGenreResDto genreResDto = mypageService.genre(userId);
+    public ResponseEntity<ApiResponse<MypageGenreResDto>> genre(@AuthenticationPrincipal String userId) {
+        MypageGenreResDto genreResDto = mypageService.genre(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_GENRE_SUCCESS, genreResDto);
     }
 
     @PostMapping("/userGenres")
-    public ResponseEntity<ApiResponse<Void>> userGenres(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MypageGenreReqDto genreReqDto) {
-//        Long userId = userDetails.getUserId();
-        Long userId = 1L;
-        
+    public ResponseEntity<ApiResponse<Void>> userGenres(@AuthenticationPrincipal String userId, @RequestBody MypageGenreReqDto genreReqDto) {
         // 디버깅 로그 추가
         log.info("받은 요청 데이터: {}", genreReqDto);
         log.info("genreIds: {}", genreReqDto != null ? genreReqDto.getGenreIds() : "DTO가 null");
         
-        mypageService.updateGenre(userId, genreReqDto);
+        mypageService.updateGenre(Long.valueOf(userId), genreReqDto);
         return ApiResponse.success_only(SuccessStatus.UPDATE_USERGENRE_SUCCESS);
     }
 
     @PostMapping(value = "/profile", consumes = "multipart/form-data")
     @Transactional
     public ResponseEntity<ApiResponse<Void>> profile(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal String userId,
             @RequestPart(value = "nickname", required = false) String nickname,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-//        User user = userRepository.findById(userDetails.getUserId());
-        User user = userRepository.findById(1L).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new RuntimeException("User not found"));
         
         MypageUpdateProfileReqDto profileReqDto = new MypageUpdateProfileReqDto(nickname, file);
         mypageService.updateProfile(user, profileReqDto);

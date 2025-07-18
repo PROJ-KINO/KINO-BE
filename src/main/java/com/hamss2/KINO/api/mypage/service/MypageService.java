@@ -5,8 +5,7 @@ import com.hamss2.KINO.api.entity.UserGenre;
 import com.hamss2.KINO.api.entity.Genre;
 import com.hamss2.KINO.api.entity.ShortReview;
 import com.hamss2.KINO.api.entity.Review;
-import com.hamss2.KINO.api.entity.MyPickMovie;
-import com.hamss2.KINO.api.image.GcsUploader;
+import com.hamss2.KINO.api.image.config.GcsUploader;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreReqDto;
 import com.hamss2.KINO.api.mypage.dto.MypageGenreResDto;
 import com.hamss2.KINO.api.mypage.dto.MypageMainResDto;
@@ -186,7 +185,9 @@ public class MypageService {
                         review.getContent(),
                         review.getMovie().getTitle(),
                         review.getTotalViews(),
-                        review.getCreatedAt()
+                        review.getCreatedAt(),
+                        review.getReviewLikes().size(),
+                        review.getComments().size()
                 ))
                 .collect(Collectors.toList());
         
@@ -203,7 +204,10 @@ public class MypageService {
                         shortReview.getContent(),
                         shortReview.getRating(),
                         shortReview.getMovie().getTitle(),
-                        shortReview.getCreatedAt()
+                        shortReview.getCreatedAt(),
+                        shortReview.getShortReviewLikes().size(),
+                        shortReview.getUser().getNickname(),
+                        shortReview.getUser().getImage()
                 ))
                 .collect(Collectors.toList());
         
@@ -218,7 +222,9 @@ public class MypageService {
                 .map(myPickMovie -> new MypagePickMovieResDto.MyPickMovieDto(
                         myPickMovie.getMyPickMovieId(),
                         myPickMovie.getMovie().getTitle(),
-                        myPickMovie.getMovie().getPosterUrl()
+                        myPickMovie.getMovie().getPosterUrl(),
+                        myPickMovie.getMovie().getDirector(),
+                        myPickMovie.getMovie().getReleaseDate()
                 ))
                 .collect(Collectors.toList());
         
