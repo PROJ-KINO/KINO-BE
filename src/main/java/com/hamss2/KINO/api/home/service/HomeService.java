@@ -46,7 +46,7 @@ public class HomeService {
         HomeResponseDto homeResponseDto = new HomeResponseDto();
 
         // 1. 상단 티저 영화
-        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
+        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc("");
         if (teaserMovie != null) {
             homeResponseDto.setTeaser(toTeaserMovieDto(teaserMovie));
         }
@@ -99,14 +99,14 @@ public class HomeService {
         homeResponseDto.setMonthlyTopMovieList(movies);
 
         // 7. 사용자 기반 추천 TOP 10 영화
-//        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
+        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
 
-//        try {
-//            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
-//            homeResponseDto.setRecommendedMovieList(recommended);
-//        } catch (Exception e) {
-//            throw new InternalServerException("플라스크 서버 오류");
-//        }
+        try {
+            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+            homeResponseDto.setRecommendedMovieList(recommended);
+        } catch (Exception e) {
+            throw new InternalServerException("플라스크 서버 오류");
+        }
 
         return homeResponseDto;
     }
@@ -144,7 +144,15 @@ public class HomeService {
         TeaserDto teaserDto = new TeaserDto();
         teaserDto.setMovieId(movie.getMovieId());
         teaserDto.setTitle(movie.getTitle());
-        teaserDto.setTeaserUrl(movie.getTeaserUrl());
+
+        String originalUrl = movie.getTeaserUrl();
+        String videoId = originalUrl.substring(originalUrl.indexOf("v=") + 2);
+        String embedUrl = "https://www.youtube.com/embed/" + videoId
+                + "?autoplay=1&controls=0&showinfo=0&rel=0" + "&modestbranding=1" + "&loop=1&playlist=" + videoId;
+
+        teaserDto.setTeaserUrl(embedUrl);
+        teaserDto.setPlot(movie.getPlot());
+        teaserDto.setStillCutUrl(movie.getStillCutUrl());
         return teaserDto;
     }
 

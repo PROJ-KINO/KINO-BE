@@ -11,7 +11,7 @@ public class ReviewCommentResDto {
 
     private Long commentId;
     private String commentContent;
-    private String commentCreatedAt; // yyyy.MM.dd HH:mm 형식
+    private String commentCreatedAt;
     private Boolean isActive; // 활성화된 댓글인지 아닌
     private Long writerId;
     private String writerUserNickname;

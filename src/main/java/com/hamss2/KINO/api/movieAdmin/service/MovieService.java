@@ -213,10 +213,12 @@ public class MovieService {
                                 actorRepository.save(actor);
                             }
                             // MovieActor 관계 저장
-                            MovieActor movieActor = new MovieActor();
-                            movieActor.setMovie(entity);
-                            movieActor.setActor(actor);
-                            movieActorRepository.save(movieActor);
+                            if (!movieActorRepository.existsByMovieAndActor(entity, actor)) {
+                                MovieActor movieActor = new MovieActor();
+                                movieActor.setMovie(entity);
+                                movieActor.setActor(actor);
+                                movieActorRepository.save(movieActor);
+                            }
                         });
                     }
                 }
