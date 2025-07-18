@@ -4,6 +4,7 @@ import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
 import com.hamss2.KINO.api.review.dto.ReviewReqDto;
 import com.hamss2.KINO.api.review.dto.ReviewResDto;
+import com.hamss2.KINO.api.review.dto.ReviewUpdateReqDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.review.service.ReviewDetailService;
 import com.hamss2.KINO.common.exception.BadRequestException;
@@ -75,6 +76,7 @@ public class ReviewController {
             reviewService.getReviewDetail(id, reviewId));
     }
 
+    // 리뷰 목록 페이지(페이지네이션)
     @GetMapping("/reviews")
     public ResponseEntity<ApiResponse<PageResDto<ReviewResDto>>> getReviews(
         @RequestParam(defaultValue = "0") int page,
@@ -84,6 +86,7 @@ public class ReviewController {
             reviewService.getReviews(page, size));
     }
 
+    // 리뷰 삭제하기
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<ApiResponse<Boolean>> deleteReview(
         @AuthenticationPrincipal String userId,
@@ -96,6 +99,19 @@ public class ReviewController {
         return ApiResponse.success(SuccessStatus.DELETE_REVIEW_SUCCESS,
             reviewService.deleteReview(id, reviewId)
         );
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<Boolean>> updateReview(
+        @AuthenticationPrincipal String userId,
+        @RequestBody ReviewUpdateReqDto reviewReqDto
+    ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS,
+            reviewService.updateReview(id, reviewReqDto));
     }
 
     @PutMapping("/{reviewId}/heart")
