@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class SimpleUserReqDto {
+public class SimpleUserResDto {
 
     private Long userId; // 사용자 ID
     private String nickname; // 사용자 닉네임

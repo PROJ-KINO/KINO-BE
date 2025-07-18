@@ -1,6 +1,6 @@
 package com.hamss2.KINO.api.user.controller;
 
-import com.hamss2.KINO.api.user.dto.SimpleUserReqDto;
+import com.hamss2.KINO.api.user.dto.SimpleUserResDto;
 import com.hamss2.KINO.api.user.service.UserService;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.reponse.ApiResponse;
@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<SimpleUserReqDto>> getSimpleUserInfo(
+    public ResponseEntity<ApiResponse<SimpleUserResDto>> getSimpleUserInfo(
         @AuthenticationPrincipal String userId
     ) {
         if (userId == null || userId.isEmpty()) {
