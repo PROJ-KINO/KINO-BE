@@ -24,6 +24,7 @@ public enum ErrorStatus {
     SELLER_EQUAL_BUY(HttpStatus.BAD_REQUEST, "자신의 게시글에 채팅방을 만들수 없습니다"),
     YOU_ARE_NOT_SELLER(HttpStatus.BAD_REQUEST, "해당 게시글의 판매자가 아닙니다."),
     REVIEW_ALREADY_DELETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 삭제된 게시물입니다."),
+    COMMENT_ALREADY_DELETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 삭제된 댓글입니다."),
 
     /**
      * 401 UNAUTHORIZED

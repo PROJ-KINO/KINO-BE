@@ -66,4 +66,8 @@ public class Comment {
     private void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 } 

@@ -9,8 +9,10 @@ import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.review.dto.CommentReqDto;
 import com.hamss2.KINO.api.review.dto.ReviewCommentResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
+import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
+import com.hamss2.KINO.common.reponse.ErrorStatus;
 import com.hamss2.KINO.common.utils.TimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +65,27 @@ public class ReviewCommentService {
 
         Comment comment = Comment.createComment(commentReqDto.getCommentContent(), user, review);
         commentRepository.save(comment);
+
+        return true;
+    }
+
+    public Boolean deleteComment(Long userId, String commentId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Comment comment = commentRepository.findById(Long.parseLong(commentId))
+            .orElseThrow(() -> new NotFoundException("Comment not found with id: " + commentId));
+
+        if (comment.getIsDeleted()) {
+            throw new BadRequestException(
+                ErrorStatus.COMMENT_ALREADY_DELETED_EXCEPTION.getMessage());
+        }
+
+        if (!comment.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException("본인이 작성한 댓글만 삭제할 수 있습니다.");
+        }
+
+        comment.delete();
 
         return true;
     }

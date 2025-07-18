@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,9 +30,7 @@ public class CommentController {
 
     @GetMapping("/{reviewId}")
     public ResponseEntity<ApiResponse<List<ReviewCommentResDto>>> getComments(
-        @AuthenticationPrincipal String userId,
-        @PathVariable Long reviewId
-    ) {
+        @AuthenticationPrincipal String userId, @PathVariable Long reviewId) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
         }
@@ -43,15 +42,24 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Boolean>> createComment(
-        @AuthenticationPrincipal String userId,
-        @RequestBody CommentReqDto commentReqDto
-    ) {
+        @AuthenticationPrincipal String userId, @RequestBody CommentReqDto commentReqDto) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
         }
         Long id = Long.parseLong(userId);
         return ApiResponse.success(SuccessStatus.CREATE_REVIEW_COMMENT_SUCCESS,
             reviewCommentService.createComment(id, commentReqDto));
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ApiResponse<Boolean>> deleteComment(
+        @AuthenticationPrincipal String userId, @PathVariable String commentId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.DELETE_REVIEW_COMMENT_SUCCESS,
+            reviewCommentService.deleteComment(id, commentId));
     }
 
 }
