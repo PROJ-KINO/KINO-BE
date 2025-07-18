@@ -21,9 +21,9 @@ public class Report {
     @Column(nullable = false)
     private String content;
 
-    private int reportType;
+    private Integer reportType;
 
-    private int relatedType;
+    private Long relatedType;
 
     private Long relatedId;
 
