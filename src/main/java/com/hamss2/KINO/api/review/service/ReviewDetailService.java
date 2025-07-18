@@ -11,6 +11,7 @@ import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
 import com.hamss2.KINO.api.review.dto.ReviewReqDto;
 import com.hamss2.KINO.api.review.dto.ReviewResDto;
+import com.hamss2.KINO.api.review.dto.ReviewUpdateReqDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.review.repository.ReviewLikeRepository;
 import com.hamss2.KINO.api.testPackage.UserRepository;
@@ -171,5 +172,35 @@ public class ReviewDetailService {
 
         return true;
 
+    }
+
+    public Boolean updateReview(Long userId, ReviewUpdateReqDto reviewReqDto) {
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Review review = reviewRepository.findById(reviewReqDto.getReviewId())
+            .orElseThrow(() -> new NotFoundException(
+                "Review not found with id: " + reviewReqDto.getReviewId()));
+
+        if (review.getIsDeleted()) { // if(review.getIsDeleted() || !review.getIsActive()) {
+            throw new BadRequestException(
+                ErrorStatus.REVIEW_ALREADY_DELETED_EXCEPTION.getMessage());
+        }
+
+        if (!review.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException(
+                ErrorStatus.NOT_ALLOWED_OTHERS_REVIEW_EXCEPTION.getMessage());
+        }
+
+        Movie movie = movieRepository.findById(reviewReqDto.getMovieId())
+            .orElseThrow(() -> new NotFoundException(
+                "Movie not found with id: " + reviewReqDto.getMovieId()));
+
+        review.setTitle(reviewReqDto.getReviewTitle());
+        review.setContent(reviewReqDto.getReviewContent());
+        review.setMovie(movie);
+
+        return true;
     }
 }
