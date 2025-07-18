@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,5 +96,18 @@ public class ReviewController {
         return ApiResponse.success(SuccessStatus.DELETE_REVIEW_SUCCESS,
             reviewService.deleteReview(id, reviewId)
         );
+    }
+
+    @PutMapping("/{reviewId}/heart")
+    public ResponseEntity<ApiResponse<Boolean>> updateLike(
+        @AuthenticationPrincipal String userId,
+        @PathVariable Long reviewId
+    ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.UPDATE_REVIEW_LIKE_SUCCESS,
+            reviewService.updateLike(id, reviewId));
     }
 }
