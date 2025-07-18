@@ -45,6 +45,7 @@ public class NaverOAuthService {
     public NaverOAuthResDto issueNaverAccessToken(String code, String state) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
+//        formData.add("grant_type", "delete");
         formData.add("client_id", naverClientId);
         formData.add("client_secret", naverClientSecret);
         formData.add("code", code); // 프론트에서 받은 code

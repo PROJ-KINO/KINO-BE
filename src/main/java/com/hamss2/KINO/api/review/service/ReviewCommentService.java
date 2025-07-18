@@ -28,8 +28,7 @@ public class ReviewCommentService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final CommentRepository commentRepository;
-
-
+    
     public List<ReviewCommentResDto> getCommentsByReviewId(Long id, Long reviewId) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
@@ -41,7 +40,7 @@ public class ReviewCommentService {
             return ReviewCommentResDto.builder()
                 .commentId(comment.getCommentId())
                 .commentContent(comment.getContent())
-                .commentCreatedAt(comment.getCreatedAt().toString())
+                .commentCreatedAt(comment.getCreatedAt())
                 .isActive(comment.getIsActive())
                 .writerId(writer.getUserId())
                 .writerUserNickname(writer.getNickname())
