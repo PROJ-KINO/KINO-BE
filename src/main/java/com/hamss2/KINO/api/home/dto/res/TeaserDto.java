@@ -9,4 +9,5 @@ public class TeaserDto {
     private Long movieId;
     private String title;
     private String teaserUrl;
+    private String plot;
 }

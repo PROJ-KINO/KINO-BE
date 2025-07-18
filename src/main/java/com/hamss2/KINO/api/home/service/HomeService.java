@@ -46,7 +46,7 @@ public class HomeService {
         HomeResponseDto homeResponseDto = new HomeResponseDto();
 
         // 1. 상단 티저 영화
-        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
+        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc("");
         if (teaserMovie != null) {
             homeResponseDto.setTeaser(toTeaserMovieDto(teaserMovie));
         }
@@ -144,7 +144,14 @@ public class HomeService {
         TeaserDto teaserDto = new TeaserDto();
         teaserDto.setMovieId(movie.getMovieId());
         teaserDto.setTitle(movie.getTitle());
-        teaserDto.setTeaserUrl(movie.getTeaserUrl());
+
+        String originalUrl = movie.getTeaserUrl();
+        String videoId = originalUrl.substring(originalUrl.indexOf("v=") + 2);
+        String embedUrl = "https://www.youtube.com/embed/" + videoId
+                + "?autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&mute=1";
+
+        teaserDto.setTeaserUrl(embedUrl);
+        teaserDto.setPlot(movie.getPlot());
         return teaserDto;
     }
 
