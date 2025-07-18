@@ -19,7 +19,6 @@ import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.reponse.ErrorStatus;
-import com.hamss2.KINO.common.utils.TimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -74,7 +73,7 @@ public class ReviewDetailService {
             .reviewTitle(review.getTitle()).reviewContent(review.getContent())
             .reviewViewCount(review.getTotalViews()).reviewCommentCount(review.getComments().size())
             .reviewLikeCount(review.getReviewLikes().size())
-            .reviewCreatedAt(TimeFormatter.formatLocalDateTime(review.getCreatedAt()))
+            .reviewCreatedAt(review.getCreatedAt())
             .movieId(movie.getMovieId()).movieTitle(movie.getTitle()).writerId(writer.getUserId())
             .writerUserNickname(writer.getNickname()).writerUserImage(writer.getImage())
             .isActive(user.getRole() != Role.BAN_USER).isHeart(review.getReviewLikes().stream()
@@ -116,13 +115,13 @@ public class ReviewDetailService {
 
         Page<ReviewResDto> response = reviews.map(review -> {
             return ReviewResDto.builder()
-                .reviewId(review.getReviewId())
-                .reviewTitle(review.getTitle())
-                .reviewContent(review.getContent())
-                .reviewViewCount(review.getTotalViews())
-                .reviewCreatedAt(review.getCreatedAt().toString())
-                .reviewCommentCount(review.getComments().size())
-                .reviewLikeCount(review.getReviewLikes().size())
+                .id(review.getReviewId())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .viewCount(review.getTotalViews())
+                .createdAt(review.getCreatedAt())
+                .commentCount(review.getComments().size())
+                .likeCount(review.getReviewLikes().size())
                 .isMine(review.getUser().getUserId().equals(user.getUserId()))
                 .isHeart(review.getReviewLikes().stream()
                     .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))

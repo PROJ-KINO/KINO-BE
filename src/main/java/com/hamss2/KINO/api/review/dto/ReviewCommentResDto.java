@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.review.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ public class ReviewCommentResDto {
 
     private Long commentId;
     private String commentContent;
-    private String commentCreatedAt;
+    private LocalDateTime commentCreatedAt;
     private Boolean isActive; // 활성화된 댓글인지 아닌
     private Long writerId;
     private String writerUserNickname;

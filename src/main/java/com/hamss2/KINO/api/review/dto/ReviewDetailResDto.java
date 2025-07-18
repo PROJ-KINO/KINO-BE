@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.review.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ public class ReviewDetailResDto {
     private String reviewTitle;
     private String reviewContent;
     private Integer reviewViewCount;
-    private String reviewCreatedAt;
+    private LocalDateTime reviewCreatedAt;
     private Integer reviewLikeCount;
     private Integer reviewCommentCount;
 
