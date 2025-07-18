@@ -55,6 +55,7 @@ public enum SuccessStatus {
     DELETE_REVIEW_SUCCESS(HttpStatus.OK, "리뷰 삭제 성공"),
     UPDATE_REVIEW_LIKE_SUCCESS(HttpStatus.OK, "리뷰 좋아요/싫어요 성공"),
     DELETE_REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 삭제 성공"),
+    SEND_MY_INFO_SUCCESS(HttpStatus.OK, "내 정보 조회 성공"),
 
     /**
      * 201
