@@ -8,4 +8,5 @@ import lombok.Getter;
 public class FollowUserDto {
     private Long userId;
     private String nickname;
+    private boolean isFollow;
 }
