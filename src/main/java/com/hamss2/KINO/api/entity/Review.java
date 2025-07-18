@@ -85,4 +85,8 @@ public class Review {
     public void incrementViews() {
         this.totalViews++;
     }
+
+    public void deleteReview() {
+        this.isDeleted = true;
+    }
 } 

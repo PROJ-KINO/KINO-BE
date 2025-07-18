@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,5 +81,19 @@ public class ReviewController {
     ) {
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS,
             reviewService.getReviews(page, size));
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<Boolean>> deleteReview(
+        @AuthenticationPrincipal String userId,
+        @PathVariable Long reviewId
+    ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.DELETE_REVIEW_SUCCESS,
+            reviewService.deleteReview(id, reviewId)
+        );
     }
 }

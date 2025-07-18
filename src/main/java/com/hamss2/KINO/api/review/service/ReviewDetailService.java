@@ -12,8 +12,10 @@ import com.hamss2.KINO.api.review.dto.ReviewReqDto;
 import com.hamss2.KINO.api.review.dto.ReviewResDto;
 import com.hamss2.KINO.api.review.dto.WritingReviewResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
+import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
+import com.hamss2.KINO.common.reponse.ErrorStatus;
 import com.hamss2.KINO.common.utils.TimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -128,5 +130,24 @@ public class ReviewDetailService {
         });
 
         return new PageResDto<>(response);
+    }
+
+    public Boolean deleteReview(Long userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new NotFoundException("Review not found with id: " + reviewId));
+
+        if (review.getIsDeleted()) {
+            throw new BadRequestException(
+                ErrorStatus.REVIEW_ALREADY_DELETED_EXCEPTION.getMessage());
+        }
+
+        if (!review.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException(
+                ErrorStatus.NOT_ALLOWED_OTHERS_REVIEW_EXCEPTION.getMessage());
+        }
+
+        review.deleteReview();
+
+        return true;
     }
 }
