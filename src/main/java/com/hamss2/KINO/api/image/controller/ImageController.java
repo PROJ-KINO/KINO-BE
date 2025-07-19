@@ -20,7 +20,7 @@ public class ImageController {
 
     @PostMapping(value = "/img", consumes = "multipart/form-data")
     public ImgResDto img(
-            @RequestPart(value = "file", required = true) MultipartFile file) {
+            @RequestPart(value = "upload", required = true) MultipartFile file) {
         return new ImgResDto(gcsUploader.uploadFile(file));
     }
 }
