@@ -70,13 +70,20 @@ public class ReviewDetailService {
         User writer = review.getUser();
 
         ReviewDetailResDto response = ReviewDetailResDto.builder().reviewId(review.getReviewId())
-            .reviewTitle(review.getTitle()).reviewContent(review.getContent())
-            .reviewViewCount(review.getTotalViews()).reviewCommentCount(review.getComments().size())
+            .reviewTitle(review.getTitle()).
+            reviewContent(review.getContent())
+            .reviewViewCount(review.getTotalViews()).
+            reviewCommentCount(review.getComments().size())
             .reviewLikeCount(review.getReviewLikes().size())
             .reviewCreatedAt(review.getCreatedAt())
-            .movieId(movie.getMovieId()).movieTitle(movie.getTitle()).writerId(writer.getUserId())
-            .writerUserNickname(writer.getNickname()).writerUserImage(writer.getImage())
-            .isActive(user.getRole() != Role.BAN_USER).isHeart(review.getReviewLikes().stream()
+            .movieId(movie.getMovieId())
+            .movieTitle(movie.getTitle())
+            .moviePosterUrl(movie.getPosterUrl())
+            .writerId(writer.getUserId())
+            .writerUserNickname(writer.getNickname())
+            .writerUserImage(writer.getImage())
+            .isActive(user.getRole() != Role.BAN_USER)
+            .isHeart(review.getReviewLikes().stream()
                 .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
             .isMine(user.equals(writer)).build();
 
@@ -86,7 +93,7 @@ public class ReviewDetailService {
         return response;
     }
 
-    public Boolean createReview(Long userId, ReviewReqDto reviewReqDto) {
+    public Long createReview(Long userId, ReviewReqDto reviewReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
@@ -102,7 +109,7 @@ public class ReviewDetailService {
 
         reviewRepository.save(review);
 
-        return true;
+        return review.getReviewId();
     }
 
     public PageResDto<ReviewResDto> getReviews(Long userId, int page, int size) {
@@ -115,7 +122,7 @@ public class ReviewDetailService {
 
         Page<ReviewResDto> response = reviews.map(review -> {
             return ReviewResDto.builder()
-                .id(review.getReviewId())
+                .reviewId(review.getReviewId())
                 .title(review.getTitle())
                 .content(review.getContent())
                 .viewCount(review.getTotalViews())
@@ -163,27 +170,38 @@ public class ReviewDetailService {
 //            throw new InternalServerException("Review is already active, cannot update.");
 //        }
 
-        ReviewLike reviewLike = review.getReviewLikes().stream()
-            .filter(like -> like.getUser().getUserId().equals(userId))
-            .findFirst().orElse(null);
+//        reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
+//            .ifPresentOrElse(like -> {
+//                // 이미 좋아요가 눌려있다면 좋아요 취소
+//                reviewLikeRepository.delete(like);
+//            }, () -> {
+//                // 좋아요가 눌려있지 않다면 좋아요 추가
+//                User user = userRepository.findById(userId)
+//                    .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+//                ReviewLike newLike = ReviewLike.createReviewLike(user, review);
+//                reviewLikeRepository.save(newLike);
+//            });
 
-        reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
-            .ifPresentOrElse(like -> {
+        boolean isLiked = reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
+            .map(like -> {
                 // 이미 좋아요가 눌려있다면 좋아요 취소
                 reviewLikeRepository.delete(like);
-            }, () -> {
+                return true;
+            })
+            .orElseGet(() -> {
                 // 좋아요가 눌려있지 않다면 좋아요 추가
                 User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
                 ReviewLike newLike = ReviewLike.createReviewLike(user, review);
                 reviewLikeRepository.save(newLike);
+                return false;
             });
 
-        return true;
+        return !isLiked;
 
     }
 
-    public Boolean updateReview(Long userId, ReviewUpdateReqDto reviewReqDto) {
+    public Long updateReview(Long userId, ReviewUpdateReqDto reviewReqDto) {
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
@@ -210,6 +228,6 @@ public class ReviewDetailService {
         review.setContent(reviewReqDto.getReviewContent());
         review.setMovie(movie);
 
-        return true;
+        return review.getReviewId();
     }
 }

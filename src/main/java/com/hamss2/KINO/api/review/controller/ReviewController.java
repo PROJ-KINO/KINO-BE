@@ -49,7 +49,7 @@ public class ReviewController {
 
     // 리뷰 작성하기
     @PostMapping
-    public ResponseEntity<ApiResponse<Boolean>> createReview(
+    public ResponseEntity<ApiResponse<Long>> createReview(
         @AuthenticationPrincipal String userId,
         @RequestBody ReviewReqDto reviewReqDto
     ) {
@@ -93,7 +93,7 @@ public class ReviewController {
 
     // 리뷰 삭제하기
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ApiResponse<Boolean>> deleteReview(
+    public ResponseEntity<ApiResponse<Void>> deleteReview(
         @AuthenticationPrincipal String userId,
         @PathVariable Long reviewId
     ) {
@@ -101,13 +101,12 @@ public class ReviewController {
             throw new BadRequestException("userId is required");
         }
         Long id = Long.parseLong(userId);
-        return ApiResponse.success(SuccessStatus.DELETE_REVIEW_SUCCESS,
-            reviewService.deleteReview(id, reviewId)
-        );
+        reviewService.deleteReview(id, reviewId);
+        return ApiResponse.success_only(SuccessStatus.DELETE_REVIEW_SUCCESS);
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<Boolean>> updateReview(
+    public ResponseEntity<ApiResponse<Long>> updateReview(
         @AuthenticationPrincipal String userId,
         @RequestBody ReviewUpdateReqDto reviewReqDto
     ) {

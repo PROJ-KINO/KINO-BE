@@ -20,6 +20,7 @@ public class ReviewDetailResDto {
 
     private Long movieId;
     private String movieTitle;
+    private String moviePosterUrl;
 
     private Long writerId;
     private String writerUserNickname;
