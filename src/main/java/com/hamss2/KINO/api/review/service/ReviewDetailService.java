@@ -86,7 +86,7 @@ public class ReviewDetailService {
         return response;
     }
 
-    public Boolean createReview(Long userId, ReviewReqDto reviewReqDto) {
+    public Long createReview(Long userId, ReviewReqDto reviewReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
@@ -102,7 +102,7 @@ public class ReviewDetailService {
 
         reviewRepository.save(review);
 
-        return true;
+        return review.getReviewId();
     }
 
     public PageResDto<ReviewResDto> getReviews(Long userId, int page, int size) {

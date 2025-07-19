@@ -49,7 +49,7 @@ public class ReviewController {
 
     // 리뷰 작성하기
     @PostMapping
-    public ResponseEntity<ApiResponse<Boolean>> createReview(
+    public ResponseEntity<ApiResponse<Long>> createReview(
         @AuthenticationPrincipal String userId,
         @RequestBody ReviewReqDto reviewReqDto
     ) {
