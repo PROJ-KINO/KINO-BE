@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class ReviewResDto {
 
-    private Long id;
+    private Long reviewId;
     private String title;
     private String content;
     private Integer viewCount;

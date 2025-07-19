@@ -7,15 +7,18 @@ import com.hamss2.KINO.api.entity.Role;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.review.dto.CommentReqDto;
+import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewCommentResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.reponse.ErrorStatus;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +31,22 @@ public class ReviewCommentService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final CommentRepository commentRepository;
-    
-    public List<ReviewCommentResDto> getCommentsByReviewId(Long id, Long reviewId) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        List<Comment> comments = commentRepository.findByReviewReviewId(reviewId);
 
-        return comments.stream().map(comment -> {
+    public PageResDto<ReviewCommentResDto> getCommentsByReviewId(
+        Long userId,
+        Long reviewId,
+        int page,
+        int size
+    ) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> comments = commentRepository.findByReviewReviewIdOrderByCreatedAtDesc(
+            reviewId, pageable);
+
+        Page<ReviewCommentResDto> response = comments.map(comment -> {
             User writer = comment.getUser();
 
             return ReviewCommentResDto.builder()
@@ -47,10 +59,12 @@ public class ReviewCommentService {
                 .writerUserImage(writer.getImage())
                 .isMine(user.getUserId().equals(writer.getUserId()))
                 .build();
-        }).toList();
+        });
+
+        return new PageResDto<>(response);
     }
 
-    public Boolean createComment(Long userId, CommentReqDto commentReqDto) {
+    public ReviewCommentResDto createComment(Long userId, CommentReqDto commentReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
         if (user.getRole().equals(Role.BAN_USER)) {
@@ -64,7 +78,16 @@ public class ReviewCommentService {
         Comment comment = Comment.createComment(commentReqDto.getCommentContent(), user, review);
         commentRepository.save(comment);
 
-        return true;
+        return ReviewCommentResDto.builder()
+            .commentId(comment.getCommentId())
+            .commentContent(comment.getContent())
+            .commentCreatedAt(comment.getCreatedAt())
+            .isActive(comment.getIsActive())
+            .writerId(user.getUserId())
+            .writerUserNickname(user.getNickname())
+            .writerUserImage(user.getImage())
+            .isMine(true)
+            .build();
     }
 
     public Boolean deleteComment(Long userId, String commentId) {
@@ -86,5 +109,41 @@ public class ReviewCommentService {
         comment.delete();
 
         return true;
+    }
+
+
+    public ReviewCommentResDto updateComment(
+        Long userId,
+        Long commentId,
+        CommentReqDto commentReqDto
+    ) {
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new NotFoundException("Comment not found with id: " + commentId));
+
+        if (comment.getIsDeleted()) {
+            throw new BadRequestException(
+                ErrorStatus.COMMENT_ALREADY_DELETED_EXCEPTION.getMessage());
+        }
+
+        if (!comment.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException("본인이 작성한 댓글만 수정할 수 있습니다.");
+        }
+
+        comment.updateContent(commentReqDto.getCommentContent());
+
+        return ReviewCommentResDto.builder()
+            .commentId(comment.getCommentId())
+            .commentContent(comment.getContent())
+            .commentCreatedAt(comment.getCreatedAt())
+            .isActive(comment.getIsActive())
+            .writerId(user.getUserId())
+            .writerUserNickname(user.getNickname())
+            .writerUserImage(user.getImage())
+            .isMine(true)
+            .build();
     }
 }
