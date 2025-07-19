@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MypagePickMovieResDto {
-    private List<MyPickMovieDto> myPickMoives;
+    private List<MyPickMovieDto> myPickMovies;
 
     @Data
     @AllArgsConstructor
