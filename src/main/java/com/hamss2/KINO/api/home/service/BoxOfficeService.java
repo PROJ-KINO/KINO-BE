@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +70,14 @@ public class BoxOfficeService {
                 MovieDto dto = new MovieDto();
                 dto.setMovieId(movie.getMovieId());
                 dto.setTitle(movie.getTitle());
-                dto.setPosterUrl(movie.getStillCutUrl());
+                dto.setPlot(movie.getPlot());
+                dto.setReleaseDate(movie.getReleaseDate());
+                dto.setRunningTime(movie.getRunningTime());
+                dto.setAgeRating(movie.getAgeRating());
+                dto.setGenres(movie.getMovieGenres().stream()
+                        .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+                dto.setStillCutUrl(movie.getStillCutUrl());
+                dto.setPosterUrl(movie.getPosterUrl());
                 movieDtos.add(dto);
             }
 
