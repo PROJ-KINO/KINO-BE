@@ -30,6 +30,16 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // 여기에 허용할 url을 추가
+        if (path.startsWith("/api/auth") || path.startsWith("/api/admin") || path.startsWith(
+            "/swagger-ui") || path.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String jwt = resolveToken(request); // 헤더에서 JWT 추출
 
         if (jwt == null || jwt.isEmpty()) {
