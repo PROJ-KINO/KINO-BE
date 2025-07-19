@@ -15,7 +15,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     // plot이 null이 아니고 빈 문자열이 아닌, teaserUrl이 있는, releaseDate 최신 영화 1개
     Movie findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc(String plot);
 
-    List<Movie> findByTitleContaining(String keyword);
+    @Query("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.movieGenres mg LEFT JOIN FETCH mg.genre WHERE m.title LIKE %:keyword%")
+    List<Movie> findByTitleContainingWithGenres(@Param("keyword") String keyword);
     List<Movie> findAllByTitle(String title);
 
     Page<Movie> findByMovieIdIn(List<Long> ids, Pageable pageable);

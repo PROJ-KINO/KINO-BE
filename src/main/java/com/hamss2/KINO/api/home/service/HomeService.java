@@ -141,7 +141,7 @@ public class HomeService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return List.of();
         }
-        List<Movie> movies = movieRepository.findByTitleContaining(keyword);
+        List<Movie> movies = movieRepository.findByTitleContainingWithGenres(keyword);
         return movies.stream().map(this::toMovieDto).toList();
     }
 
@@ -158,6 +158,10 @@ public class HomeService {
         teaserDto.setTeaserUrl(embedUrl);
         teaserDto.setPlot(movie.getPlot());
         teaserDto.setStillCutUrl(movie.getStillCutUrl());
+        teaserDto.setReleaseDate(movie.getReleaseDate());
+        teaserDto.setRunningTime(movie.getRunningTime());
+        teaserDto.setGenres(movie.getMovieGenres().stream()
+                .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
         return teaserDto;
     }
 
