@@ -23,6 +23,8 @@ public enum ErrorStatus {
     POST_NOT_FOUND_EXCEPTION(HttpStatus.BAD_REQUEST, "해당 게시물이 없습니다"),
     SELLER_EQUAL_BUY(HttpStatus.BAD_REQUEST, "자신의 게시글에 채팅방을 만들수 없습니다"),
     YOU_ARE_NOT_SELLER(HttpStatus.BAD_REQUEST, "해당 게시글의 판매자가 아닙니다."),
+    REVIEW_ALREADY_DELETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 삭제된 게시물입니다."),
+    COMMENT_ALREADY_DELETED_EXCEPTION(HttpStatus.BAD_REQUEST, "이미 삭제된 댓글입니다."),
 
     /**
      * 401 UNAUTHORIZED
@@ -34,6 +36,7 @@ public enum ErrorStatus {
      * 403 FORBIDDEN
      */
     OTHERS_USER_INFO_NOT_ALLOWED_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사용자의 정보에 접근이 불가능합니다."),
+    NOT_ALLOWED_OTHERS_REVIEW_EXCEPTION(HttpStatus.FORBIDDEN, "다른 사용자의 게시물의 수정/삭제할 수 업습니다."),
 
     /**
      * 404 NOT_FOUND

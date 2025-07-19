@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class MypagePickMovieResDto {
-    private List<MyPickMovieDto> myPickMoives;
+    private List<MyPickMovieDto> myPickMovies;
 
     @Data
     @AllArgsConstructor
@@ -19,5 +20,7 @@ public class MypagePickMovieResDto {
         private Long myPickId;
         private String movieTitle;
         private String posterUrl;
+        private String director;
+        private LocalDate releaseDate;
     }
 }

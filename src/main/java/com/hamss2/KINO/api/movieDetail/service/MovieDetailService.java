@@ -1,8 +1,10 @@
 package com.hamss2.KINO.api.movieDetail.service;
 
+import com.hamss2.KINO.api.entity.DailyMovieView;
 import com.hamss2.KINO.api.entity.Movie;
 import com.hamss2.KINO.api.entity.MyPickMovie;
 import com.hamss2.KINO.api.entity.User;
+import com.hamss2.KINO.api.home.repository.DailyMovieViewRepository;
 import com.hamss2.KINO.api.home.repository.MyPickMovieRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +25,7 @@ public class MovieDetailService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final MyPickMovieRepository myPickMovieRepository;
+    private final DailyMovieViewRepository dailyMovieViewRepository;
 
 
     // 찜 등록
@@ -58,10 +62,28 @@ public class MovieDetailService {
     }
 
     // 작품 정보
-    @Transactional(readOnly = true)
+    @Transactional
     public MovieDetailDto getMovieDetail(Long movieId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
+
+        // 누적 조회수
+        movie.setTotalView(movie.getTotalView() + 1);
+
+        // 일간 조회수
+        LocalDate today = LocalDate.now();
+        DailyMovieView todayView = dailyMovieViewRepository
+                .findByMovieAndViewDate(movie, today)
+                .orElseGet(() -> {
+                    DailyMovieView newView = new DailyMovieView();
+                    newView.setMovie(movie);
+                    newView.setViewDate(today);
+                    newView.setDailyView(0);
+                    return newView;
+                });
+        todayView.setDailyView(todayView.getDailyView() + 1);
+        dailyMovieViewRepository.save(todayView);
+
         return MovieDetailDto.builder()
                 .movieId(movie.getMovieId())
                 .title(movie.getTitle())
@@ -72,8 +94,7 @@ public class MovieDetailService {
                 .director(movie.getDirector())
                 .ageRating(movie.getAgeRating())
                 .genres(movie.getMovieGenres().stream()
-                        .map(mg -> mg.getGenre().getGenreName())
-                        .collect(Collectors.toList()))
+                        .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()))
                 .actors(movie.getActors().stream()
                         .map(a -> MovieDetailDto.ActorDto.builder()
                                 .name(a.getActor().getName())

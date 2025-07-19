@@ -2,10 +2,7 @@ package com.hamss2.KINO.api.movieDetail.service;
 
 import com.hamss2.KINO.api.admin.repository.CommentRepository;
 import com.hamss2.KINO.api.admin.repository.ReportRepository;
-import com.hamss2.KINO.api.entity.Movie;
-import com.hamss2.KINO.api.entity.Report;
-import com.hamss2.KINO.api.entity.ShortReview;
-import com.hamss2.KINO.api.entity.User;
+import com.hamss2.KINO.api.entity.*;
 import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
@@ -57,7 +54,7 @@ public class ShortReviewService {
 
     // 한줄평 등록
     @Transactional
-    public void createShortReview(Long movieId, ShortReviewReqDto shortReviewReqDto, Long userId) {
+    public ShortReviewResDto createShortReview(Long movieId, ShortReviewReqDto shortReviewReqDto, Long userId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
         User user = userRepository.findById(userId)
@@ -78,11 +75,17 @@ public class ShortReviewService {
         shortReview.setIsActive(true);
         shortReview.setCreatedAt(LocalDateTime.now());
         shortReviewRepository.save(shortReview);
+
+        // 좋아요 리뷰ID 목록 한 번에 미리 가져와서 N+1 방지
+        Set<Long> myLikedReviewIds = shortReviewLikeRepository.findByUserUserId(userId)
+                .stream().map(like -> like.getShortReview().getShortReviewId()).collect(Collectors.toSet());
+
+        return toDto(shortReview, userId, myLikedReviewIds);
     }
 
     // 한줄평 수정
     @Transactional
-    public void updateShortReview(Long movieId, ShortReviewReqDto shortReviewReqDto, Long shortReviewId, Long userId) {
+    public ShortReviewResDto updateShortReview(Long movieId, ShortReviewReqDto shortReviewReqDto, Long shortReviewId, Long userId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
         User user = userRepository.findById(userId)
@@ -102,7 +105,14 @@ public class ShortReviewService {
 
         shortReview.setContent(shortReviewReqDto.getContent());
         shortReview.setRating(shortReviewReqDto.getRating());
+        shortReview.setCreatedAt(LocalDateTime.now());
         shortReviewRepository.save(shortReview);
+
+        // 좋아요 리뷰ID 목록 한 번에 미리 가져와서 N+1 방지
+        Set<Long> myLikedReviewIds = shortReviewLikeRepository.findByUserUserId(userId)
+                .stream().map(like -> like.getShortReview().getShortReviewId()).collect(Collectors.toSet());
+
+        return toDto(shortReview, userId, myLikedReviewIds);
     }
 
     // 한줄평 삭제
@@ -128,6 +138,29 @@ public class ShortReviewService {
         // Soft delete 처리
         shortReview.setIsDeleted(true);
         shortReviewRepository.save(shortReview);
+    }
+
+    @Transactional
+    public boolean toggleLike(Long shortReviewId, Long userId) {
+        ShortReview shortReview = shortReviewRepository.findById(shortReviewId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 한줄평입니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
+
+        Optional<ShortReviewLike> like = shortReviewLikeRepository.findByUserAndShortReview(user, shortReview);
+        if (like.isPresent()) {
+            // 좋아요 취소
+            shortReviewLikeRepository.delete(like.get());
+            return false;
+        } else {
+            // 좋아요 등록
+            ShortReviewLike newLike = new ShortReviewLike();
+            newLike.setShortReview(shortReview);
+            newLike.setUser(user);
+            newLike.setCreatedAt(LocalDateTime.now());
+            shortReviewLikeRepository.save(newLike);
+            return true;
+        }
     }
 
     // 한줄평 DTO 변환 메서드

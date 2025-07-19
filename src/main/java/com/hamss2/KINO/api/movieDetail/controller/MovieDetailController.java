@@ -3,6 +3,7 @@ package com.hamss2.KINO.api.movieDetail.controller;
 import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
+import com.hamss2.KINO.api.movieDetail.dto.res.LikeStatusDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.ReviewResDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.ShortReviewResDto;
@@ -12,6 +13,7 @@ import com.hamss2.KINO.api.movieDetail.service.ShortReviewService;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class MovieDetailController {
 
     private final MovieDetailService movieDetailService;
@@ -56,29 +59,27 @@ public class MovieDetailController {
 
     // 한줄평 조회
     @GetMapping("/{movieId}/short-reviews")
-    @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
             (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
-             @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+             @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
         Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
     }
 
     // 한줄평 등록
     @PostMapping("/{movieId}/short-reviews")
-    public ResponseEntity<ApiResponse<Void>> createShortReview
+    public ResponseEntity<ApiResponse<ShortReviewResDto>> createShortReview
     (@PathVariable Long movieId, @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
-        shortReviewService.createShortReview(movieId, shortReviewReqDto, Long.valueOf(userId));
-        return ApiResponse.success_only(SuccessStatus.CREATE_SHORT_REVIEW_SUCCESS);
+        ShortReviewResDto shortReviewResDto = shortReviewService.createShortReview(movieId, shortReviewReqDto, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.CREATE_SHORT_REVIEW_SUCCESS, shortReviewResDto);
     }
 
     // 한줄평 수정
     @PutMapping("/{movieId}/short-reviews/{shortReviewId}")
-    public ResponseEntity<ApiResponse<Void>> updateShortReview(@PathVariable Long movieId, @PathVariable Long shortReviewId,
+    public ResponseEntity<ApiResponse<ShortReviewResDto>> updateShortReview(@PathVariable Long movieId, @PathVariable Long shortReviewId,
             @RequestBody ShortReviewReqDto shortReviewReqDto, @AuthenticationPrincipal String userId) {
-        shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, Long.valueOf(userId));
-        return ApiResponse.success_only(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS);
+        ShortReviewResDto shortReviewResDto = shortReviewService.updateShortReview(movieId, shortReviewReqDto, shortReviewId, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.UPDATE_SHORT_REVIEW_SUCCESS, shortReviewResDto);
     }
 
     // 한줄평 삭제
@@ -89,7 +90,14 @@ public class MovieDetailController {
         return ApiResponse.success_only(SuccessStatus.DELETE_SHORT_REVIEW_SUCCESS);
     }
 
-    // 신
+    // 좋아요 토글
+    @PostMapping("/{shortReviewId}/like")
+    public ResponseEntity<ApiResponse<LikeStatusDto>> likeShortReview(@PathVariable Long shortReviewId, @AuthenticationPrincipal String userId) {
+        boolean liked = shortReviewService.toggleLike(shortReviewId, Long.valueOf(userId));
+        return ApiResponse.success(SuccessStatus.LIKE_SHORT_REVIEW_SUCCESS, new LikeStatusDto(liked));
+    }
+
+    // 신고
     @PostMapping("/report")
     public ResponseEntity<ApiResponse<Void>> report(@RequestBody ReportReqDto reportReqDto, @AuthenticationPrincipal String userId) {
         reviewService.report(reportReqDto, Long.valueOf(userId));
@@ -98,11 +106,10 @@ public class MovieDetailController {
 
     // 상세 리뷰 조회
     @GetMapping("/{movieId}/reviews")
-    @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
             @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId,
-            @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+            @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
+        log.info("========================== userId : " + userId + "==========================");
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size, Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_REVIEW_LIST_SUCCESS, reviewPage);
     }

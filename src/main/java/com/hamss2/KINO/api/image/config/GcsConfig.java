@@ -1,4 +1,4 @@
-package com.hamss2.KINO.api.image;
+package com.hamss2.KINO.api.image.config;
 
 import com.google.cloud.storage.Storage;
 import com.google.auth.oauth2.GoogleCredentials;

@@ -6,15 +6,14 @@ import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,38 +26,57 @@ public class BoxOfficeService {
     @Value("${kofic.api-key}")
     private String KOFIC_API_KEY;
 
+    @Cacheable(value = "boxOfficeCache", key = "'top10'")
     public List<MovieDto> fetchRealBoxOfficeTop10() {
-        String today = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        List<Map<String, Object>> allBoxOfficeList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-        // 1. KOFIC 오픈API 호출
-        Map<String, Object> result = koficWebClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .scheme("http")
-                        .host("www.kobis.or.kr")
-                        .path("/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json")
-                        .queryParam("key", KOFIC_API_KEY)
-                        .queryParam("targetDt", today)
-                        .build())
-                .retrieve()
-                .bodyToMono(Map.class)
-                .block();
+        // 1. 4일치 박스오피스 데이터 가져오기
+        for (int i = 1; i <= 4; i++) {
+            String day = LocalDate.now().minusDays(i).format(formatter);
+            Map<String, Object> result = koficWebClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .scheme("http")
+                            .host("www.kobis.or.kr")
+                            .path("/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json")
+                            .queryParam("key", KOFIC_API_KEY)
+                            .queryParam("targetDt", day)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
 
-        // 2. 응답 파싱
-        Map<String, Object> boxOfficeResult = (Map<String, Object>) result.get("boxOfficeResult");
-        List<Map<String, Object>> dailyList = (List<Map<String, Object>>) boxOfficeResult.get("dailyBoxOfficeList");
+            Map<String, Object> boxOfficeResult = (Map<String, Object>) result.get("boxOfficeResult");
+            List<Map<String, Object>> dailyList = (List<Map<String, Object>>) boxOfficeResult.get("dailyBoxOfficeList");
+            allBoxOfficeList.addAll(dailyList);
+        }
 
-        // 3. 영화명으로 우리 DB와 매칭해서 DTO
+        // 2. 영화명 기준 중복 제거 (KOFIC 영화명 중복)
+        LinkedHashMap<String, Map<String, Object>> unique = new LinkedHashMap<>();
+        for (Map<String, Object> item : allBoxOfficeList) {
+            unique.putIfAbsent((String) item.get("movieNm"), item);
+        }
+        List<Map<String, Object>> topNList = new ArrayList<>(unique.values());
+
+        // 3. 우리 DB와 매칭
         List<MovieDto> movieDtos = new ArrayList<>();
-
-        for (Map<String, Object> item : dailyList) {
+        for (Map<String, Object> item : topNList) {
             String koficTitle = (String) item.get("movieNm");
-            List<Movie> movies = movieRepository.findAllByTitle(koficTitle);
+            String koficTitleWithoutSpace = koficTitle.replaceAll("\\s+", "");
+            List<Movie> movies = movieRepository.findAllByTitleIgnoringSpace(koficTitleWithoutSpace);
 
             if (!movies.isEmpty()) {
-                Movie movie = movies.get(0); // 제일 먼저 나온 영화 사용
+                Movie movie = movies.get(0); // 첫번째 매칭 영화
                 MovieDto dto = new MovieDto();
                 dto.setMovieId(movie.getMovieId());
                 dto.setTitle(movie.getTitle());
+                dto.setPlot(movie.getPlot());
+                dto.setReleaseDate(movie.getReleaseDate());
+                dto.setRunningTime(movie.getRunningTime());
+                dto.setAgeRating(movie.getAgeRating());
+                dto.setGenres(movie.getMovieGenres().stream()
+                        .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+                dto.setStillCutUrl(movie.getStillCutUrl());
                 dto.setPosterUrl(movie.getPosterUrl());
                 movieDtos.add(dto);
             }

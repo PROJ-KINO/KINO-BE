@@ -23,5 +23,7 @@ public class MypageReviewResDto {
         private String movieTitle;
         private Integer totalViews;
         private LocalDateTime createdAt;
+        private int likes;
+        private int comments;
     }
 }

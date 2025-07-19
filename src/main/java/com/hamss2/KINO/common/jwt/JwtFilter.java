@@ -30,7 +30,37 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // 여기에 허용할 url을 추가
+        if (path.startsWith("/api/auth") || path.startsWith("/api/admin") || path.startsWith(
+            "/swagger-ui") || path.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String jwt = resolveToken(request); // 헤더에서 JWT 추출
+
+        if (jwt == null || jwt.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.setContentType("application/json;charset=UTF-8");
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            result.put("success", false);
+            result.put("message", "Token is empty");
+            result.put("data", "Token is empty");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String responseBody = objectMapper.writeValueAsString(result);
+
+            response.getWriter().write(responseBody);
+            response.getWriter().flush();
+            response.getWriter().close();
+            return;
+        }
+
         try {
             if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
                 Authentication authentication = jwtUtils.getAuthentication(jwt);

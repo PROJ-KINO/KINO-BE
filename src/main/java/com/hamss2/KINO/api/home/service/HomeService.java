@@ -7,6 +7,7 @@ import com.hamss2.KINO.api.home.dto.res.MovieDto;
 import com.hamss2.KINO.api.home.dto.res.ReviewDto;
 import com.hamss2.KINO.api.home.dto.res.TeaserDto;
 import com.hamss2.KINO.api.home.repository.*;
+import com.hamss2.KINO.api.image.controller.ImageController;
 import com.hamss2.KINO.api.movieAdmin.repository.GenreRepository;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import com.hamss2.KINO.api.mypage.repository.UserGenreRepository;
@@ -15,6 +16,7 @@ import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +46,14 @@ public class HomeService {
         HomeResponseDto homeResponseDto = new HomeResponseDto();
 
         // 1. 상단 티저 영화
-        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
+        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc("");
         if (teaserMovie != null) {
             homeResponseDto.setTeaser(toTeaserMovieDto(teaserMovie));
         }
 
         // 2. 사용자 좋아요 TOP 10 리뷰
         homeResponseDto.setTopLikeReviewList(
-                reviewRepository.findTop10ByLikeCount().stream()
+                reviewRepository.findTop10ByReviewLikes(PageRequest.of(0, 10)).stream()
                         .map(this::toReviewDto)
                         .toList()
         );
@@ -70,17 +72,24 @@ public class HomeService {
         try {
             homeResponseDto.setBoxOfficeMovieList(boxOfficeService.fetchRealBoxOfficeTop10());
         } catch (Exception e) {
-            throw new InternalServerException("박스오피스 서버 오류");
+            throw new InternalServerException("박스오피스 서버 오류" + e);
         }
 
         // 5. 일별 조회수 TOP 10 영화
-        List<DailyMovieView> topViews = dailymovieViewRepository.findTop10ByViewDateOrderByDailyViewDesc(LocalDate.now());
+        List<DailyMovieView> topViews = dailymovieViewRepository.findByViewDateOrderByDailyViewDesc(LocalDate.now(), PageRequest.of(0, 10));
         List<MovieDto> dailyTopMovieList = topViews.stream()
                 .map(dmv -> {
                     Movie movie = dmv.getMovie();
                     MovieDto dto = new MovieDto();
                     dto.setMovieId(movie.getMovieId());
                     dto.setTitle(movie.getTitle());
+                    dto.setPlot(movie.getPlot());
+                    dto.setReleaseDate(movie.getReleaseDate());
+                    dto.setRunningTime(movie.getRunningTime());
+                    dto.setAgeRating(movie.getAgeRating());
+                    dto.setGenres(movie.getMovieGenres().stream()
+                            .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+                    dto.setStillCutUrl(movie.getStillCutUrl());
                     dto.setPosterUrl(movie.getPosterUrl());
                     return dto;
                 })
@@ -90,21 +99,19 @@ public class HomeService {
         // 6. 월별 조회수 TOP 10 영화
         LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
         LocalDate endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
-        List<Movie> monthlyTopMovies = dailymovieViewRepository.findTop10MovieByMonthView(startOfMonth, endOfMonth);
+        List<Movie> monthlyTopMovies = dailymovieViewRepository.findTop10MovieByMonthView(startOfMonth, endOfMonth, PageRequest.of(0, 10));
         List<MovieDto> movies = monthlyTopMovies.stream()
                 .map(this::toMovieDto)
                 .toList();
         homeResponseDto.setMonthlyTopMovieList(movies);
 
         // 7. 사용자 기반 추천 TOP 10 영화
-//        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
-
-//        try {
-//            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
-//            homeResponseDto.setRecommendedMovieList(recommended);
-//        } catch (Exception e) {
-//            throw new InternalServerException("플라스크 서버 오류");
-//        }
+        try {
+            List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
+            homeResponseDto.setRecommendedMovieList(recommended);
+        } catch (Exception e) {
+            throw new InternalServerException("플라스크 서버 오류");
+        }
 
         return homeResponseDto;
     }
@@ -142,7 +149,15 @@ public class HomeService {
         TeaserDto teaserDto = new TeaserDto();
         teaserDto.setMovieId(movie.getMovieId());
         teaserDto.setTitle(movie.getTitle());
-        teaserDto.setTeaserUrl(movie.getTeaserUrl());
+
+        String originalUrl = movie.getTeaserUrl();
+        String videoId = originalUrl.substring(originalUrl.indexOf("v=") + 2);
+        String embedUrl = "https://www.youtube.com/embed/" + videoId
+                + "?autoplay=1&controls=0&showinfo=0&rel=0" + "&modestbranding=1" + "&loop=1&playlist=" + videoId;
+
+        teaserDto.setTeaserUrl(embedUrl);
+        teaserDto.setPlot(movie.getPlot());
+        teaserDto.setStillCutUrl(movie.getStillCutUrl());
         return teaserDto;
     }
 
@@ -160,6 +175,13 @@ public class HomeService {
         MovieDto movieDto = new MovieDto();
         movieDto.setMovieId(movie.getMovieId());
         movieDto.setTitle(movie.getTitle());
+        movieDto.setPlot(movie.getPlot());
+        movieDto.setReleaseDate(movie.getReleaseDate());
+        movieDto.setRunningTime(movie.getRunningTime());
+        movieDto.setAgeRating(movie.getAgeRating());
+        movieDto.setGenres(movie.getMovieGenres().stream()
+                .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+        movieDto.setStillCutUrl(movie.getStillCutUrl());
         movieDto.setPosterUrl(movie.getPosterUrl());
         return movieDto;
     }
