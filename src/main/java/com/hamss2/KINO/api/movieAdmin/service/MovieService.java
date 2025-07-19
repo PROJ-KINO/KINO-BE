@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -290,7 +292,22 @@ public class MovieService {
                         m.getMovieId(),
                         m.getPosterUrl(),
                         movieGenreRepository.findByMovie_MovieId(m.getMovieId()).stream()
+                                .map(mG -> mG.getGenre().getGenreId()).toList()
+                )).toList();
+    }
+
+    public Page<MovieResDto> allMovies(Pageable pageable, List<Long> ids){
+        Page<Movie> movies = movieRepository.findByMovieIdIn(ids, pageable); // ✨ 페이징 + ids 필터링
+
+        List<MovieResDto> dtoList = movies.stream()
+                .map(m -> new MovieResDto(
+                        m.getTitle(),
+                        m.getMovieId(),
+                        m.getPosterUrl(),
+                        movieGenreRepository.findByMovie_MovieId(m.getMovieId()).stream()
                                 .map(mG -> mG.getGenre().getGenreName()).toList()
                 )).toList();
+
+        return new PageImpl<>(dtoList, pageable, movies.getTotalElements());
     }
 }

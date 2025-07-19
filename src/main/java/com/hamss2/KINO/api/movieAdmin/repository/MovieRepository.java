@@ -1,6 +1,8 @@
 package com.hamss2.KINO.api.movieAdmin.repository;
 
 import com.hamss2.KINO.api.entity.Movie;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -12,4 +14,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     Movie findFirstByTeaserUrlIsNotNullOrderByReleaseDateDesc();
     List<Movie> findByTitleContaining(String keyword);
     List<Movie> findAllByTitle(String title);
+
+    Page<Movie> findByMovieIdIn(List<Long> ids, Pageable pageable);
 }

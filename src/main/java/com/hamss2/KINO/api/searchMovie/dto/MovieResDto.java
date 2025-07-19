@@ -13,5 +13,5 @@ public class MovieResDto {
     private String title;
     private Long movieId;
     private String posterUrl;
-    private List<String> movieGenre;
+    private List<Long> movieGenre;
 }
