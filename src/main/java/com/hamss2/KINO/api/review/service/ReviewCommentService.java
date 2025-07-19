@@ -7,15 +7,18 @@ import com.hamss2.KINO.api.entity.Role;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.home.repository.ReviewRepository;
 import com.hamss2.KINO.api.review.dto.CommentReqDto;
+import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewCommentResDto;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
 import com.hamss2.KINO.common.reponse.ErrorStatus;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +31,22 @@ public class ReviewCommentService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final CommentRepository commentRepository;
-    
-    public List<ReviewCommentResDto> getCommentsByReviewId(Long id, Long reviewId) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
-        List<Comment> comments = commentRepository.findByReviewReviewId(reviewId);
 
-        return comments.stream().map(comment -> {
+    public PageResDto<ReviewCommentResDto> getCommentsByReviewId(
+        Long userId,
+        Long reviewId,
+        int page,
+        int size
+    ) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> comments = commentRepository.findByReviewReviewIdOrderByCreatedAtDesc(
+            reviewId, pageable);
+
+        Page<ReviewCommentResDto> response = comments.map(comment -> {
             User writer = comment.getUser();
 
             return ReviewCommentResDto.builder()
@@ -47,7 +59,9 @@ public class ReviewCommentService {
                 .writerUserImage(writer.getImage())
                 .isMine(user.getUserId().equals(writer.getUserId()))
                 .build();
-        }).toList();
+        });
+
+        return new PageResDto<>(response);
     }
 
     public Boolean createComment(Long userId, CommentReqDto commentReqDto) {
