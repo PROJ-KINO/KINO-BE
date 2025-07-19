@@ -16,11 +16,15 @@ public class MovieDto implements Serializable {
     private Long movieId;
     private String title;
     private String plot;
+    @JsonProperty("release_date")
     private LocalDate releaseDate;
+    @JsonProperty("running_time")
     private int runningTime;
+    @JsonProperty("age_rating")
     private String ageRating;
     private List<String> genres;
     @JsonProperty("still_cut_url")
     private String stillCutUrl;
+    @JsonProperty("poster_url")
     private String posterUrl;
 }
