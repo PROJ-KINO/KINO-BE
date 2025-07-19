@@ -146,15 +146,14 @@ public class JwtUtils {
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException("JWT 만료됨: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.info("지원하지 않는 JWT: {}", e.getMessage());
+            throw new UnauthorizedException("지원하지 않는 JWT: " + e.getMessage());
         } catch (MalformedJwtException e) {
-            log.info("잘못된 JWT: {}", e.getMessage());
+            throw new UnauthorizedException("잘못된 JWT: " + e.getMessage());
         } catch (SecurityException | SignatureException e) {
-            log.info("서명 검증 실패: {}", e.getMessage());
+            throw new UnauthorizedException("서명 검증 실패:  " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims 문자열이 비어 있음: {}", e.getMessage());
+            throw new UnauthorizedException("JWT claims 문자열이 비어 있음: " + e.getMessage());
         }
-        return false;
     }
 
     // 토큰의 Claims(내용) 추출

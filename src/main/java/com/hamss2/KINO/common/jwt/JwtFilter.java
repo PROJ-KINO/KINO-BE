@@ -31,6 +31,26 @@ public class JwtFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         String jwt = resolveToken(request); // 헤더에서 JWT 추출
+
+        if (jwt == null || jwt.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            response.setContentType("application/json;charset=UTF-8");
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            result.put("success", false);
+            result.put("message", "Token is empty");
+            result.put("data", "Token is empty");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String responseBody = objectMapper.writeValueAsString(result);
+
+            response.getWriter().write(responseBody);
+            response.getWriter().flush();
+            response.getWriter().close();
+            return;
+        }
+
         try {
             if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
                 Authentication authentication = jwtUtils.getAuthentication(jwt);
