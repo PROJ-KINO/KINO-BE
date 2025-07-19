@@ -32,7 +32,7 @@ public class CacheRefreshService {
                         m.getMovieId(),
                         m.getPosterUrl(),
                         m.getMovieGenres().stream()
-                                .map(mg -> mg.getGenre().getGenreName())
+                                .map(mg -> mg.getGenre().getGenreId())
                                 .distinct()
                                 .toList()
                 )).toList();

@@ -31,13 +31,20 @@ public class SearchMovieContoller {
         return ApiResponse.success(SEARCH_ALL_MOVIE_SUCCESS, dto);
     }
 
+    /**
+     * 🎬 영화 목록 페이지네이션 조회
+     * @param page 페이지 번호 (0부터 시작)
+     * @param size 페이지 크기 (기본값: 12)
+     * @param genreIds 장르 ID 목록 (선택적, 없으면 전체 조회)
+     * @return 페이지네이션된 영화 목록
+     */
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<Page<MovieResDto>>> searchAllMovies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam List<Long> ids
+            @RequestParam(required = false) List<Long> genreIds
     ) {
-        Page<MovieResDto> dto = movieService.allMovies(PageRequest.of(page, size), ids);
+        Page<MovieResDto> dto = movieService.allMovies(PageRequest.of(page, size), genreIds);
 
         return ApiResponse.success(SEARCH_ALL_MOVIE_SUCCESS, dto);
     }

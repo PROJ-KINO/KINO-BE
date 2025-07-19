@@ -19,6 +19,22 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findAllByTitle(String title);
 
     Page<Movie> findByMovieIdIn(List<Long> ids, Pageable pageable);
+    
+    // 장르별 영화 페이지네이션 조회 (N+1 문제 해결을 위한 JOIN FETCH)
+    @Query("SELECT DISTINCT m FROM Movie m " +
+           "JOIN FETCH m.movieGenres mg " +
+           "JOIN FETCH mg.genre g " +
+           "WHERE g.genreId IN :genreIds " +
+           "ORDER BY m.releaseDate DESC")
+    Page<Movie> findByGenreIdsWithGenres(@Param("genreIds") List<Long> genreIds, Pageable pageable);
+    
+    // 모든 장르의 영화 조회 (장르 필터링 없음)
+    @Query("SELECT DISTINCT m FROM Movie m " +
+           "JOIN FETCH m.movieGenres mg " +
+           "JOIN FETCH mg.genre g " +
+           "ORDER BY m.releaseDate DESC")
+    Page<Movie> findAllWithGenresPageable(Pageable pageable);
+    
     @Query("SELECT m FROM Movie m WHERE REPLACE(m.title, ' ', '') LIKE %:title%")
     List<Movie> findAllByTitleIgnoringSpace(@Param("title") String title);
 
