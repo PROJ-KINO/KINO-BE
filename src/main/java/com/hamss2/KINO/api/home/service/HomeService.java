@@ -72,11 +72,11 @@ public class HomeService {
         try {
             homeResponseDto.setBoxOfficeMovieList(boxOfficeService.fetchRealBoxOfficeTop10());
         } catch (Exception e) {
-            throw new InternalServerException("박스오피스 서버 오류");
+            throw new InternalServerException("박스오피스 서버 오류" + e);
         }
 
         // 5. 일별 조회수 TOP 10 영화
-        List<DailyMovieView> topViews = dailymovieViewRepository.findTop10ByViewDateOrderByDailyViewDesc(LocalDate.now());
+        List<DailyMovieView> topViews = dailymovieViewRepository.findByViewDateOrderByDailyViewDesc(LocalDate.now(), PageRequest.of(0, 10));
         List<MovieDto> dailyTopMovieList = topViews.stream()
                 .map(dmv -> {
                     Movie movie = dmv.getMovie();
@@ -99,15 +99,13 @@ public class HomeService {
         // 6. 월별 조회수 TOP 10 영화
         LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
         LocalDate endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
-        List<Movie> monthlyTopMovies = dailymovieViewRepository.findTop10MovieByMonthView(startOfMonth, endOfMonth);
+        List<Movie> monthlyTopMovies = dailymovieViewRepository.findTop10MovieByMonthView(startOfMonth, endOfMonth, PageRequest.of(0, 10));
         List<MovieDto> movies = monthlyTopMovies.stream()
                 .map(this::toMovieDto)
                 .toList();
         homeResponseDto.setMonthlyTopMovieList(movies);
 
         // 7. 사용자 기반 추천 TOP 10 영화
-        homeResponseDto.setRecommendedMovieList(recommendationService.getRecommendations(userId, 10));
-
         try {
             List<MovieDto> recommended = recommendationService.getRecommendations(userId, 10);
             homeResponseDto.setRecommendedMovieList(recommended);

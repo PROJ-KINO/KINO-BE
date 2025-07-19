@@ -5,6 +5,7 @@ import com.hamss2.KINO.api.home.dto.res.MovieDto;
 import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,6 +20,7 @@ public class RecommendationService {
 
     private final WebClient recommenderWebClient;
 
+    @Cacheable(value = "recommendCache", key = "#userId + ':' + #n")
     public List<MovieDto> getRecommendations(Long userId, int n) {
         Map<String, Object> request = new HashMap<>();
         request.put("user_id", userId);
