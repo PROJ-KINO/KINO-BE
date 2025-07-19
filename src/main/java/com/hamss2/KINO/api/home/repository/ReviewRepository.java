@@ -13,12 +13,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 좋아요순 TOP 10 리뷰
     @Query("""
-            SELECT r FROM Review r
-            LEFT JOIN r.reviewLikes rl
-            WHERE r.isDeleted = false
-            GROUP BY r
-            ORDER BY COUNT(rl) DESC, r.createdAt DESC
-        """)
+    SELECT r FROM Review r
+    LEFT JOIN r.reviewLikes rl
+    JOIN FETCH r.movie m
+    WHERE r.isDeleted = false
+    GROUP BY r
+    ORDER BY COUNT(rl) DESC, r.createdAt DESC
+""")
     List<Review> findTop10ByReviewLikes(Pageable pageable);
 
     // 영화별 리뷰 리스트
