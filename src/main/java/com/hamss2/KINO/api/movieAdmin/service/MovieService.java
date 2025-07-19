@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -310,5 +313,41 @@ public class MovieService {
         }
 
         throw new BadRequestException("영화 데이터를 불러올 수 없습니다.");
+    }
+
+    public Page<MovieResDto> allMovies(Pageable pageable, List<Long> genreIds){
+        Page<Movie> movies;
+        
+        // 장르 필터링 여부에 따라 다른 쿼리 사용
+        if (genreIds != null && !genreIds.isEmpty()) {
+            movies = movieRepository.findByGenreIdsWithGenres(genreIds, pageable);
+        } else {
+            movies = movieRepository.findAllWithGenresPageable(pageable);
+        }
+
+        // 이미 JOIN FETCH로 가져온 데이터 활용 (N+1 문제 해결)
+        // List<MovieResDto> movieList = movies.stream()
+        //         .map(m -> new MovieResDto(
+        //                 m.getTitle(),
+        //                 m.getMovieId(),
+        //                 m.getPosterUrl(),
+        //                 m.getMovieGenres().stream()
+        //                         .map(mg -> mg.getGenre().getGenreId())
+        //                         .distinct()
+        //                         .toList()
+        //         )).toList();
+
+        // return new PageImpl<>(movieList, pageable, movies.getTotalElements());
+
+        // 더 간단한 방법: Page.map() 사용
+        return movies.map(m -> new MovieResDto(
+            m.getTitle(),
+            m.getMovieId(),
+            m.getPosterUrl(),
+            m.getMovieGenres().stream()
+                .map(mg -> mg.getGenre().getGenreId())
+                .distinct()
+                .toList()
+        ));
     }
 }
