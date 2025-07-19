@@ -107,7 +107,7 @@ public class ReviewController {
     }
 
     @PutMapping
-    public ResponseEntity<ApiResponse<Boolean>> updateReview(
+    public ResponseEntity<ApiResponse<Long>> updateReview(
         @AuthenticationPrincipal String userId,
         @RequestBody ReviewUpdateReqDto reviewReqDto
     ) {

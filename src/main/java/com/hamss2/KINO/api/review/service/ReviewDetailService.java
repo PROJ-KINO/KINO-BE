@@ -86,7 +86,7 @@ public class ReviewDetailService {
         return response;
     }
 
-    public Long createReview(Long userId, ReviewReqDto reviewReqDto) {
+    public Boolean createReview(Long userId, ReviewReqDto reviewReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
@@ -102,7 +102,7 @@ public class ReviewDetailService {
 
         reviewRepository.save(review);
 
-        return review.getReviewId();
+        return true;
     }
 
     public PageResDto<ReviewResDto> getReviews(Long userId, int page, int size) {
@@ -183,7 +183,7 @@ public class ReviewDetailService {
 
     }
 
-    public Boolean updateReview(Long userId, ReviewUpdateReqDto reviewReqDto) {
+    public Long updateReview(Long userId, ReviewUpdateReqDto reviewReqDto) {
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
@@ -210,6 +210,6 @@ public class ReviewDetailService {
         review.setContent(reviewReqDto.getReviewContent());
         review.setMovie(movie);
 
-        return true;
+        return review.getReviewId();
     }
 }
