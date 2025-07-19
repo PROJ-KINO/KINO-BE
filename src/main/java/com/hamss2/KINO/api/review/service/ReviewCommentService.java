@@ -110,4 +110,40 @@ public class ReviewCommentService {
 
         return true;
     }
+
+
+    public ReviewCommentResDto updateComment(
+        Long userId,
+        Long commentId,
+        CommentReqDto commentReqDto
+    ) {
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new NotFoundException("Comment not found with id: " + commentId));
+
+        if (comment.getIsDeleted()) {
+            throw new BadRequestException(
+                ErrorStatus.COMMENT_ALREADY_DELETED_EXCEPTION.getMessage());
+        }
+
+        if (!comment.getUser().getUserId().equals(userId)) {
+            throw new UnauthorizedException("본인이 작성한 댓글만 수정할 수 있습니다.");
+        }
+
+        comment.updateContent(commentReqDto.getCommentContent());
+
+        return ReviewCommentResDto.builder()
+            .commentId(comment.getCommentId())
+            .commentContent(comment.getContent())
+            .commentCreatedAt(comment.getCreatedAt())
+            .isActive(comment.getIsActive())
+            .writerId(user.getUserId())
+            .writerUserNickname(user.getNickname())
+            .writerUserImage(user.getImage())
+            .isMine(true)
+            .build();
+    }
 }

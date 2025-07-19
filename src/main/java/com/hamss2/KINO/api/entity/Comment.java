@@ -70,4 +70,8 @@ public class Comment {
     public void delete() {
         this.isDeleted = true;
     }
-} 
+
+    public void updateContent(String commentContent) {
+        this.content = commentContent;
+    }
+}

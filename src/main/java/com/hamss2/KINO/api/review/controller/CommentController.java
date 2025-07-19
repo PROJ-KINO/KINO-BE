@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,6 +67,20 @@ public class CommentController {
         Long id = Long.parseLong(userId);
         return ApiResponse.success(SuccessStatus.DELETE_REVIEW_COMMENT_SUCCESS,
             reviewCommentService.deleteComment(id, commentId));
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ApiResponse<ReviewCommentResDto>> updateComment(
+        @AuthenticationPrincipal String userId,
+        @PathVariable Long commentId,
+        @RequestBody CommentReqDto commentReqDto
+    ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+        return ApiResponse.success(SuccessStatus.UPDATE_REVIEW_COMMENT_SUCCESS,
+            reviewCommentService.updateComment(id, commentId, commentReqDto));
     }
 
 }
