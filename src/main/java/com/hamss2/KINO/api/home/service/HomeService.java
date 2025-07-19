@@ -83,7 +83,14 @@ public class HomeService {
                     MovieDto dto = new MovieDto();
                     dto.setMovieId(movie.getMovieId());
                     dto.setTitle(movie.getTitle());
-                    dto.setPosterUrl(movie.getStillCutUrl());
+                    dto.setPlot(movie.getPlot());
+                    dto.setReleaseDate(movie.getReleaseDate());
+                    dto.setRunningTime(movie.getRunningTime());
+                    dto.setAgeRating(movie.getAgeRating());
+                    dto.setGenres(movie.getMovieGenres().stream()
+                            .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+                    dto.setStillCutUrl(movie.getStillCutUrl());
+                    dto.setPosterUrl(movie.getPosterUrl());
                     return dto;
                 })
                 .toList();
@@ -170,7 +177,14 @@ public class HomeService {
         MovieDto movieDto = new MovieDto();
         movieDto.setMovieId(movie.getMovieId());
         movieDto.setTitle(movie.getTitle());
-        movieDto.setPosterUrl(movie.getStillCutUrl());
+        movieDto.setPlot(movie.getPlot());
+        movieDto.setReleaseDate(movie.getReleaseDate());
+        movieDto.setRunningTime(movie.getRunningTime());
+        movieDto.setAgeRating(movie.getAgeRating());
+        movieDto.setGenres(movie.getMovieGenres().stream()
+                .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+        movieDto.setStillCutUrl(movie.getStillCutUrl());
+        movieDto.setPosterUrl(movie.getPosterUrl());
         return movieDto;
     }
 }
