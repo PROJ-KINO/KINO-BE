@@ -70,13 +70,20 @@ public class ReviewDetailService {
         User writer = review.getUser();
 
         ReviewDetailResDto response = ReviewDetailResDto.builder().reviewId(review.getReviewId())
-            .reviewTitle(review.getTitle()).reviewContent(review.getContent())
-            .reviewViewCount(review.getTotalViews()).reviewCommentCount(review.getComments().size())
+            .reviewTitle(review.getTitle()).
+            reviewContent(review.getContent())
+            .reviewViewCount(review.getTotalViews()).
+            reviewCommentCount(review.getComments().size())
             .reviewLikeCount(review.getReviewLikes().size())
             .reviewCreatedAt(review.getCreatedAt())
-            .movieId(movie.getMovieId()).movieTitle(movie.getTitle()).writerId(writer.getUserId())
-            .writerUserNickname(writer.getNickname()).writerUserImage(writer.getImage())
-            .isActive(user.getRole() != Role.BAN_USER).isHeart(review.getReviewLikes().stream()
+            .movieId(movie.getMovieId())
+            .movieTitle(movie.getTitle())
+            .moviePosterUrl(movie.getPosterUrl())
+            .writerId(writer.getUserId())
+            .writerUserNickname(writer.getNickname())
+            .writerUserImage(writer.getImage())
+            .isActive(user.getRole() != Role.BAN_USER)
+            .isHeart(review.getReviewLikes().stream()
                 .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
             .isMine(user.equals(writer)).build();
 
