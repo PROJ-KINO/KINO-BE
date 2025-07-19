@@ -86,7 +86,7 @@ public class ReviewDetailService {
         return response;
     }
 
-    public Boolean createReview(Long userId, ReviewReqDto reviewReqDto) {
+    public Long createReview(Long userId, ReviewReqDto reviewReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
@@ -102,7 +102,7 @@ public class ReviewDetailService {
 
         reviewRepository.save(review);
 
-        return true;
+        return review.getReviewId();
     }
 
     public PageResDto<ReviewResDto> getReviews(Long userId, int page, int size) {
@@ -163,23 +163,34 @@ public class ReviewDetailService {
 //            throw new InternalServerException("Review is already active, cannot update.");
 //        }
 
-        ReviewLike reviewLike = review.getReviewLikes().stream()
-            .filter(like -> like.getUser().getUserId().equals(userId))
-            .findFirst().orElse(null);
+//        reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
+//            .ifPresentOrElse(like -> {
+//                // 이미 좋아요가 눌려있다면 좋아요 취소
+//                reviewLikeRepository.delete(like);
+//            }, () -> {
+//                // 좋아요가 눌려있지 않다면 좋아요 추가
+//                User user = userRepository.findById(userId)
+//                    .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+//                ReviewLike newLike = ReviewLike.createReviewLike(user, review);
+//                reviewLikeRepository.save(newLike);
+//            });
 
-        reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
-            .ifPresentOrElse(like -> {
+        boolean isLiked = reviewLikeRepository.findByUserUserIdAndReviewReviewId(userId, reviewId)
+            .map(like -> {
                 // 이미 좋아요가 눌려있다면 좋아요 취소
                 reviewLikeRepository.delete(like);
-            }, () -> {
+                return true;
+            })
+            .orElseGet(() -> {
                 // 좋아요가 눌려있지 않다면 좋아요 추가
                 User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
                 ReviewLike newLike = ReviewLike.createReviewLike(user, review);
                 reviewLikeRepository.save(newLike);
+                return false;
             });
 
-        return true;
+        return !isLiked;
 
     }
 
