@@ -115,7 +115,7 @@ public class ReviewDetailService {
 
         Page<ReviewResDto> response = reviews.map(review -> {
             return ReviewResDto.builder()
-                .id(review.getReviewId())
+                .reviewId(review.getReviewId())
                 .title(review.getTitle())
                 .content(review.getContent())
                 .viewCount(review.getTotalViews())
