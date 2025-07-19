@@ -47,7 +47,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Boolean>> createComment(
+    public ResponseEntity<ApiResponse<ReviewCommentResDto>> createComment(
         @AuthenticationPrincipal String userId, @RequestBody CommentReqDto commentReqDto) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");

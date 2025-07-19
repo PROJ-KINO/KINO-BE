@@ -64,7 +64,7 @@ public class ReviewCommentService {
         return new PageResDto<>(response);
     }
 
-    public Boolean createComment(Long userId, CommentReqDto commentReqDto) {
+    public ReviewCommentResDto createComment(Long userId, CommentReqDto commentReqDto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
         if (user.getRole().equals(Role.BAN_USER)) {
@@ -78,7 +78,16 @@ public class ReviewCommentService {
         Comment comment = Comment.createComment(commentReqDto.getCommentContent(), user, review);
         commentRepository.save(comment);
 
-        return true;
+        return ReviewCommentResDto.builder()
+            .commentId(comment.getCommentId())
+            .commentContent(comment.getContent())
+            .commentCreatedAt(comment.getCreatedAt())
+            .isActive(comment.getIsActive())
+            .writerId(user.getUserId())
+            .writerUserNickname(user.getNickname())
+            .writerUserImage(user.getImage())
+            .isMine(true)
+            .build();
     }
 
     public Boolean deleteComment(Long userId, String commentId) {
