@@ -35,6 +35,7 @@ public class Review {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)
