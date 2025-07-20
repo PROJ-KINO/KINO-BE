@@ -43,7 +43,7 @@ public class ReviewCommentService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Comment> comments = commentRepository.findByReviewReviewIdOrderByCreatedAtDesc(
+        Page<Comment> comments = commentRepository.findAllByReviewReviewIdAndIsDeletedFalseOrderByCreatedAtDesc(
             reviewId, pageable);
 
         Page<ReviewCommentResDto> response = comments.map(comment -> {
