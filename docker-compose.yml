@@ -45,7 +45,8 @@ services:
       - kino-net
 
 volumes:
-  db:
+  kino-mysql:
+    driver: local
 
 networks:
   kino-net:
