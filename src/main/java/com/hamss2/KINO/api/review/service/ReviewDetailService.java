@@ -122,6 +122,8 @@ public class ReviewDetailService {
             pageable);
 
         Page<ReviewResDto> response = reviews.map(review -> {
+            User writer = review.getUser();
+
             return ReviewResDto.builder()
                 .reviewId(review.getReviewId())
                 .title(review.getTitle())
@@ -130,7 +132,10 @@ public class ReviewDetailService {
                 .createdAt(review.getCreatedAt())
                 .commentCount(review.getComments().size())
                 .likeCount(review.getReviewLikes().size())
-                .isMine(review.getUser().getUserId().equals(user.getUserId()))
+                .writerId(writer.getUserId())
+                .writerNickname(writer.getNickname())
+                .writerImage(writer.getImage())
+                .isMine(writer.getUserId().equals(user.getUserId()))
                 .isHeart(review.getReviewLikes().stream()
                     .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
                 .build();
