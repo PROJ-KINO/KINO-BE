@@ -30,9 +30,9 @@ public class AuthService {
     private final AuthRepository authRepository;
     private final TokenRepository tokenRepository;
     private final JwtUtils jwtUtils;
-    private final KakaoOAuthService kakaoOAuthService;      // 4351093445
-    private final NaverOAuthService naverOAuthService;      // JpUAIsJkfdP_L1J3tsDhoiiGAKQRd3r7-UgkEihV6jg
-    private final GoogleOAuthService googleOAuthService;    // 106429518732962555807
+    private final KakaoOAuthService kakaoOAuthService;
+    private final NaverOAuthService naverOAuthService;
+    private final GoogleOAuthService googleOAuthService;
 
 //    public TokenDto login() {
 //        // 로그인 로직을 구현합니다.
