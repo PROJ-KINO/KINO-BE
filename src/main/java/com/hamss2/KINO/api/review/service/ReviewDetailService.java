@@ -132,9 +132,9 @@ public class ReviewDetailService {
                 .createdAt(review.getCreatedAt())
                 .commentCount(review.getComments().size()) // TODO N+1 문제 가능성
                 .likeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
-                .writerId(writer.getUserId())
-                .writerNickname(writer.getNickname())
-                .writerImage(writer.getImage())
+                .userId(writer.getUserId())
+                .userNickname(writer.getNickname())
+                .userImage(writer.getImage())
                 .isMine(writer.getUserId().equals(user.getUserId()))
                 .isHeart(review.getReviewLikes().stream()
                     .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
