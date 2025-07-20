@@ -18,9 +18,9 @@ public class ReviewResDto {
     private Integer likeCount;
     private Integer commentCount;
 
-    private Long writerId;
-    private String writerNickname;
-    private String writerImage;
+    private Long userId;
+    private String userNickname;
+    private String userImage;
 
     private Boolean isMine;
     private Boolean isHeart;
