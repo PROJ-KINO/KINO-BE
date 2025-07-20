@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, Long> {
     // 오늘 기준 TOP 10 조회수
     @Query("""
-     SELECT d FROM DailyMovieView d JOIN FETCH d.movie
+    SELECT d FROM DailyMovieView d
+    JOIN d.movie m
     WHERE d.viewDate = :date
     ORDER BY d.dailyView DESC
     """)
@@ -22,7 +23,7 @@ public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, 
 
     @Query("""
     SELECT d.movie FROM DailyMovieView d
-    WHERE d.viewDate BETWEEN :start AND :end GROUP BY d.movie
+    WHERE d.viewDate BETWEEN :start AND :end GROUP BY d.movie선
     ORDER BY SUM(d.dailyView) DESC
     """)
     List<Movie> findTop10MovieByMonthView(@Param("start") LocalDate start, @Param("end") LocalDate end, Pageable pageable);
