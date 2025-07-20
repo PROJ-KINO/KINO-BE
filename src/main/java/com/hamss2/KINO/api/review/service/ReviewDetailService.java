@@ -118,9 +118,12 @@ public class ReviewDetailService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Review> reviews = reviewRepository.findAllByIsDeletedFalseOrderByCreatedAtDesc(
+            pageable);
 
         Page<ReviewResDto> response = reviews.map(review -> {
+            User writer = review.getUser();
+
             return ReviewResDto.builder()
                 .reviewId(review.getReviewId())
                 .title(review.getTitle())
