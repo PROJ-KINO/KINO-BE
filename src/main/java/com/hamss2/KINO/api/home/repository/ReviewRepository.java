@@ -31,5 +31,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Review> findAllByIsDeletedFalseOrderByCreatedAtDesc(Pageable pageable);
+
     Optional<Review> findByReviewId(Long reviewId);
 }
