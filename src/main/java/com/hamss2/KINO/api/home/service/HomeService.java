@@ -46,7 +46,8 @@ public class HomeService {
         HomeResponseDto homeResponseDto = new HomeResponseDto();
 
         // 1. 상단 티저 영화
-        Movie teaserMovie = movieRepository.findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotOrderByReleaseDateDesc("");
+        Movie teaserMovie = movieRepository
+                .findFirstByTeaserUrlIsNotNullAndPlotIsNotNullAndPlotNotAndReleaseDateLessThanEqualOrderByReleaseDateDesc("", LocalDate.now());
         if (teaserMovie != null) {
             homeResponseDto.setTeaser(toTeaserMovieDto(teaserMovie));
         }
