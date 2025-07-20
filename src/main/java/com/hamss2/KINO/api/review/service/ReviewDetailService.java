@@ -73,8 +73,8 @@ public class ReviewDetailService {
             .reviewTitle(review.getTitle()).
             reviewContent(review.getContent())
             .reviewViewCount(review.getTotalViews()).
-            reviewCommentCount(review.getComments().size())
-            .reviewLikeCount(review.getReviewLikes().size())
+            reviewCommentCount(review.getComments().size()) // TODO N+1 문제 가능성
+            .reviewLikeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
             .reviewCreatedAt(review.getCreatedAt())
             .movieId(movie.getMovieId())
             .movieTitle(movie.getTitle())
@@ -127,9 +127,12 @@ public class ReviewDetailService {
                 .content(review.getContent())
                 .viewCount(review.getTotalViews())
                 .createdAt(review.getCreatedAt())
-                .commentCount(review.getComments().size())
-                .likeCount(review.getReviewLikes().size())
-                .isMine(review.getUser().getUserId().equals(user.getUserId()))
+                .commentCount(review.getComments().size()) // TODO N+1 문제 가능성
+                .likeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
+                .writerId(writer.getUserId())
+                .writerNickname(writer.getNickname())
+                .writerImage(writer.getImage())
+                .isMine(writer.getUserId().equals(user.getUserId()))
                 .isHeart(review.getReviewLikes().stream()
                     .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
                 .build();
