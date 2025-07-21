@@ -23,7 +23,7 @@ public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, 
 
     @Query("""
     SELECT d.movie FROM DailyMovieView d
-    WHERE d.viewDate BETWEEN :start AND :end GROUP BY d.movie선
+    WHERE d.viewDate BETWEEN :start AND :end GROUP BY d.movie
     ORDER BY SUM(d.dailyView) DESC
     """)
     List<Movie> findTop10MovieByMonthView(@Param("start") LocalDate start, @Param("end") LocalDate end, Pageable pageable);
