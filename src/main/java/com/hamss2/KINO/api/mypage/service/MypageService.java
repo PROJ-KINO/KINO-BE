@@ -108,6 +108,7 @@ public class MypageService {
         
         List<ShortReview> shortReviews = user.getShortReviews();
         MypageMainResDto.ShortReviewDto latestShortReviewDto = shortReviews.stream()
+                .filter(shortReview -> !shortReview.getIsDeleted())
                 .max(Comparator.comparing(ShortReview::getCreatedAt))
                 .map(sr -> new MypageMainResDto.ShortReviewDto(
                         sr.getShortReviewId(),
@@ -121,6 +122,7 @@ public class MypageService {
         
         List<Review> reviews = user.getReviews();
         MypageMainResDto.ReviewDto latestReviewDto = reviews.stream()
+                .filter(review -> !review.getIsDeleted())
                 .max(Comparator.comparing(Review::getCreatedAt))
                 .map(r -> new MypageMainResDto.ReviewDto(
                         r.getReviewId(),
@@ -175,6 +177,7 @@ public class MypageService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         
         List<MypageReviewResDto.ReviewDto> reviewDtos = user.getReviews().stream()
+                .filter(review -> !review.getIsDeleted())
                 .map(review -> new MypageReviewResDto.ReviewDto(
                         review.getReviewId(),
                         review.getTitle(),
@@ -195,6 +198,7 @@ public class MypageService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         
         List<MypageShortReviewResDto.ShortReviewDto> shortReviewDtos = user.getShortReviews().stream()
+                .filter(shortReview -> !shortReview.getIsDeleted())
                 .map(shortReview -> new MypageShortReviewResDto.ShortReviewDto(
                         shortReview.getShortReviewId(),
                         shortReview.getContent(),
