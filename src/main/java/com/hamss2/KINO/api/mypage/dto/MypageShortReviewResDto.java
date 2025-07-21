@@ -23,5 +23,6 @@ public class MypageShortReviewResDto {
         private String movieTitle;
         private LocalDateTime createdAt;
         private int likes;
+        private Long movieId;
     }
 }

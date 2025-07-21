@@ -201,7 +201,8 @@ public class MypageService {
                         shortReview.getRating(),
                         shortReview.getMovie().getTitle(),
                         shortReview.getCreatedAt(),
-                        shortReview.getShortReviewLikes().size()
+                        shortReview.getShortReviewLikes().size(),
+                        shortReview.getMovie().getMovieId()
                 ))
                 .collect(Collectors.toList());
         
