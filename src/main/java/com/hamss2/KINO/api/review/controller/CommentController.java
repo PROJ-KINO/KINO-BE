@@ -1,6 +1,7 @@
 package com.hamss2.KINO.api.review.controller;
 
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.review.dto.CommentReqDto;
 import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewCommentResDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,11 +33,13 @@ public class CommentController {
     private final ReviewCommentService reviewCommentService;
 
     @GetMapping("/{reviewId}")
+    @Translate
     public ResponseEntity<ApiResponse<PageResDto<ReviewCommentResDto>>> getComments(
         @AuthenticationPrincipal String userId,
         @PathVariable Long reviewId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "30") int size
+        @RequestParam(defaultValue = "30") int size,
+        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");

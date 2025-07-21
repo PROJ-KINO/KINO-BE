@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.review.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.review.dto.PageResDto;
 import com.hamss2.KINO.api.review.dto.ReviewDetailResDto;
 import com.hamss2.KINO.api.review.dto.ReviewReqDto;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,9 +36,11 @@ public class ReviewController {
 
     // 리뷰 작성 페이지로 이동
     @GetMapping
+    @Translate
     public ResponseEntity<ApiResponse<WritingReviewResDto>> startReview(
         @AuthenticationPrincipal String userId,
-        @RequestParam(required = false) Long movieId
+        @RequestParam(required = false) Long movieId,
+        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
@@ -64,9 +68,11 @@ public class ReviewController {
 
     // 리뷰 페이지
     @GetMapping("/{reviewId}")
+    @Translate
     public ResponseEntity<ApiResponse<ReviewDetailResDto>> getReviewDetail(
         @AuthenticationPrincipal String userId,
-        @PathVariable Long reviewId
+        @PathVariable Long reviewId,
+        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
@@ -78,10 +84,12 @@ public class ReviewController {
 
     // 리뷰 목록 페이지(페이지네이션)
     @GetMapping("/reviews")
+    @Translate
     public ResponseEntity<ApiResponse<PageResDto<ReviewResDto>>> getReviews(
         @AuthenticationPrincipal String userId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "30") int size
+        @RequestParam(defaultValue = "30") int size,
+        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
