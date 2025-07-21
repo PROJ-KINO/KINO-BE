@@ -4,6 +4,7 @@ import com.hamss2.KINO.api.entity.Movie;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,4 +43,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("SELECT DISTINCT m FROM Movie m JOIN FETCH m.movieGenres mg JOIN FETCH mg.genre")
     List<Movie> findAllWithGenres();
+
+    @Modifying
+    @Query("UPDATE Movie m SET m.totalView = m.totalView + 1 WHERE m.movieId = :movieId")
+    void incrementTotalView(@Param("movieId") Long movieId);
 }

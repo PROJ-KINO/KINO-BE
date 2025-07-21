@@ -64,7 +64,7 @@ public class MovieDetailService {
     }
 
     // 작품 정보
-    @Transactional(readOnly = true)
+    @Transactional
     public MovieDetailDto getMovieDetail(Long movieId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
@@ -116,22 +116,13 @@ public class MovieDetailService {
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
 
             // 누적 조회수 증가
-            movie.setTotalView(movie.getTotalView() + 1);
+//            movie.setTotalView(movie.getTotalView() + 1);
+            movieRepository.incrementTotalView(movieId);
 
             // 일간 조회수 증가
-            LocalDate today = LocalDate.now();
-            DailyMovieView todayView = dailyMovieViewRepository
-                    .findByMovieAndViewDate(movie, today)
-                    .orElseGet(() -> {
-                        DailyMovieView newView = new DailyMovieView();
-                        newView.setMovie(movie);
-                        newView.setViewDate(today);
-                        newView.setDailyView(0);
-                        return newView;
-                    });
-            todayView.setDailyView(todayView.getDailyView() + 1);
-            dailyMovieViewRepository.save(todayView);
-            
+            dailyMovieViewRepository.upsertDailyView(movieId, LocalDate.now());
+
+
         } catch (Exception e) {
             // 조회수 증가 실패 로그 (서비스에 영향 없음)
             System.err.println("조회수 증가 중 오류 발생 - 영화ID: " + movieId + ", 오류: " + e.getMessage());

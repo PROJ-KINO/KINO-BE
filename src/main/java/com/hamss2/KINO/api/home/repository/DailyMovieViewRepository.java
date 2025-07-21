@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -35,4 +36,8 @@ public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, 
         @Param("end") LocalDate end, Pageable pageable);
 
     Optional<DailyMovieView> findByMovieAndViewDate(Movie movie, LocalDate viewDate);
+
+    @Modifying
+    @Query(value = "INSERT INTO daily_movie_view (movie_id, view_date, daily_view, created_at) VALUES (:movieId, :viewDate, 1, NOW()) ON DUPLICATE KEY UPDATE daily_view = daily_view + 1", nativeQuery = true)
+    void upsertDailyView(@Param("movieId") Long movieId, @Param("viewDate") LocalDate viewDate);
 }
