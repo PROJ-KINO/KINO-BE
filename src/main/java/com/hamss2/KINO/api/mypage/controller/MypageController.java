@@ -26,29 +26,57 @@ public class MypageController {
     private final FollowRepository followRepository;
 
     @GetMapping("/main")
-    public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(@AuthenticationPrincipal String userId) {
-        MypageMainResDto mainResDto = mypageService.mypage(Long.valueOf(userId));
+    public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(
+            @AuthenticationPrincipal String userId,
+            @RequestParam (required = false) Long targetId
+            ) {
+        MypageMainResDto mainResDto = null;
+
+        if(Long.valueOf(userId) == targetId) {
+            mainResDto = mypageService.mypage(Long.valueOf(userId));
+        } else mainResDto = mypageService.mypage(targetId);
+
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_MAIN_SUCCESS, mainResDto);
     }
 
     @GetMapping("/shortReview")
-    public ResponseEntity<ApiResponse<MypageShortReviewResDto>> shortReview(@AuthenticationPrincipal String userId) {
-        MypageShortReviewResDto shortReviewResDto = mypageService.shortReview(Long.valueOf(userId));
+    public ResponseEntity<ApiResponse<MypageShortReviewResDto>> shortReview(
+            @AuthenticationPrincipal String userId,
+            @RequestParam (required = false) Long targetId
+    ) {
+        MypageShortReviewResDto shortReviewResDto = null;
+
+        if(Long.valueOf(userId) == targetId) {
+            shortReviewResDto = mypageService.shortReview(Long.valueOf(userId));
+        } else shortReviewResDto = mypageService.shortReview(targetId);
+
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_SHORTREVIEW_SUCCESS, shortReviewResDto);
     }
 
     @GetMapping("/review")
-    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(@AuthenticationPrincipal String userId) {
-        MypageReviewResDto reviewResDto = mypageService.review(Long.valueOf(userId));
+    public ResponseEntity<ApiResponse<MypageReviewResDto>> review(
+            @AuthenticationPrincipal String userId,
+            @RequestParam (required = false) Long targetId
+    ) {
+        MypageReviewResDto reviewResDto = null;
+        if(Long.valueOf(userId) == targetId) {
+            reviewResDto = mypageService.review(Long.valueOf(userId));
+        } else reviewResDto = mypageService.review(targetId);
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_REVIEW_SUCCESS, reviewResDto);
     }
 
     @GetMapping("/myPickMovie")
-    public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(@AuthenticationPrincipal String userId) {
-        MypagePickMovieResDto pickMovieResDto = mypageService.myPickMovie(Long.valueOf(userId));
+    public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(
+            @AuthenticationPrincipal String userId,
+            @RequestParam (required = false) Long targetId
+    ) {
+        MypagePickMovieResDto pickMovieResDto = null;
+        if(Long.valueOf(userId) == targetId) {
+            pickMovieResDto = mypageService.myPickMovie(Long.valueOf(userId));
+        } else pickMovieResDto = mypageService.myPickMovie(targetId);
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_PICKMOVIE_SUCCESS, pickMovieResDto);
     }
