@@ -173,6 +173,14 @@ public class HomeService {
         reviewDto.setContent(review.getContent());
         reviewDto.setMovieId(review.getMovie().getMovieId());
         reviewDto.setMovieTitle(review.getMovie().getTitle());
+        reviewDto.setPlot(review.getMovie().getPlot());
+        reviewDto.setReleaseDate(review.getMovie().getReleaseDate());
+        reviewDto.setRunningTime(review.getMovie().getRunningTime());
+        reviewDto.setAgeRating(review.getMovie().getAgeRating());
+        reviewDto.setGenres(review.getMovie().getMovieGenres().stream()
+                .map(mg -> mg.getGenre().getGenreName()).distinct().collect(Collectors.toList()));
+        reviewDto.setPosterUrl(review.getMovie().getPosterUrl());
+        reviewDto.setStillCutUrl(review.getMovie().getStillCutUrl());
         return reviewDto;
     }
 
