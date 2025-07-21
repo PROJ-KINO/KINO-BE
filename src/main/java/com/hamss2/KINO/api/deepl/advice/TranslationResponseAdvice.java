@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.deepl.advice;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.deepl.service.DeeplService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.*;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -26,7 +27,8 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
                             Class<? extends HttpMessageConverter<?>> converterType) {
         log.info("supports() called: converterType={}", converterType);
 
-        return true;
+        return returnType.getContainingClass().isAnnotationPresent(Translate.class)
+                || returnType.hasMethodAnnotation(Translate.class);
     }
 
     @Override
@@ -41,42 +43,82 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
         List<String> langs = request.getHeaders().getOrDefault("X-Target-Lang",
                 request.getHeaders().getOrDefault("Accept-Language", List.of("EN")));
         String targetLang = langs.get(0).toUpperCase();
-        log.info("============================== targetLang : " + targetLang + "=============================");
         if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7")) return body;
         log.info("============================== targetLang : " + targetLang + "=============================");
-        translateFields(body, targetLang);
+        
+        // 순환 참조 방지를 위한 방문 기록
+        Set<Object> visited = new HashSet<>();
+        translateFields(body, targetLang, visited);
         return body;
     }
 
-    private void translateFields(Object obj, String targetLang) {
+    private void translateFields(Object obj, String targetLang, Set<Object> visited) {
         if (obj == null) return;
+        
+        // 순환 참조 방지: 이미 방문한 객체는 스킵
+        if (visited.contains(obj)) {
+            log.info("🔄 Circular reference detected, skipping: {}", obj.getClass().getName());
+            return;
+        }
+        visited.add(obj);
+
+        log.info("🔍 Analyzing object: {} (class: {})", 
+                obj.toString().length() > 100 ? obj.toString().substring(0, 100) + "..." : obj.toString(), 
+                obj.getClass().getName());
 
         if (obj instanceof List<?>) {
-            for (Object item : (List<?>) obj) translateFields(item, targetLang);
+            log.info("📝 Found List with {} items", ((List<?>) obj).size());
+            for (Object item : (List<?>) obj) translateFields(item, targetLang, visited);
             return;
         }
         if (obj instanceof java.util.Map<?,?>) {
-            for (Object v : ((java.util.Map<?,?>) obj).values()) translateFields(v, targetLang);
+            log.info("📝 Found Map with {} entries", ((java.util.Map<?,?>) obj).size());
+            for (Object v : ((java.util.Map<?,?>) obj).values()) translateFields(v, targetLang, visited);
             return;
         }
+        
         Class<?> cls = obj.getClass();
-        if (isPrimitiveOrWrapper(cls) || cls.isEnum() || cls.getName().startsWith("java.")) {
+        if (isPrimitiveOrWrapper(cls) || cls.isEnum() || cls.getName().startsWith("java.lang") 
+            || (cls.getName().startsWith("org.springframework") && !cls.getName().startsWith("org.springframework.data"))) {
+            log.info("⚠️ Skipping class: {} (primitive/wrapper/enum/java/spring class)", cls.getName());
             return;
         }
 
-        for (Field f : cls.getDeclaredFields()) {
+        // 현재 클래스와 부모 클래스의 모든 필드 수집
+        List<Field> allFields = new ArrayList<>();
+        Class<?> currentClass = cls;
+        while (currentClass != null && !currentClass.getName().startsWith("java.")) {
+            allFields.addAll(Arrays.asList(currentClass.getDeclaredFields()));
+            currentClass = currentClass.getSuperclass();
+        }
+        
+        log.info("🔧 Processing {} fields in class: {} (including parent classes)", allFields.size(), cls.getName());
+        for (Field f : allFields) {
             f.setAccessible(true);
             try {
                 Object val = f.get(obj);
+                if (val == null) continue;
+                
+                String fieldInfo = val.toString().length() > 50 ? val.toString().substring(0, 50) + "..." : val.toString();
+                log.info("🔎 Field '{}' ({}): {}", f.getName(), f.getType().getSimpleName(), fieldInfo);
+                
                 if (val instanceof String s && !s.isBlank()) {
                     String translated = deeplService.translate(s, targetLang);
-                    log.info("Translating '{}' to '{}' -> '{}'", s, targetLang, translated);
+                    log.info("✅ Translating '{}' to '{}' -> '{}'", s, targetLang, translated);
                     f.set(obj, translated);
                 } else if (val != null) {
-                    translateFields(val, targetLang);
+                    log.info("🔄 Recursing into field: {}", f.getName());
+                    translateFields(val, targetLang, visited);
                 }
-            } catch (IllegalAccessException ignored) {}
+            } catch (IllegalAccessException e) {
+                log.warn("❌ Cannot access field: {}", f.getName());
+            } catch (Exception e) {
+                log.warn("⚠️ Error processing field {}: {}", f.getName(), e.getMessage());
+            }
         }
+        
+        // 처리 완료 후 방문 기록에서 제거 (다른 경로로 다시 방문 가능하도록)
+        visited.remove(obj);
     }
 
     private boolean isPrimitiveOrWrapper(Class<?> cls) {

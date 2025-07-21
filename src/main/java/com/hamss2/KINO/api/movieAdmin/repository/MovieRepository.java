@@ -26,14 +26,14 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
            "JOIN FETCH m.movieGenres mg " +
            "JOIN FETCH mg.genre g " +
            "WHERE g.genreId IN :genreIds " +
-           "ORDER BY m.releaseDate DESC")
+           "ORDER BY m.totalView DESC, m.releaseDate DESC")
     Page<Movie> findByGenreIdsWithGenres(@Param("genreIds") List<Long> genreIds, Pageable pageable);
     
     // 모든 장르의 영화 조회 (장르 필터링 없음)
     @Query("SELECT DISTINCT m FROM Movie m " +
            "JOIN FETCH m.movieGenres mg " +
            "JOIN FETCH mg.genre g " +
-           "ORDER BY m.releaseDate DESC")
+           "ORDER BY m.totalView DESC, m.releaseDate DESC")
     Page<Movie> findAllWithGenresPageable(Pageable pageable);
     
     @Query("SELECT m FROM Movie m WHERE REPLACE(m.title, ' ', '') LIKE %:title%")

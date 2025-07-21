@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @Slf4j
-//@Translate
 public class AdminController {
 
     private final AdminService adminService;
