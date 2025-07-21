@@ -22,6 +22,10 @@ public class ReviewResDto {
     private String userNickname;
     private String userImage;
 
+    private Long movieId;
+    private String movieTitle;
+    private String movieImage;
+
     private Boolean isMine;
     private Boolean isHeart;
 

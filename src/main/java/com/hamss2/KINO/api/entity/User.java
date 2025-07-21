@@ -53,7 +53,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String providerId;
 
     @Column(nullable = false)
