@@ -1,6 +1,5 @@
 package com.hamss2.KINO.api.deepl.advice;
 
-import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.deepl.service.DeeplService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,7 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
                             Class<? extends HttpMessageConverter<?>> converterType) {
         log.info("supports() called: converterType={}", converterType);
 
-        return returnType.getContainingClass().isAnnotationPresent(Translate.class)
-                || returnType.hasMethodAnnotation(Translate.class);
+        return true;
     }
 
     @Override
