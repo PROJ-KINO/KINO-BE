@@ -1,6 +1,5 @@
 package com.hamss2.KINO.api.deepl.advice;
 
-import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.deepl.service.DeeplService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
