@@ -76,13 +76,14 @@ public class ReviewDetailService {
             reviewCommentCount(review.getComments().size()) // TODO N+1 문제 가능성
             .reviewLikeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
             .reviewCreatedAt(review.getCreatedAt())
+            .isReviewActive(review.getIsActive())
             .movieId(movie.getMovieId())
             .movieTitle(movie.getTitle())
             .moviePosterUrl(movie.getPosterUrl())
             .writerId(writer.getUserId())
             .writerUserNickname(writer.getNickname())
             .writerUserImage(writer.getImage())
-            .isActive(user.getRole() != Role.BAN_USER)
+            .isUserActive(user.getRole() != Role.BAN_USER)
             .isHeart(review.getReviewLikes().stream()
                 .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
             .isMine(user.equals(writer)).build();

@@ -17,6 +17,7 @@ public class ReviewDetailResDto {
     private LocalDateTime reviewCreatedAt;
     private Integer reviewLikeCount;
     private Integer reviewCommentCount;
+    private Boolean isReviewActive;
 
     private Long movieId;
     private String movieTitle;
@@ -26,7 +27,7 @@ public class ReviewDetailResDto {
     private String writerUserNickname;
     private String writerUserImage;
 
-    private Boolean isActive; // 사용자가 활성화된 상태인지
+    private Boolean isUserActive; // 사용자가 활성화된 상태인지
     private Boolean isMine; // 사용자가 작성자인지 여부
     private Boolean isHeart; // 사용자가 좋아요를 눌렀는지 여부
 
