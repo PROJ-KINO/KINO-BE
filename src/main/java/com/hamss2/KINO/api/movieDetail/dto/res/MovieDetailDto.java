@@ -18,7 +18,7 @@ public class MovieDetailDto {
     private LocalDate releaseDate;
     private int runningTime;
     private String ageRating;
-    private List<String> genres;
+    private List<Long> genreIds;
     private String director;
     private List<ActorDto> actors;
     private List<OttDto> otts;
