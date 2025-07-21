@@ -123,6 +123,7 @@ public class ReviewDetailService {
 
         Page<ReviewResDto> response = reviews.map(review -> {
             User writer = review.getUser();
+            Movie movie = review.getMovie();
 
             return ReviewResDto.builder()
                 .reviewId(review.getReviewId())
@@ -135,6 +136,9 @@ public class ReviewDetailService {
                 .userId(writer.getUserId())
                 .userNickname(writer.getNickname())
                 .userImage(writer.getImage())
+                .movieId(movie.getMovieId())
+                .movieTitle(movie.getTitle())
+                .movieImage(movie.getPosterUrl())
                 .isMine(writer.getUserId().equals(user.getUserId()))
                 .isHeart(review.getReviewLikes().stream()
                     .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
