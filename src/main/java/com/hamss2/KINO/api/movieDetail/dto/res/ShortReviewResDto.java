@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.movieDetail.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,4 +19,6 @@ public class ShortReviewResDto {
     private boolean mine;
     private int likeCount;
     private boolean liked; // 내가 좋아요 눌렀는지
+    @JsonProperty("isReviewActive")
+    private boolean reviewActive;
 }

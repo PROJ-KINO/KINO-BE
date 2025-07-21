@@ -176,6 +176,7 @@ public class ShortReviewService {
                 .mine(review.getUser().getUserId().equals(myUserId))
                 .likeCount(review.getShortReviewLikes() == null ? 0 : review.getShortReviewLikes().size())
                 .liked(myLikedReviewIds != null && myLikedReviewIds.contains(review.getShortReviewId()))
+                .reviewActive(review.getIsActive())
                 .build();
     }
 }
