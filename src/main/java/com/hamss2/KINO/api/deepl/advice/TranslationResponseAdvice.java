@@ -43,7 +43,7 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
         List<String> langs = request.getHeaders().getOrDefault("X-Target-Lang",
                 request.getHeaders().getOrDefault("Accept-Language", List.of("EN")));
         String targetLang = langs.get(0).toUpperCase();
-        if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7")) return body;
+        if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7") || targetLang.equals("KO")) return body;
         log.info("============================== targetLang : " + targetLang + "=============================");
         
         // 순환 참조 방지를 위한 방문 기록
