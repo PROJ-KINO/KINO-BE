@@ -35,6 +35,7 @@ public class KakaoOAuthService {
             .queryParam("client_id", kakaoClientId)
             .queryParam("redirect_uri", kakaoRedirectUri)
             .queryParam("scope", "profile_nickname,profile_image,account_email")
+            .queryParam("prompt", "login") // 사용자에게 권한을 재확인하도록 요청
             .build()
             .toUriString();
 

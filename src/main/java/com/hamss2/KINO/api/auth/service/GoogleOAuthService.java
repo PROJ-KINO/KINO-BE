@@ -35,6 +35,7 @@ public class GoogleOAuthService {
             .queryParam("response_type", "code")
             .queryParam("scope", "email profile") // 필요한 scope를 추가 email%20profile
             .queryParam("access_type", "offline") // refresh token을 원할 경우 access_type을 offline으로 설정
+            .queryParam("prompt", "login") // 사용자에게 권한을 재확인하도록 요청
             .build()
             .toUriString();
     }
