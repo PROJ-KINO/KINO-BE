@@ -1,11 +1,6 @@
 package com.hamss2.KINO.api.admin.service;
 
-import com.hamss2.KINO.api.admin.dto.AdminReportCommentDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReportReviewDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReportShortReviewDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReqDto;
-import com.hamss2.KINO.api.admin.dto.AdminReviewResDto;
-import com.hamss2.KINO.api.admin.dto.AdminUserResDto;
+import com.hamss2.KINO.api.admin.dto.*;
 import com.hamss2.KINO.api.admin.repository.CommentRepository;
 import com.hamss2.KINO.api.admin.repository.ReportRepository;
 import com.hamss2.KINO.api.admin.repository.UserBanRepoitory;
@@ -169,6 +164,33 @@ public class AdminService {
 
             userBanRepository.save(userBan);
         });
+    }
+
+    public List<BanUserMonthStatDto> getMonthlyBanUserStat(LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null) {
+            throw new BadRequestException("조회 기간의 시작과 끝을 모두 입력해야 합니다.");
+        }
+        if (start.isAfter(end)) {
+            throw new BadRequestException("시작일은 종료일보다 빠르거나 같아야 합니다.");
+        }
+
+        List<Object[]> rows = userBanRepository.countBannedUsersByMonth(start, end);
+
+        // Object[] to DTO 변환
+        return rows.stream()
+                .map(row -> new BanUserMonthStatDto(
+                        (String) row[0],           // "YYYY-MM"
+                        ((Number) row[1]).intValue() // banCount
+                )).toList();
+    }
+
+    public List<GenreShortReviewStatDto> getGenreShortReviewRank() {
+        List<Object[]> rows = shortReviewRepository.findGenreByShortReviewCount();
+        return rows.stream()
+                .map(row -> new GenreShortReviewStatDto(
+                        (String) row[0],
+                        ((Number) row[1]).intValue()
+                )).toList();
     }
 
 }

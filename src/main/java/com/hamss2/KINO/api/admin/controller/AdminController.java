@@ -1,19 +1,17 @@
 package com.hamss2.KINO.api.admin.controller;
 
-import com.hamss2.KINO.api.admin.dto.AdminReportCommentDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReportReviewDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReportShortReviewDetailResDto;
-import com.hamss2.KINO.api.admin.dto.AdminReqDto;
-import com.hamss2.KINO.api.admin.dto.AdminReviewResDto;
-import com.hamss2.KINO.api.admin.dto.AdminUserResDto;
+import com.hamss2.KINO.api.admin.dto.*;
 import com.hamss2.KINO.api.admin.service.AdminService;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,5 +100,18 @@ public class AdminController {
             adminService.process(adminReqDto);
         }
         return ApiResponse.success_only(SuccessStatus.PROCESS_REPORT_SUCCESS);
+    }
+
+    @GetMapping("/stats/banuser/month")
+    public ResponseEntity<ApiResponse<List<BanUserMonthStatDto>>> getBanUserMonthStat(
+            @RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_BANUSER_MONTH_STAT_SUCCESS, adminService.getMonthlyBanUserStat(start, end));
+    }
+
+    @GetMapping("/stats/shortreview/genre")
+    public ResponseEntity<ApiResponse<List<GenreShortReviewStatDto>>> getGenreShortReviewRank() {
+        List<GenreShortReviewStatDto> result = adminService.getGenreShortReviewRank();
+        return ApiResponse.success(SuccessStatus.SEARCH_ADMIN_SHORTREVIEW_GENRE_STAT_SUCCESS, result);
     }
 }
