@@ -58,7 +58,7 @@ public class MovieDetailController {
     // 작품정보 탭
     @GetMapping("/{movieId}/info")
     @Translate
-    public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieInfo(@PathVariable Long movieId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+    public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieInfo(@PathVariable Long movieId) {
         MovieDetailDto movieDetail = movieDetailService.getMovieDetail(movieId);
         return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_DETAIL_SUCCESS, movieDetail);
     }
@@ -68,7 +68,7 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
     (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
         Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size,
             Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
@@ -124,7 +124,7 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
         @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
         log.info("========================== userId : " + userId + "==========================");
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size,
             Long.valueOf(userId));

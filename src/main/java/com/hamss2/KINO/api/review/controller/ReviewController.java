@@ -39,8 +39,7 @@ public class ReviewController {
     @Translate
     public ResponseEntity<ApiResponse<WritingReviewResDto>> startReview(
         @AuthenticationPrincipal String userId,
-        @RequestParam(required = false) Long movieId,
-        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
+        @RequestParam(required = false) Long movieId
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
@@ -71,8 +70,7 @@ public class ReviewController {
     @Translate
     public ResponseEntity<ApiResponse<ReviewDetailResDto>> getReviewDetail(
         @AuthenticationPrincipal String userId,
-        @PathVariable Long reviewId,
-        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
+        @PathVariable Long reviewId
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");
@@ -88,8 +86,7 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<PageResDto<ReviewResDto>>> getReviews(
         @AuthenticationPrincipal String userId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "30") int size,
-        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
+        @RequestParam(defaultValue = "30") int size
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");

@@ -38,8 +38,7 @@ public class CommentController {
         @AuthenticationPrincipal String userId,
         @PathVariable Long reviewId,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "30") int size,
-        @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
+        @RequestParam(defaultValue = "30") int size
     ) {
         if (userId == null || userId.isEmpty()) {
             throw new BadRequestException("userId is required");

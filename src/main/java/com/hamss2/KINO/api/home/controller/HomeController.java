@@ -23,8 +23,7 @@ public class HomeController {
 
     @Translate
     @GetMapping("/home")
-    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(@AuthenticationPrincipal String userId
-                                                                    ,@RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(@AuthenticationPrincipal String userId) {
         HomeResponseDto homeResponseDto = homeService.getHomeData(Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEND_HOME_SUCCESS, homeResponseDto);
     }
@@ -37,7 +36,7 @@ public class HomeController {
 
     @Translate
     @GetMapping("/movies/search")
-    public ResponseEntity<ApiResponse<List<MovieDto>>> searchMovies(@RequestParam String keyword, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
+    public ResponseEntity<ApiResponse<List<MovieDto>>> searchMovies(@RequestParam String keyword) {
         List<MovieDto> result = homeService.searchMovies(keyword);
         return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_SUCCESS, result);
     }

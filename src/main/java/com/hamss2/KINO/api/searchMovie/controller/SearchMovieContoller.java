@@ -41,8 +41,7 @@ public class SearchMovieContoller {
     public ResponseEntity<ApiResponse<Page<MovieResDto>>> searchAllMovies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
-            @RequestParam(required = false) List<Long> genreIds,
-            @RequestHeader(value = "X-Target-Lang", required = false) String targetLang
+            @RequestParam(required = false) List<Long> genreIds
             ) {
         Page<MovieResDto> dto = movieService.allMovies(PageRequest.of(page, size), genreIds);
 

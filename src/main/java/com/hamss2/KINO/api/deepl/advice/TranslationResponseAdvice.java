@@ -38,17 +38,34 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request,
                                   ServerHttpResponse response) {
-        if (body == null) return null;
-        // 번역 타겟 언어 추출
-        List<String> langs = request.getHeaders().getOrDefault("X-Target-Lang",
-                request.getHeaders().getOrDefault("Accept-Language", List.of("EN")));
-        String targetLang = langs.get(0).toUpperCase();
-        if(targetLang.equals("KO-KR,KO;Q=0.9,EN-US;Q=0.8,EN;Q=0.7") || targetLang.equals("KO")) return body;
-        log.info("============================== targetLang : " + targetLang + "=============================");
+        if (body == null) return body;
         
-        // 순환 참조 방지를 위한 방문 기록
-        Set<Object> visited = new HashSet<>();
-        translateFields(body, targetLang, visited);
+        // X-Target-Lang 헤더 추출
+        List<String> langHeaders = request.getHeaders().get("X-Target-Lang");
+        String targetLang = "";
+        
+        if (langHeaders != null && !langHeaders.isEmpty()) {
+            targetLang = langHeaders.get(0).trim().toUpperCase();
+        }
+        
+        log.info("🌍 X-Target-Lang: '{}' (empty: {})", targetLang, targetLang.isEmpty());
+        
+        // KO이거나 빈 값이면 번역하지 않음
+        if (targetLang.isEmpty() || targetLang.equals("KO")) {
+            log.info("✅ No translation needed (KO or empty)");
+            return body;
+        }
+        
+        // EN이면 번역 수행
+        if (targetLang.equals("EN")) {
+            log.info("🔤 Starting English translation...");
+            Set<Object> visited = new HashSet<>();
+            translateFields(body, targetLang, visited);
+            return body;
+        }
+        
+        // 지원하지 않는 언어면 번역하지 않음
+        log.info("⚠️ Unsupported language: '{}', returning original", targetLang);
         return body;
     }
 
