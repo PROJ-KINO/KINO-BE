@@ -12,7 +12,9 @@ import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -62,27 +64,18 @@ public class MovieDetailService {
     }
 
     // 작품 정보
-    @Transactional
+    @Transactional(readOnly = true)
     public MovieDetailDto getMovieDetail(Long movieId) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
 
-        // 누적 조회수
-        movie.setTotalView(movie.getTotalView() + 1);
-
-        // 일간 조회수
-        LocalDate today = LocalDate.now();
-        DailyMovieView todayView = dailyMovieViewRepository
-                .findByMovieAndViewDate(movie, today)
-                .orElseGet(() -> {
-                    DailyMovieView newView = new DailyMovieView();
-                    newView.setMovie(movie);
-                    newView.setViewDate(today);
-                    newView.setDailyView(0);
-                    return newView;
-                });
-        todayView.setDailyView(todayView.getDailyView() + 1);
-        dailyMovieViewRepository.save(todayView);
+        // 조회수 증가는 별도 트랜잭션으로 비동기 처리
+        try {
+            incrementViewCount(movieId);
+        } catch (Exception e) {
+            // 조회수 증가 실패해도 영화 정보는 정상 반환
+            System.err.println("조회수 증가 실패: " + e.getMessage());
+        }
 
         return MovieDetailDto.builder()
                 .movieId(movie.getMovieId())
@@ -113,5 +106,35 @@ public class MovieDetailService {
                 .build();
     }
 
+    // 조회수 증가 (별도 트랜잭션으로 비동기 처리)
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void incrementViewCount(Long movieId) {
+        try {
+            Movie movie = movieRepository.findById(movieId)
+                    .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
+
+            // 누적 조회수 증가
+            movie.setTotalView(movie.getTotalView() + 1);
+
+            // 일간 조회수 증가
+            LocalDate today = LocalDate.now();
+            DailyMovieView todayView = dailyMovieViewRepository
+                    .findByMovieAndViewDate(movie, today)
+                    .orElseGet(() -> {
+                        DailyMovieView newView = new DailyMovieView();
+                        newView.setMovie(movie);
+                        newView.setViewDate(today);
+                        newView.setDailyView(0);
+                        return newView;
+                    });
+            todayView.setDailyView(todayView.getDailyView() + 1);
+            dailyMovieViewRepository.save(todayView);
+            
+        } catch (Exception e) {
+            // 조회수 증가 실패 로그 (서비스에 영향 없음)
+            System.err.println("조회수 증가 중 오류 발생 - 영화ID: " + movieId + ", 오류: " + e.getMessage());
+        }
+    }
 
 }
