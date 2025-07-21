@@ -14,4 +14,5 @@ public class SimpleUserResDto {
     private String email; // 사용자 이메일
     private String image; // 사용자 프로필 이미지 URL
     private Boolean isFirstLogin; // 첫 로그인 여부
+    private Boolean isUserActive; // 사용자 활성화 상태
 }

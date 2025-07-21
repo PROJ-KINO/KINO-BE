@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.user.service;
 
+import com.hamss2.KINO.api.entity.Role;
 import com.hamss2.KINO.api.entity.User;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.api.user.dto.SimpleUserResDto;
@@ -27,6 +28,7 @@ public class UserService {
             .image(user.getImage())
             .email(user.getEmail())
             .isFirstLogin(user.getIsFirstLogin())
+            .isUserActive(user.getRole() != Role.BAN_USER)
             .build();
     }
 }
