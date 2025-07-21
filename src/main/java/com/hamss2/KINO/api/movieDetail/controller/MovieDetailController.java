@@ -2,6 +2,7 @@ package com.hamss2.KINO.api.movieDetail.controller;
 
 //import com.hamss2.KINO.api.deepl.annotation.Translate;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.movieDetail.dto.req.ReportReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.req.ShortReviewReqDto;
 import com.hamss2.KINO.api.movieDetail.dto.res.LikeStatusDto;
@@ -18,15 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -64,16 +57,18 @@ public class MovieDetailController {
 
     // 작품정보 탭
     @GetMapping("/{movieId}/info")
-    public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieInfo(@PathVariable Long movieId) {
+    @Translate
+    public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieInfo(@PathVariable Long movieId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         MovieDetailDto movieDetail = movieDetailService.getMovieDetail(movieId);
         return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_DETAIL_SUCCESS, movieDetail);
     }
 
     // 한줄평 조회
     @GetMapping("/{movieId}/short-reviews")
+    @Translate
     public ResponseEntity<ApiResponse<Page<ShortReviewResDto>>> getShortReviews
     (@PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
+        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         Page<ShortReviewResDto> reviews = shortReviewService.getShortReviews(movieId, page, size,
             Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEARCH_SHORT_REVIEW_SUCCESS, reviews);
@@ -126,9 +121,10 @@ public class MovieDetailController {
 
     // 상세 리뷰 조회
     @GetMapping("/{movieId}/reviews")
+    @Translate
     public ResponseEntity<ApiResponse<Page<ReviewResDto>>> getReviews(
         @PathVariable Long movieId, @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId) {
+        @RequestParam(defaultValue = "20") int size, @AuthenticationPrincipal String userId, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         log.info("========================== userId : " + userId + "==========================");
         Page<ReviewResDto> reviewPage = reviewService.getReviewList(movieId, page, size,
             Long.valueOf(userId));

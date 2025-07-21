@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.home.controller;
 
+import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.home.dto.req.GenreSelectReq;
 import com.hamss2.KINO.api.home.dto.res.HomeResponseDto;
 import com.hamss2.KINO.api.home.dto.res.MovieDto;
@@ -20,8 +21,10 @@ public class HomeController {
 
     private final HomeService homeService;
 
+    @Translate
     @GetMapping("/home")
-    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(@AuthenticationPrincipal String userId) {
+    public ResponseEntity<ApiResponse<HomeResponseDto>> getHomeData(@AuthenticationPrincipal String userId
+                                                                    ,@RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         HomeResponseDto homeResponseDto = homeService.getHomeData(Long.valueOf(userId));
         return ApiResponse.success(SuccessStatus.SEND_HOME_SUCCESS, homeResponseDto);
     }
@@ -32,8 +35,9 @@ public class HomeController {
         return ApiResponse.success_only(SuccessStatus.SEND_USER_GENRE_SELECT_SUCCESS);
     }
 
+    @Translate
     @GetMapping("/movies/search")
-    public ResponseEntity<ApiResponse<List<MovieDto>>> searchMovies(@RequestParam String keyword) {
+    public ResponseEntity<ApiResponse<List<MovieDto>>> searchMovies(@RequestParam String keyword, @RequestHeader(value = "X-Target-Lang", required = false) String targetLang) {
         List<MovieDto> result = homeService.searchMovies(keyword);
         return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_SUCCESS, result);
     }
