@@ -119,7 +119,6 @@ public class JwtUtils {
                 ));
             }
         }
-        ;
 
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
