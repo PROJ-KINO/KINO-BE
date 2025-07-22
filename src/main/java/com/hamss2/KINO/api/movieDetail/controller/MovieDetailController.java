@@ -60,6 +60,7 @@ public class MovieDetailController {
     @Translate
     public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieInfo(@PathVariable Long movieId) {
         MovieDetailDto movieDetail = movieDetailService.getMovieDetail(movieId);
+        log.info("++++++++++++++++++++++++++++++++ movie : {}", movieDetail);
         return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_DETAIL_SUCCESS, movieDetail);
     }
 

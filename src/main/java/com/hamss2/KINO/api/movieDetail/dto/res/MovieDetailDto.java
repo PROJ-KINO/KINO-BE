@@ -3,12 +3,18 @@ package com.hamss2.KINO.api.movieDetail.dto.res;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class MovieDetailDto {
 
     private Long movieId;
@@ -27,6 +33,9 @@ public class MovieDetailDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
     public static class ActorDto {
         private String name;
         private String profileUrl;
@@ -34,6 +43,9 @@ public class MovieDetailDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
     public static class OttDto {
         private String name;
         private String logoUrl;

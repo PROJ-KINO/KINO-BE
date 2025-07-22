@@ -3,6 +3,8 @@ package com.hamss2.KINO.api.deepl.advice;
 import com.hamss2.KINO.api.deepl.annotation.Translate;
 import com.hamss2.KINO.api.deepl.service.LibreTranslateService;
 import com.hamss2.KINO.api.deepl.service.CachedTranslationService;
+import com.hamss2.KINO.common.reponse.ApiResponse;
+import com.hamss2.KINO.common.reponse.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -18,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import com.hamss2.KINO.api.home.dto.res.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -59,6 +62,24 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
         if (targetLang.isEmpty() || targetLang.equals("KO")) {
             log.info("✅ No translation needed (KO or empty)");
             return body;
+        }
+        
+        // 영화 상세(MovieDetailDto) 응답이면 캐시 우선 처리
+        if (body instanceof com.hamss2.KINO.common.reponse.ApiResponse apiResponse &&
+            apiResponse.getData() instanceof MovieDetailDto movieDetailDto) {
+            Long movieId = movieDetailDto.getMovieId();
+            log.info("🎬 영화 상세 캐시 우선 처리: movieId={}, lang={}", movieId, targetLang);
+            MovieDetailDto cached = cachedTranslationService.getMovieDetailFromCache(targetLang, movieId);
+            if (cached != null) {
+                log.info("💾 캐시 HIT: movieId={}, lang={}", movieId, targetLang);
+                return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_DETAIL_SUCCESS, cached).getBody();
+            } else {
+                log.info("⚡ 캐시 MISS: movieId={}, lang={}", movieId, targetLang);
+                cachedTranslationService.translateAndCacheMovieDetail(movieDetailDto, targetLang, movieId);
+                MovieDetailDto cachedAfterPut = cachedTranslationService.getMovieDetailFromCache(targetLang, movieId);
+                log.info("[실시간번역] 캐시 저장 후 조회 결과: {}", cachedAfterPut);
+                return ApiResponse.success(SuccessStatus.SEARCH_MOVIE_DETAIL_SUCCESS, cachedAfterPut).getBody();
+            }
         }
         
         // EN이면 번역 수행

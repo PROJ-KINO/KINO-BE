@@ -49,4 +49,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Modifying
     @Query("UPDATE Movie m SET m.totalView = m.totalView + 1 WHERE m.movieId = :movieId")
     void incrementTotalView(@Param("movieId") Long movieId);
+
+    @Query("SELECT m.movieId FROM Movie m")
+    List<Long> findAllMovieIds();
 }

@@ -3,10 +3,15 @@ package com.hamss2.KINO.api.deepl.scheduler;
 import com.hamss2.KINO.api.deepl.service.CachedTranslationService;
 import com.hamss2.KINO.api.home.service.HomeService;
 import com.hamss2.KINO.api.home.dto.res.HomeResponseDto;
+import com.hamss2.KINO.api.movieAdmin.repository.MovieRepository;
+import com.hamss2.KINO.api.movieDetail.service.MovieDetailService;
+import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +20,8 @@ public class TranslationCacheScheduler {
     
     private final CachedTranslationService cachedTranslationService;
     private final HomeService homeService;
+    private final MovieRepository movieRepository;
+    private final MovieDetailService movieDetailService;
     
     /**
      * 30분마다 번역 캐시 갱신
@@ -141,5 +148,41 @@ public class TranslationCacheScheduler {
             log.error("❌ Manual cache refresh failed: {}", e.getMessage(), e);
             throw new RuntimeException("캐시 갱신에 실패했습니다: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 매일 4시 영화 상세 번역 캐시 스케줄러 (EN만, 없는 영화만, 20개씩 10초 대기)
+     */
+    @Scheduled(cron = "0 0 4 * * ?")
+    public void cacheAllMovieDetails() {
+        log.info("🎬 [스케줄러] 영화 상세 번역 캐시 시작");
+        List<Long> movieIds = movieRepository.findAllMovieIds();
+        int count = 0;
+        for (Long movieId : movieIds) {
+            try {
+                // 이미 캐시가 있으면 skip
+                MovieDetailDto cached = cachedTranslationService.getMovieDetailFromCache("EN", movieId);
+                if (cached != null) {
+                    log.info("[SKIP] 이미 캐시된 영화: {}", movieId);
+                    continue;
+                }
+                // 상세 정보 조회
+                MovieDetailDto detail = movieDetailService.getMovieDetail(movieId);
+                if (detail == null) continue;
+                // 번역 및 캐시 저장
+                MovieDetailDto translated = cachedTranslationService.translateAndCacheMovieDetail(detail, "EN", movieId);
+                log.info("[캐시] 영화ID {} 번역 및 저장 완료", movieId);
+            } catch (Exception e) {
+                log.warn("[ERROR] 영화ID {} 처리 중 오류: {}", movieId, e.getMessage());
+            }
+            count++;
+            if (count % 20 == 0) {
+                try {
+                    log.info("[WAIT] 20개 처리, 10초 대기...");
+                    Thread.sleep(10000);
+                } catch (InterruptedException ignored) {}
+            }
+        }
+        log.info("🎬 [스케줄러] 영화 상세 번역 캐시 완료");
     }
 } 

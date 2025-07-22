@@ -15,6 +15,7 @@ import com.hamss2.KINO.api.deepl.service.LibreTranslateService;
 import java.util.ArrayList;
 import java.util.List;
 import com.hamss2.KINO.api.home.dto.res.ReviewDto;
+import com.hamss2.KINO.api.movieDetail.dto.res.MovieDetailDto;
 
 @Service
 @RequiredArgsConstructor
@@ -449,6 +450,88 @@ public class CachedTranslationService {
         } catch (Exception e) {
             log.warn("⚠️ Failed to cache translated TopPickMovies: {}", e.getMessage());
             return translatedMovies; // 캐시 실패해도 번역된 데이터는 반환
+        }
+    }
+    
+    /**
+     * 영화 상세 캐시 조회만 (original 없이)
+     */
+    @Cacheable(value = "translatedMovieDetail", key = "#movieId + '_' + #targetLang")
+    public MovieDetailDto getMovieDetailFromCache(String targetLang, Long movieId) {
+        // 캐시 miss 시 null 반환
+        return null;
+    }
+
+    /**
+     * 영화 상세 실시간 번역 및 캐시 저장
+     */
+    @CachePut(value = "translatedMovieDetail", key = "#movieId + '_' + #targetLang")
+    public MovieDetailDto translateAndCacheMovieDetail(MovieDetailDto original, String targetLang, Long movieId) {
+        if (original == null || targetLang.equals("KO") || targetLang.isEmpty()) {
+            log.warn("[실시간번역] original이 null이거나 targetLang이 KO/빈값");
+            return original;
+        }
+        try {
+            MovieDetailDto.MovieDetailDtoBuilder builder = MovieDetailDto.builder()
+                .movieId(original.getMovieId())
+                .backdropUrl(original.getBackdropUrl())
+                .releaseDate(original.getReleaseDate())
+                .runningTime(original.getRunningTime())
+                .ageRating(original.getAgeRating())
+                .genreIds(original.getGenreIds())
+                .teaserUrl(original.getTeaserUrl())
+                .avgRating(original.getAvgRating());
+
+            String originalTitle = original.getTitle();
+            String translatedTitle = libreTranslateService.translate(originalTitle, targetLang);
+            log.info("[실시간번역] title: '{}' -> '{}'", originalTitle, translatedTitle);
+            builder.title(translatedTitle);
+
+            String originalPlot = original.getPlot();
+            String translatedPlot = libreTranslateService.translate(originalPlot, targetLang);
+            log.info("[실시간번역] plot: '{}' -> '{}'", originalPlot, translatedPlot);
+            builder.plot(translatedPlot);
+
+            String originalDirector = original.getDirector();
+            String translatedDirector = libreTranslateService.translate(originalDirector, targetLang);
+            log.info("[실시간번역] director: '{}' -> '{}'", originalDirector, translatedDirector);
+            builder.director(translatedDirector);
+
+            // 배우
+            if (original.getActors() != null) {
+                List<MovieDetailDto.ActorDto> translatedActors = new ArrayList<>();
+                for (MovieDetailDto.ActorDto actor : original.getActors()) {
+                    String originalActorName = actor.getName();
+                    String translatedActorName = libreTranslateService.translate(originalActorName, targetLang);
+                    log.info("[실시간번역] actor.name: '{}' -> '{}'", originalActorName, translatedActorName);
+                    translatedActors.add(MovieDetailDto.ActorDto.builder()
+                        .name(translatedActorName)
+                        .profileUrl(actor.getProfileUrl())
+                        .build());
+                }
+                builder.actors(translatedActors);
+            }
+            // OTT
+            if (original.getOtts() != null) {
+                List<MovieDetailDto.OttDto> translatedOtts = new ArrayList<>();
+                for (MovieDetailDto.OttDto ott : original.getOtts()) {
+                    String originalOttName = ott.getName();
+                    String translatedOttName = libreTranslateService.translate(originalOttName, targetLang);
+                    log.info("[실시간번역] ott.name: '{}' -> '{}'", originalOttName, translatedOttName);
+                    translatedOtts.add(MovieDetailDto.OttDto.builder()
+                        .name(translatedOttName)
+                        .logoUrl(ott.getLogoUrl())
+                        .linkUrl(ott.getLinkUrl())
+                        .build());
+                }
+                builder.otts(translatedOtts);
+            }
+            MovieDetailDto result = builder.build();
+            log.info("[실시간번역] 최종 번역 결과: {}", result);
+            return result;
+        } catch (Exception e) {
+            log.error("❌ Error translating movie detail: {}", e.getMessage(), e);
+            return original;
         }
     }
     

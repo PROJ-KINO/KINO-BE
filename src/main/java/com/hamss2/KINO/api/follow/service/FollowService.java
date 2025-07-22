@@ -55,10 +55,8 @@ public class FollowService {
         User target = userRepository.findById(targetId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
-        boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
-
         return followRepository.findAllByFollowee(target).stream()
-                .map(f -> new FollowUserDto(f.getFollower().getUserId(), f.getFollower().getNickname(), isFollow))
+                .map(f -> new FollowUserDto(f.getFollower().getUserId(), f.getFollower().getNickname(), followRepository.existsByFollowerAndFollowee(user, f.getFollower()), f.getFollower().getImage()))
                 .collect(Collectors.toList());
     }
 
@@ -70,10 +68,8 @@ public class FollowService {
         User target = userRepository.findById(targetId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
-        boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
-
         return followRepository.findAllByFollower(target).stream()
-                .map(f -> new FollowUserDto(f.getFollowee().getUserId(), f.getFollowee().getNickname(), isFollow))
+                .map(f -> new FollowUserDto(f.getFollowee().getUserId(), f.getFollowee().getNickname(), followRepository.existsByFollowerAndFollowee(user, f.getFollowee()), f.getFollowee().getImage()))
                 .collect(Collectors.toList());
     }
 
