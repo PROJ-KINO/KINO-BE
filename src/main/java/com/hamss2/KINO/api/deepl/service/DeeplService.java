@@ -18,12 +18,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class DeeplService {
     private final DeeplConfig deeplConfig;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4); // 병렬 처리용
 
     public String translate(String text, String targetLang) {
         // HTML 태그 보호
@@ -37,6 +42,7 @@ public class DeeplService {
         params.add("auth_key", deeplConfig.getApiKey());
         params.add("text", protectedText);
         params.add("target_lang", targetLang); // 예: "KO"
+        params.add("ignore_tags", "figure,img");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
@@ -60,55 +66,19 @@ public class DeeplService {
         if (texts == null || texts.isEmpty()) {
             return List.of();
         }
-        
-        // 청크 크기 설정 (API 제한을 고려하여 작게 설정)
-        final int CHUNK_SIZE = 50;
-        
-        // 빈 텍스트 필터링 및 인덱스 매핑
-        List<TextWithIndex> filteredTexts = new ArrayList<>();
-        for (int i = 0; i < texts.size(); i++) {
-            String text = texts.get(i);
+        // 무조건 개별 번역만 수행
+        List<String> result = new ArrayList<>();
+        for (String text : texts) {
             if (text != null && !text.trim().isEmpty()) {
-                filteredTexts.add(new TextWithIndex(text, i));
+                try {
+                    result.add(translate(text, targetLang));
+                } catch (Exception e) {
+                    result.add(text); // 실패시 원본 반환
+                }
+            } else {
+                result.add(text);
             }
         }
-        
-        if (filteredTexts.isEmpty()) {
-            return texts; // 원본 그대로 반환
-        }
-        
-        // 결과 리스트 초기화
-        List<String> result = new ArrayList<>(texts);
-        
-        try {
-            // 청크 단위로 번역 처리
-            for (int i = 0; i < filteredTexts.size(); i += CHUNK_SIZE) {
-                int endIndex = Math.min(i + CHUNK_SIZE, filteredTexts.size());
-                List<TextWithIndex> chunk = filteredTexts.subList(i, endIndex);
-                
-                // 청크 번역
-                List<String> chunkTexts = chunk.stream()
-                        .map(TextWithIndex::getText)
-                        .toList();
-                        
-                List<String> translatedChunk = translateChunk(chunkTexts, targetLang);
-                
-                // 번역 결과를 원본 위치에 매핑
-                for (int j = 0; j < chunk.size() && j < translatedChunk.size(); j++) {
-                    int originalIndex = chunk.get(j).getIndex();
-                    result.set(originalIndex, translatedChunk.get(j));
-                }
-                
-                // API 호출 간격 조절 (과도한 요청 방지)
-                if (endIndex < filteredTexts.size()) {
-                    Thread.sleep(100); // 100ms 대기
-                }
-            }
-        } catch (Exception e) {
-            // 오류 발생 시 원본 반환
-            return texts;
-        }
-        
         return result;
     }
     
@@ -120,19 +90,9 @@ public class DeeplService {
             return List.of();
         }
         
-        // 구분자로 텍스트들을 하나로 합치기
-        String separator = "|||DEEPL_SEPARATOR|||";
-        String combinedText = String.join(separator, texts);
-        
-        // 배치 번역 수행
-        String translatedCombined = translate(combinedText, targetLang);
-        
-        // 결과를 다시 분리
-        String[] translatedArray = translatedCombined.split("\\|\\|\\|DEEPL_SEPARATOR\\|\\|\\|");
-        List<String> translatedTexts = Arrays.asList(translatedArray);
-        
-        // 원본과 개수가 맞지 않으면 개별 번역으로 폴백
-        if (translatedTexts.size() != texts.size()) {
+        // HTML이 포함된 텍스트가 있으면 개별 번역으로 처리
+        boolean hasHtml = texts.stream().anyMatch(text -> text.contains("<") && text.contains(">"));
+        if (hasHtml) {
             return texts.stream()
                     .map(text -> {
                         try {
@@ -144,9 +104,40 @@ public class DeeplService {
                     .toList();
         }
         
-        return translatedTexts.stream()
-                .map(String::trim)
-                .toList();
+        // HTML이 없는 텍스트만 배치 번역 수행
+        try {
+            // 더 안전한 구분자 사용
+            String separator = "\n###KINO_TRANSLATE_SEP###\n";
+            String combinedText = String.join(separator, texts);
+            
+            // 배치 번역 수행
+            String translatedCombined = translate(combinedText, targetLang);
+            
+            // 결과를 다시 분리
+            String[] translatedArray = translatedCombined.split("\n###KINO_TRANSLATE_SEP###\n");
+            List<String> translatedTexts = Arrays.asList(translatedArray);
+            
+            // 원본과 개수가 맞지 않으면 개별 번역으로 폴백
+            if (translatedTexts.size() != texts.size()) {
+                throw new RuntimeException("배치 번역 결과 개수 불일치");
+            }
+            
+            return translatedTexts.stream()
+                    .map(String::trim)
+                    .toList();
+                    
+        } catch (Exception e) {
+            // 배치 번역 실패시 개별 번역으로 폴백
+            return texts.stream()
+                    .map(text -> {
+                        try {
+                            return translate(text, targetLang);
+                        } catch (Exception ex) {
+                            return text; // 실패시 원본 반환
+                        }
+                    })
+                    .toList();
+        }
     }
     
     /**
@@ -167,6 +158,19 @@ public class DeeplService {
         
         public int getIndex() {
             return index;
+        }
+    }
+    
+    /**
+     * 청크 번역 결과를 저장하는 헬퍼 클래스
+     */
+    private static class ChunkResult {
+        private final List<TextWithIndex> chunk;
+        private final List<String> translatedTexts;
+        
+        public ChunkResult(List<TextWithIndex> chunk, List<String> translatedTexts) {
+            this.chunk = chunk;
+            this.translatedTexts = translatedTexts;
         }
     }
     

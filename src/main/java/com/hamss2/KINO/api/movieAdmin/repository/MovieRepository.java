@@ -27,6 +27,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
            "JOIN FETCH m.movieGenres mg " +
            "JOIN FETCH mg.genre g " +
            "WHERE g.genreId IN :genreIds " +
+           "AND m.posterUrl IS NOT NULL " +
            "ORDER BY m.totalView DESC, m.releaseDate DESC")
     Page<Movie> findByGenreIdsWithGenres(@Param("genreIds") List<Long> genreIds, Pageable pageable);
     
@@ -34,6 +35,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("SELECT DISTINCT m FROM Movie m " +
            "JOIN FETCH m.movieGenres mg " +
            "JOIN FETCH mg.genre g " +
+           "WHERE m.posterUrl IS NOT NULL " +
            "ORDER BY m.totalView DESC, m.releaseDate DESC")
     Page<Movie> findAllWithGenresPageable(Pageable pageable);
     

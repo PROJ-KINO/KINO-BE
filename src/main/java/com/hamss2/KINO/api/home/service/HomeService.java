@@ -62,6 +62,7 @@ public class HomeService {
         // 3. 사용자 찜 TOP 10 영화
         List<Movie> topPickMovies = myPickMovieRepository.findTop10MoviesByPickCount();
         List<MovieDto> topMovieList = topPickMovies.stream()
+                .limit(10) // 최대 10개로 제한
                 .map(movie -> {
                     MovieDto movieDto = toMovieDto(movie);
                     return movieDto;

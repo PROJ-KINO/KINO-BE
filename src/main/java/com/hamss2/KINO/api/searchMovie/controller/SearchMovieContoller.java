@@ -37,7 +37,6 @@ public class SearchMovieContoller {
      * @return 페이지네이션된 영화 목록
      */
     @GetMapping("/all")
-    @Translate
     public ResponseEntity<ApiResponse<Page<MovieResDto>>> searchAllMovies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,

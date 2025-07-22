@@ -27,7 +27,7 @@ dependencies {
     //    Developer Tools - Spring Boot DevTools, Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //    Web - Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -65,6 +65,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+    
+    // jsoup - HTML 파싱
+    implementation 'org.jsoup:jsoup:1.17.2'
 }
 
 tasks.named('test') {
