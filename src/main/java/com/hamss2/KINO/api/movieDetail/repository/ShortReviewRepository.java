@@ -6,7 +6,9 @@ import com.hamss2.KINO.api.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ShortReviewRepository extends JpaRepository<ShortReview, Long> {
@@ -16,4 +18,12 @@ public interface ShortReviewRepository extends JpaRepository<ShortReview, Long> 
     Optional<ShortReview> findByUserAndMovieAndIsDeletedFalse(User user, Movie movie);
     // 한줄평 ID로 soft delete 아닌 것만 조회 (수정/삭제)
     Optional<ShortReview> findByShortReviewIdAndIsDeletedFalse(Long shortReviewId);
+    @Query("""
+    SELECT g.genreName, COUNT(sr.shortReviewId) as shortReviewCount
+    FROM ShortReview sr JOIN sr.movie m JOIN MovieGenre mg ON mg.movie = m JOIN mg.genre g
+    WHERE sr.isDeleted = false
+    GROUP BY g.genreName
+    ORDER BY shortReviewCount DESC
+""")
+    List<Object[]> findGenreByShortReviewCount();
 }

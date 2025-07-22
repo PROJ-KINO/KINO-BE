@@ -57,6 +57,8 @@ public enum SuccessStatus {
     DELETE_REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 삭제 성공"),
     SEND_MY_INFO_SUCCESS(HttpStatus.OK, "내 정보 조회 성공"),
     UPDATE_REVIEW_COMMENT_SUCCESS(HttpStatus.OK, "리뷰 댓글 수정 성공"),
+    SEARCH_ADMIN_BANUSER_MONTH_STAT_SUCCESS(HttpStatus.OK, "월별 정지 회원수 조회 성공"),
+    SEARCH_ADMIN_SHORTREVIEW_GENRE_STAT_SUCCESS(HttpStatus.OK, "장르별 한줄평 수 조회 성공"),
 
     /**
      * 201
