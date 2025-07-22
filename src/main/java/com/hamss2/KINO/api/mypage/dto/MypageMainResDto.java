@@ -12,6 +12,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MypageMainResDto {
+    private Long userId;
     private String nickname;
     private String image;
     private ShortReviewDto shortReview;
