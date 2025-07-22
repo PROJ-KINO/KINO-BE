@@ -104,20 +104,22 @@ public class JwtUtils {
 
     public String reissueAccessToken(Long userId, Role role) {
 
-        Authentication authentication = switch (role) {
+        Authentication authentication = null;
+        switch (role) {
             case ADMIN -> {
-                new UsernamePasswordAuthenticationToken(
+                authentication = new UsernamePasswordAuthenticationToken(
                     userId,
                     null, List.of(() -> "ROLE_ADMIN"
                 ));
             }
             default -> {
-                new UsernamePasswordAuthenticationToken(
+                authentication = new UsernamePasswordAuthenticationToken(
                     userId,
                     null, List.of(() -> "ROLE_USER"
                 ));
             }
-        };
+        }
+        ;
 
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
