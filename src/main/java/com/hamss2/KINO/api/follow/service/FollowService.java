@@ -57,7 +57,7 @@ public class FollowService {
 
         boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
 
-        return followRepository.findAllByFollowee(user).stream()
+        return followRepository.findAllByFollowee(target).stream()
                 .map(f -> new FollowUserDto(f.getFollower().getUserId(), f.getFollower().getNickname(), isFollow))
                 .collect(Collectors.toList());
     }
@@ -72,7 +72,7 @@ public class FollowService {
 
         boolean isFollow = followRepository.existsByFollowerAndFollowee(user, target);
 
-        return followRepository.findAllByFollower(user).stream()
+        return followRepository.findAllByFollower(target).stream()
                 .map(f -> new FollowUserDto(f.getFollowee().getUserId(), f.getFollowee().getNickname(), isFollow))
                 .collect(Collectors.toList());
     }
