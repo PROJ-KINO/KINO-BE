@@ -34,8 +34,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // 여기에 허용할 url을 추가
-        if (path.startsWith("/api/auth") || path.startsWith("/api/admin") || path.startsWith(
-            "/swagger-ui") || path.startsWith("/v3/api-docs")) {
+        if (path.startsWith("/api/auth") ||
+//            path.startsWith("/api/admin") ||
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,6 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        log.error(jwtUtils.extractRoleClaim(jwt));
         try {
             if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
                 Authentication authentication = jwtUtils.getAuthentication(jwt);

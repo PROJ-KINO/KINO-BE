@@ -108,13 +108,13 @@ public class JwtUtils {
         switch (role) {
             case ADMIN -> {
                 authentication = new UsernamePasswordAuthenticationToken(
-                    userId,
+                    userId.toString(),
                     null, List.of(() -> "ROLE_ADMIN"
                 ));
             }
             default -> {
                 authentication = new UsernamePasswordAuthenticationToken(
-                    userId,
+                    userId.toString(),
                     null, List.of(() -> "ROLE_USER"
                 ));
             }
@@ -214,4 +214,10 @@ public class JwtUtils {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
             .getExpiration().before(new Date());
     }
+
+    public String extractRoleClaim(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
+            .get(AUTHORITIES_KEY, String.class);
+    }
+
 }
