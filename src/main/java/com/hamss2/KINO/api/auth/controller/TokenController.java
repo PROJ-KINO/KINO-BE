@@ -23,10 +23,17 @@ public class TokenController {
     private final AuthService authService;
 
     @GetMapping("/refresh")
-    public ResponseEntity<ApiResponse<String>> reissueAccessToken() {
+    public ResponseEntity<ApiResponse<String>> reissueAccessToken(
+        @AuthenticationPrincipal String userId
+    ) {
+        if (userId == null || userId.isEmpty()) {
+            throw new BadRequestException("userId is required");
+        }
+        Long id = Long.parseLong(userId);
+
         return ApiResponse.success(
             SuccessStatus.CREATE_ACCESS_TOKEN_SUCCESS,
-            authService.reissueAccessToken()
+            authService.reissueAccessToken(id)
         );
     }
 
@@ -47,7 +54,7 @@ public class TokenController {
 
             HttpSession session = request.getSession();  // 세션 생성/조회
             session.setAttribute("isLogout", true);
-            
+
             return success;
 
         } catch (Exception e) {

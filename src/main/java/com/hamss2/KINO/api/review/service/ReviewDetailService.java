@@ -1,5 +1,6 @@
 package com.hamss2.KINO.api.review.service;
 
+import com.hamss2.KINO.api.admin.repository.CommentRepository;
 import com.hamss2.KINO.api.entity.Movie;
 import com.hamss2.KINO.api.entity.Review;
 import com.hamss2.KINO.api.entity.ReviewLike;
@@ -37,6 +38,7 @@ public class ReviewDetailService {
     private final UserRepository userRepository;
     private final MovieRepository movieRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final CommentRepository commentRepository;
 
     public WritingReviewResDto startReview(Long userId, Long movieId) {
 
@@ -70,13 +72,16 @@ public class ReviewDetailService {
         User writer = review.getUser();
 
         ReviewDetailResDto response = ReviewDetailResDto.builder().reviewId(review.getReviewId())
-            .reviewTitle(review.getTitle()).
-            reviewContent(review.getContent())
-            .reviewViewCount(review.getTotalViews()).
-            reviewCommentCount(review.getComments().size()) // TODO N+1 문제 가능성
+            .reviewTitle(review.getTitle())
+            .reviewContent(review.getContent())
+            .reviewViewCount(review.getTotalViews())
+            .reviewCommentCount(
+                commentRepository.countByReviewReviewIdAndIsDeletedFalse(review.getReviewId())
+            )
             .reviewLikeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
             .reviewCreatedAt(review.getCreatedAt())
             .isReviewActive(review.getIsActive())
+            .isReviewDeleted(review.getIsDeleted())
             .movieId(movie.getMovieId())
             .movieTitle(movie.getTitle())
             .moviePosterUrl(movie.getPosterUrl())
@@ -132,7 +137,8 @@ public class ReviewDetailService {
                 .content(review.getContent())
                 .viewCount(review.getTotalViews())
                 .createdAt(review.getCreatedAt())
-                .commentCount(review.getComments().size()) // TODO N+1 문제 가능성
+                .commentCount(
+                    commentRepository.countByReviewReviewIdAndIsDeletedFalse(review.getReviewId()))
                 .likeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
                 .userId(writer.getUserId())
                 .userNickname(writer.getNickname())
