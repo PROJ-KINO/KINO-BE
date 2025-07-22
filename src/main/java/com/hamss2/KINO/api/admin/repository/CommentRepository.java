@@ -23,4 +23,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         Pageable pageable);
 
     Optional<Comment> findByCommentId(Long commentId);
+
+    Integer countByReviewReviewIdAndIsDeletedFalse(Long reviewId);
 }
