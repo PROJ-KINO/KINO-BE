@@ -1,6 +1,5 @@
 package com.hamss2.KINO.common.jwt;
 
-import com.hamss2.KINO.api.entity.Role;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +34,8 @@ public class SecurityConfig {
             .httpBasic(httpBasic -> httpBasic.disable()) // HTTP Basic 인증 비활성화
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll() // 인증 관련 API는 모두 허용
-                .requestMatchers("**").permitAll() // TODO 삭제
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/admin/**")
-                .hasRole(Role.ADMIN.toString()) // ADMIN 권한이 필요한 API
+                .requestMatchers("/api/admin/**").hasRole("ROLE_ADMIN") // ADMIN 권한이 필요한 API
                 .anyRequest().authenticated()   // 나머지 모든 요청은 인증 필요
             )
             .sessionManagement(session ->
