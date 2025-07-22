@@ -81,7 +81,7 @@ public class AuthService {
 
         // TODO : 로그인 성공 시 토큰 발급 로직 추가
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-            user.getUserId(),
+            user.getUserId().toString(),
             null, List.of(() -> "ROLE_USER"
         )); // 실제 권한 정보로 변경 필요
         TokenDto tokenDto = jwtUtils.generateTokenDto(authentication);
