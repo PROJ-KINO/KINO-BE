@@ -219,7 +219,7 @@ public class MypageService {
         
         List<MypagePickMovieResDto.MyPickMovieDto> myPickMovieDtos = user.getMyPickMovies().stream()
                 .map(myPickMovie -> new MypagePickMovieResDto.MyPickMovieDto(
-                        myPickMovie.getMyPickMovieId(),
+                        myPickMovie.getMovie().getMovieId(),
                         myPickMovie.getMovie().getTitle(),
                         myPickMovie.getMovie().getPosterUrl(),
                         myPickMovie.getMovie().getDirector(),

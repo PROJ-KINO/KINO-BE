@@ -68,7 +68,7 @@ public class MypageController {
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_REVIEW_SUCCESS, reviewResDto);
     }
 
-    @GetMapping("/myPickMovie")
+    @GetMapping(" /myPickMovie")
     public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(
             @AuthenticationPrincipal String userId,
             @RequestParam (required = false) Long targetId
