@@ -1,9 +1,14 @@
 package com.hamss2.KINO.api.mypage.controller;
 
-import com.hamss2.KINO.api.entity.Follow;
 import com.hamss2.KINO.api.entity.User;
-import com.hamss2.KINO.api.mypage.dto.*;
 import com.hamss2.KINO.api.follow.repository.FollowRepository;
+import com.hamss2.KINO.api.mypage.dto.MypageGenreReqDto;
+import com.hamss2.KINO.api.mypage.dto.MypageGenreResDto;
+import com.hamss2.KINO.api.mypage.dto.MypageMainResDto;
+import com.hamss2.KINO.api.mypage.dto.MypagePickMovieResDto;
+import com.hamss2.KINO.api.mypage.dto.MypageReviewResDto;
+import com.hamss2.KINO.api.mypage.dto.MypageShortReviewResDto;
+import com.hamss2.KINO.api.mypage.dto.MypageUpdateProfileReqDto;
 import com.hamss2.KINO.api.mypage.service.MypageService;
 import com.hamss2.KINO.api.testPackage.UserRepository;
 import com.hamss2.KINO.common.reponse.ApiResponse;
@@ -13,7 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -21,79 +32,89 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/mypage")
 @Slf4j
 public class MypageController {
+
     private final UserRepository userRepository;
     private final MypageService mypageService;
     private final FollowRepository followRepository;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<MypageMainResDto>> mypage(
-            @AuthenticationPrincipal String userId,
-            @RequestParam (required = false) Long targetId
-            ) {
+        @AuthenticationPrincipal String userId,
+        @RequestParam(required = false) Long targetId
+    ) {
         MypageMainResDto mainResDto = null;
 
-        if(Long.valueOf(userId) == targetId) {
+        if (Long.valueOf(userId) == targetId) {
             mainResDto = mypageService.mypage(Long.valueOf(userId));
-        } else mainResDto = mypageService.mypage(targetId);
-
+        } else {
+            mainResDto = mypageService.mypage(targetId);
+        }
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_MAIN_SUCCESS, mainResDto);
     }
 
     @GetMapping("/shortReview")
     public ResponseEntity<ApiResponse<MypageShortReviewResDto>> shortReview(
-            @AuthenticationPrincipal String userId,
-            @RequestParam (required = false) Long targetId
+        @AuthenticationPrincipal String userId,
+        @RequestParam(required = false) Long targetId
     ) {
         MypageShortReviewResDto shortReviewResDto = null;
 
-        if(Long.valueOf(userId) == targetId) {
+        if (Long.valueOf(userId) == targetId) {
             shortReviewResDto = mypageService.shortReview(Long.valueOf(userId));
-        } else shortReviewResDto = mypageService.shortReview(targetId);
+        } else {
+            shortReviewResDto = mypageService.shortReview(targetId);
+        }
 
-
-        return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_SHORTREVIEW_SUCCESS, shortReviewResDto);
+        return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_SHORTREVIEW_SUCCESS,
+            shortReviewResDto);
     }
 
     @GetMapping("/review")
     public ResponseEntity<ApiResponse<MypageReviewResDto>> review(
-            @AuthenticationPrincipal String userId,
-            @RequestParam (required = false) Long targetId
+        @AuthenticationPrincipal String userId,
+        @RequestParam(required = false) Long targetId
     ) {
         MypageReviewResDto reviewResDto = null;
-        if(Long.valueOf(userId) == targetId) {
+        if (Long.valueOf(userId) == targetId) {
             reviewResDto = mypageService.review(Long.valueOf(userId));
-        } else reviewResDto = mypageService.review(targetId);
+        } else {
+            reviewResDto = mypageService.review(targetId);
+        }
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_REVIEW_SUCCESS, reviewResDto);
     }
 
-    @GetMapping(" /myPickMovie")
+    @GetMapping("/myPickMovie")
     public ResponseEntity<ApiResponse<MypagePickMovieResDto>> myPickMovie(
-            @AuthenticationPrincipal String userId,
-            @RequestParam (required = false) Long targetId
+        @AuthenticationPrincipal String userId,
+        @RequestParam(required = false) Long targetId
     ) {
         MypagePickMovieResDto pickMovieResDto = null;
-        if(Long.valueOf(userId) == targetId) {
+        if (Long.valueOf(userId) == targetId) {
             pickMovieResDto = mypageService.myPickMovie(Long.valueOf(userId));
-        } else pickMovieResDto = mypageService.myPickMovie(targetId);
+        } else {
+            pickMovieResDto = mypageService.myPickMovie(targetId);
+        }
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_PICKMOVIE_SUCCESS, pickMovieResDto);
     }
 
     @GetMapping("/userGenres")
-    public ResponseEntity<ApiResponse<MypageGenreResDto>> genre(@AuthenticationPrincipal String userId) {
+    public ResponseEntity<ApiResponse<MypageGenreResDto>> genre(
+        @AuthenticationPrincipal String userId) {
         MypageGenreResDto genreResDto = mypageService.genre(Long.valueOf(userId));
 
         return ApiResponse.success(SuccessStatus.SEARCH_MYPAGE_GENRE_SUCCESS, genreResDto);
     }
 
     @PostMapping("/userGenres")
-    public ResponseEntity<ApiResponse<Void>> userGenres(@AuthenticationPrincipal String userId, @RequestBody MypageGenreReqDto genreReqDto) {
+    public ResponseEntity<ApiResponse<Void>> userGenres(@AuthenticationPrincipal String userId,
+        @RequestBody MypageGenreReqDto genreReqDto) {
         // 디버깅 로그 추가
         log.info("받은 요청 데이터: {}", genreReqDto);
         log.info("genreIds: {}", genreReqDto != null ? genreReqDto.getGenreIds() : "DTO가 null");
-        
+
         mypageService.updateGenre(Long.valueOf(userId), genreReqDto);
         return ApiResponse.success_only(SuccessStatus.UPDATE_USERGENRE_SUCCESS);
     }
@@ -101,11 +122,12 @@ public class MypageController {
     @PostMapping(value = "/profile", consumes = "multipart/form-data")
     @Transactional
     public ResponseEntity<ApiResponse<Void>> profile(
-            @AuthenticationPrincipal String userId,
-            @RequestPart(value = "nickname", required = false) String nickname,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
-        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new RuntimeException("User not found"));
-        
+        @AuthenticationPrincipal String userId,
+        @RequestPart(value = "nickname", required = false) String nickname,
+        @RequestPart(value = "file", required = false) MultipartFile file) {
+        User user = userRepository.findById(Long.valueOf(userId))
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
         MypageUpdateProfileReqDto profileReqDto = new MypageUpdateProfileReqDto(nickname, file);
         mypageService.updateProfile(user, profileReqDto);
         return ApiResponse.success_only(SuccessStatus.UPDATE_PROFILE_SUCCESS);

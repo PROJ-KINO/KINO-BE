@@ -15,6 +15,7 @@ import com.hamss2.KINO.common.jwt.TokenDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +35,13 @@ public class AuthService {
     private final NaverOAuthService naverOAuthService;
     private final GoogleOAuthService googleOAuthService;
 
+    @Value("${kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+    @Value("${naver.redirect-uri}")
+    private String naverRedirectUri;
+    @Value("${google.redirect-uri}")
+    private String googleRedirectUri;
+
 //    public TokenDto login() {
 //        // 로그인 로직을 구현합니다.
 //        // 예시로, 사용자 인증 후 토큰을 생성하는 로직을 작성할 수 있습니다.
@@ -44,6 +52,10 @@ public class AuthService {
 //    }
 
     public String getLoginPage(SocialType provider, boolean isLogout) {
+
+        log.error("kakaoRedirectUri={}, naverRedirectUri={}, googleRedirectUri={}",
+            kakaoRedirectUri, naverRedirectUri, googleRedirectUri);
+
         return switch (provider) {
             case KAKAO -> kakaoOAuthService.getKakaoAuthUrl(isLogout);
             case NAVER -> naverOAuthService.getNaverAuthUrl(isLogout);
