@@ -77,6 +77,7 @@ public class ReviewDetailService {
             .reviewLikeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
             .reviewCreatedAt(review.getCreatedAt())
             .isReviewActive(review.getIsActive())
+            .isReviewDeleted(review.getIsDeleted())
             .movieId(movie.getMovieId())
             .movieTitle(movie.getTitle())
             .moviePosterUrl(movie.getPosterUrl())

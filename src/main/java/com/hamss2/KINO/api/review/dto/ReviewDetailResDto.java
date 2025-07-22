@@ -18,6 +18,7 @@ public class ReviewDetailResDto {
     private Integer reviewLikeCount;
     private Integer reviewCommentCount;
     private Boolean isReviewActive;
+    private Boolean isReviewDeleted;
 
     private Long movieId;
     private String movieTitle;
