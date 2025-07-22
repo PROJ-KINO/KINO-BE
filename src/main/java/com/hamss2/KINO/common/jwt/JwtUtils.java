@@ -1,5 +1,6 @@
 package com.hamss2.KINO.common.jwt;
 
+import com.hamss2.KINO.api.entity.Role;
 import com.hamss2.KINO.common.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 // TokenProvider 클래스는 JWT 토큰을 생성하고 검증하는 역할을 합니다.
@@ -101,8 +102,22 @@ public class JwtUtils {
             .build();
     }
 
-    public String reissueAccessToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String reissueAccessToken(Long userId, Role role) {
+
+        Authentication authentication = switch (role) {
+            case ADMIN -> {
+                new UsernamePasswordAuthenticationToken(
+                    userId,
+                    null, List.of(() -> "ROLE_ADMIN"
+                ));
+            }
+            default -> {
+                new UsernamePasswordAuthenticationToken(
+                    userId,
+                    null, List.of(() -> "ROLE_USER"
+                ));
+            }
+        };
 
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)

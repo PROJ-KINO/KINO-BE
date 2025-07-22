@@ -100,10 +100,16 @@ public class AuthService {
         );
     }
 
-    public String reissueAccessToken() {
+    public String reissueAccessToken(
+        Long userId // 사용자 ID
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info(authentication.getName());
-        return jwtUtils.reissueAccessToken();
+
+        User user = authRepository.findByUserId(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID입니다."));
+
+        return jwtUtils.reissueAccessToken(user.getUserId(), user.getRole());
     }
 
     public Boolean logout(Long userId) {
