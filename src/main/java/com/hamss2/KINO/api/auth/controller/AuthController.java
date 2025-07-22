@@ -7,6 +7,8 @@ import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.exception.InternalServerException;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +27,20 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/login/{provider}")
-    public ResponseEntity<ApiResponse<String>> getLoginPage(@PathVariable String provider) {
+    public ResponseEntity<ApiResponse<String>> getLoginPage(
+        @PathVariable String provider,
+        HttpServletRequest request
+    ) {
+
+        HttpSession session = request.getSession();
+        Boolean isLogout = (Boolean) session.getAttribute("isLogout");
+
         try {
             SocialType socialType = SocialType.fromString(provider);
+
             return ApiResponse.success(
                 SuccessStatus.REDIRECT_OAUTH_PAGE_SUCCESS,
-                authService.getLoginPage(socialType)
+                authService.getLoginPage(socialType, isLogout != null && isLogout)
             );
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("지원하지 않는 로그인 제공자입니다." + e.getMessage());
@@ -41,7 +51,8 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResDto>> socialLogin(
         @PathVariable String provider,
         @RequestParam String code, // 인증 코드
-        @RequestParam(required = false) String state
+        @RequestParam(required = false) String state,
+        HttpServletRequest request
     ) {
         log.info("google login code={}, state={}", code, state);
         if (code == null || code.isEmpty()) {
@@ -50,8 +61,12 @@ public class AuthController {
 
         try {
             SocialType socialType = SocialType.fromString(provider);
-            return ApiResponse.success(SuccessStatus.SEND_LOGIN_SUCCESS,
+            ResponseEntity<ApiResponse<LoginResDto>> response = ApiResponse.success(
+                SuccessStatus.SEND_LOGIN_SUCCESS,
                 authService.socialLogin(socialType, code, state));
+
+            request.getSession().removeAttribute("isLogout"); // 로그인 성공 시 세션에 isLogout 설정
+            return response;
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("지원하지 않는 로그인 제공자입니다." + e.getMessage());
         }

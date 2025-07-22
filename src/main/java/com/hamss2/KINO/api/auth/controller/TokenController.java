@@ -4,6 +4,8 @@ import com.hamss2.KINO.api.auth.service.AuthService;
 import com.hamss2.KINO.common.exception.BadRequestException;
 import com.hamss2.KINO.common.reponse.ApiResponse;
 import com.hamss2.KINO.common.reponse.SuccessStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,10 @@ public class TokenController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<ApiResponse<Boolean>> logout(@AuthenticationPrincipal String userId) {
+    public ResponseEntity<ApiResponse<Boolean>> logout(
+        @AuthenticationPrincipal String userId,
+        HttpServletRequest request
+    ) {
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("사용자 ID가 제공되지 않았습니다.");
         }
@@ -37,7 +42,14 @@ public class TokenController {
 //        String userId = authentication.getName();
         try {
             Long id = Long.parseLong(userId);
-            return ApiResponse.success(SuccessStatus.SEND_LOGOUT_SUCCESS, authService.logout(id));
+            ResponseEntity<ApiResponse<Boolean>> success = ApiResponse.success(
+                SuccessStatus.SEND_LOGOUT_SUCCESS, authService.logout(id));
+
+            HttpSession session = request.getSession();  // 세션 생성/조회
+            session.setAttribute("isLogout", true);
+            
+            return success;
+
         } catch (Exception e) {
             log.error("로그아웃 중 오류 발생: {}", e.getMessage());
             throw new BadRequestException("로그아웃 처리 중 오류가 발생했습니다.");

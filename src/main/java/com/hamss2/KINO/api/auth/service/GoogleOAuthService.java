@@ -27,7 +27,20 @@ public class GoogleOAuthService {
     @Value("${google.redirect-uri}")
     private String googleRedirectUri;
 
-    public String getGoogleAuthUrl() {
+    public String getGoogleAuthUrl(boolean isLogout) {
+        if (!isLogout) {
+            return UriComponentsBuilder
+                .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
+                .queryParam("client_id", googleClientId)
+                .queryParam("redirect_uri", googleRedirectUri)
+                .queryParam("response_type", "code")
+                .queryParam("scope", "email profile") // 필요한 scope를 추가 email%20profile
+                .queryParam("access_type",
+                    "offline") // refresh token을 원할 경우 access_type을 offline으로 설정
+                .build()
+                .toUriString();
+        }
+
         return UriComponentsBuilder
             .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
             .queryParam("client_id", googleClientId)
@@ -35,6 +48,7 @@ public class GoogleOAuthService {
             .queryParam("response_type", "code")
             .queryParam("scope", "email profile") // 필요한 scope를 추가 email%20profile
             .queryParam("access_type", "offline") // refresh token을 원할 경우 access_type을 offline으로 설정
+            .queryParam("prompt", "login") // 사용자에게 권한을 재확인하도록 요청
             .build()
             .toUriString();
     }
