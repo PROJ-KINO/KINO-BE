@@ -30,7 +30,19 @@ public class NaverOAuthService {
     @Value("${naver.client-secret}")
     private String naverClientSecret;
 
-    public String getNaverAuthUrl() {
+    public String getNaverAuthUrl(boolean isLogout) {
+        if (!isLogout) {
+            return UriComponentsBuilder
+                .fromUriString(BASE_URL + "/oauth2.0/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", naverClientId)
+                .queryParam("redirect_uri", naverRedirectUri)
+                // .queryParam("scope", "profile_nickname,profile_image") // 필요하면 추가
+                // .queryParam("state", state) // CSRF 방지용 state도 추가 권장
+                .build()
+                .toUriString();
+        }
+
         return UriComponentsBuilder
             .fromUriString(BASE_URL + "/oauth2.0/authorize")
             .queryParam("response_type", "code")

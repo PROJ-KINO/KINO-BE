@@ -43,11 +43,11 @@ public class AuthService {
 //        return tokenProvider.generateTokenDto(token); // null은 실제 인증 객체로 대체해야 합니다.
 //    }
 
-    public String getLoginPage(SocialType provider) {
+    public String getLoginPage(SocialType provider, boolean isLogout) {
         return switch (provider) {
-            case KAKAO -> kakaoOAuthService.getKakaoAuthUrl();
-            case NAVER -> naverOAuthService.getNaverAuthUrl();
-            case GOOGLE -> googleOAuthService.getGoogleAuthUrl();
+            case KAKAO -> kakaoOAuthService.getKakaoAuthUrl(isLogout);
+            case NAVER -> naverOAuthService.getNaverAuthUrl(isLogout);
+            case GOOGLE -> googleOAuthService.getGoogleAuthUrl(isLogout);
         };
     }
 

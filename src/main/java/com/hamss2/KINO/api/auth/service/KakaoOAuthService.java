@@ -28,7 +28,18 @@ public class KakaoOAuthService {
     @Value("${kakao.client-secret}")
     private String kakaoClientSecret; // 카카오 클라이언트 시크릿 키
 
-    public String getKakaoAuthUrl() {
+    public String getKakaoAuthUrl(boolean isLogout) {
+        if (!isLogout) {
+            return UriComponentsBuilder
+                .fromUriString(BASE_URL + "/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", kakaoClientId)
+                .queryParam("redirect_uri", kakaoRedirectUri)
+                .queryParam("scope", "profile_nickname,profile_image,account_email")
+                .build()
+                .toUriString();
+        }
+
         return UriComponentsBuilder
             .fromUriString(BASE_URL + "/authorize")
             .queryParam("response_type", "code")
