@@ -150,7 +150,7 @@ public class MypageService {
                 ))
                 .collect(Collectors.toList());
         
-        return new MypageMainResDto(nickname, image, latestShortReviewDto, latestReviewDto, 
+        return new MypageMainResDto(userId, nickname, image, latestShortReviewDto, latestReviewDto,
                                    followersCount, followingCount, myPickMovieDtos);
     }
 
