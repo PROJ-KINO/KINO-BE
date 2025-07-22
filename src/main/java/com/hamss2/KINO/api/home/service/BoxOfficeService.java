@@ -32,7 +32,7 @@ public class BoxOfficeService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         // 1. 4일치 박스오피스 데이터 가져오기
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 7; i++) {
             String day = LocalDate.now().minusDays(i).format(formatter);
             Map<String, Object> result = koficWebClient.get()
                     .uri(uriBuilder -> uriBuilder
