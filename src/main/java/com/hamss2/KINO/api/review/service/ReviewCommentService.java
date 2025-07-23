@@ -56,7 +56,7 @@ public class ReviewCommentService {
                 .isActive(comment.getIsActive())
                 .writerId(writer.getUserId())
                 .writerUserNickname(writer.getNickname())
-                .writerUserImage(writer.getImage())
+                .writerUserImage(cleanImageUrl(writer.getImage()))
                 .isMine(user.getUserId().equals(writer.getUserId()))
                 .build();
         });
@@ -85,7 +85,7 @@ public class ReviewCommentService {
             .isActive(comment.getIsActive())
             .writerId(user.getUserId())
             .writerUserNickname(user.getNickname())
-            .writerUserImage(user.getImage())
+            .writerUserImage(cleanImageUrl(user.getImage()))
             .isMine(true)
             .build();
     }
@@ -142,8 +142,18 @@ public class ReviewCommentService {
             .isActive(comment.getIsActive())
             .writerId(user.getUserId())
             .writerUserNickname(user.getNickname())
-            .writerUserImage(user.getImage())
+            .writerUserImage(cleanImageUrl(user.getImage()))
             .isMine(true)
             .build();
+    }
+    
+    /**
+     * 이미지 URL에서 공백을 제거하는 유틸리티 메서드
+     */
+    private String cleanImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            return imageUrl;
+        }
+        return imageUrl.trim().replaceAll("\\s+", "");
     }
 }

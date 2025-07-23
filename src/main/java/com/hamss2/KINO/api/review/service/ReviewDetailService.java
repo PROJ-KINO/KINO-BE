@@ -87,7 +87,7 @@ public class ReviewDetailService {
             .moviePosterUrl(movie.getPosterUrl())
             .writerId(writer.getUserId())
             .writerUserNickname(writer.getNickname())
-            .writerUserImage(writer.getImage())
+            .writerUserImage(cleanImageUrl(writer.getImage()))
             .isUserActive(user.getRole() != Role.BAN_USER)
             .isHeart(review.getReviewLikes().stream()
                 .anyMatch(like -> like.getUser().getUserId().equals(user.getUserId())))
@@ -142,7 +142,7 @@ public class ReviewDetailService {
                 .likeCount(review.getReviewLikes().size()) // TODO N+1 문제 가능성
                 .userId(writer.getUserId())
                 .userNickname(writer.getNickname())
-                .userImage(writer.getImage())
+                .userImage(cleanImageUrl(writer.getImage()))
                 .movieId(movie.getMovieId())
                 .movieTitle(movie.getTitle())
                 .movieImage(movie.getPosterUrl())
@@ -246,5 +246,15 @@ public class ReviewDetailService {
         review.setMovie(movie);
 
         return review.getReviewId();
+    }
+    
+    /**
+     * 이미지 URL에서 공백을 제거하는 유틸리티 메서드
+     */
+    private String cleanImageUrl(String imageUrl) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            return imageUrl;
+        }
+        return imageUrl.trim().replaceAll("\\s+", "");
     }
 }
