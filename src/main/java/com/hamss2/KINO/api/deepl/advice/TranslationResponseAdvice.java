@@ -155,6 +155,11 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
                 log.info("🔎 Field '{}' ({}): {}", f.getName(), f.getType().getSimpleName(), fieldInfo);
                 
                 if (val instanceof String s && !s.isBlank()) {
+                    // 이미지 URL 관련 필드는 번역하지 않음
+                    if (isImageUrlField(f.getName())) {
+                        log.info("🖼️ Skipping image URL field: {}", f.getName());
+                        continue;
+                    }
                     String translated = libreTranslateService.translate(s, targetLang);
                     log.info("✅ Translating '{}' to '{}' -> '{}'", s, targetLang, translated);
                     f.set(obj, translated);
@@ -184,6 +189,23 @@ public class TranslationResponseAdvice implements ResponseBodyAdvice<Object> {
                 || cls == Float.class
                 || cls == Double.class
                 || cls == Void.class;
+    }
+    
+    /**
+     * 이미지 URL 관련 필드인지 확인하는 메서드
+     */
+    private boolean isImageUrlField(String fieldName) {
+        String lowerFieldName = fieldName.toLowerCase();
+        return lowerFieldName.contains("image") 
+            || lowerFieldName.contains("url") 
+            || lowerFieldName.contains("photo")
+            || lowerFieldName.contains("picture")
+            || lowerFieldName.contains("avatar")
+            || lowerFieldName.contains("profile")
+            || lowerFieldName.contains("poster")
+            || lowerFieldName.contains("backdrop")
+            || lowerFieldName.contains("stillcut")
+            || lowerFieldName.contains("teaser");
     }
 
     /**
