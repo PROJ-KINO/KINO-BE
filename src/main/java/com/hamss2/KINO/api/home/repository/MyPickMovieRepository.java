@@ -22,4 +22,12 @@ public interface MyPickMovieRepository extends JpaRepository<MyPickMovie, Long> 
     Optional<MyPickMovie> findByUserAndMovie(User user, Movie movie);
     // 찜 해제
     void deleteByUserAndMovie(User user, Movie movie);
+    
+    // 중복 데이터 확인
+    @Query("SELECT COUNT(m) FROM MyPickMovie m WHERE m.user = :user AND m.movie = :movie")
+    long countByUserAndMovie(User user, Movie movie);
+    
+    // 중복 데이터 삭제 (가장 오래된 것만 남기고 나머지 삭제)
+    @Query("DELETE FROM MyPickMovie m WHERE m.id NOT IN (SELECT MIN(m2.id) FROM MyPickMovie m2 WHERE m2.user = :user AND m2.movie = :movie GROUP BY m2.user, m2.movie) AND m.user = :user AND m.movie = :movie")
+    void deleteDuplicateByUserAndMovie(User user, Movie movie);
 }

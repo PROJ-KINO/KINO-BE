@@ -60,6 +60,14 @@ public class MovieDetailService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
+        
+        // 중복 데이터가 있는지 확인하고 정리
+        long count = myPickMovieRepository.countByUserAndMovie(user, movie);
+        if (count > 1) {
+            // 중복 데이터가 있으면 정리 (별도 트랜잭션에서 처리)
+            cleanupDuplicateMyPick(user, movie);
+        }
+        
         return myPickMovieRepository.findByUserAndMovie(user, movie).isPresent();
     }
 
@@ -129,6 +137,19 @@ public class MovieDetailService {
             // 조회수 증가 실패 로그 (서비스에 영향 없음)
             System.err.println("조회수 증가 중 오류 발생 - 영화ID: " + movieId + ", 오류: " + e.getMessage());
             throw e;
+        }
+    }
+    
+    /**
+     * 중복된 MyPick 데이터 정리
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void cleanupDuplicateMyPick(User user, Movie movie) {
+        try {
+            myPickMovieRepository.deleteDuplicateByUserAndMovie(user, movie);
+            System.out.println("중복 MyPick 데이터 정리 완료 - User: " + user.getUserId() + ", Movie: " + movie.getMovieId());
+        } catch (Exception e) {
+            System.err.println("중복 MyPick 데이터 정리 실패: " + e.getMessage());
         }
     }
 
