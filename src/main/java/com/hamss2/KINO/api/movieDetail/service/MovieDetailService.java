@@ -69,13 +69,15 @@ public class MovieDetailService {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 영화입니다."));
 
+        incrementViewCount(movieId);
+
         // 조회수 증가는 별도 트랜잭션으로 비동기 처리
-        try {
-            incrementViewCount(movieId);
-        } catch (Exception e) {
-            // 조회수 증가 실패해도 영화 정보는 정상 반환
-            System.err.println("조회수 증가 실패: " + e.getMessage());
-        }
+//        try {
+//            incrementViewCount(movieId);
+//        } catch (Exception e) {
+//            // 조회수 증가 실패해도 영화 정보는 정상 반환
+//            System.err.println("조회수 증가 실패: " + e.getMessage());
+//        }
 
         return MovieDetailDto.builder()
                 .movieId(movie.getMovieId())
@@ -126,6 +128,7 @@ public class MovieDetailService {
         } catch (Exception e) {
             // 조회수 증가 실패 로그 (서비스에 영향 없음)
             System.err.println("조회수 증가 중 오류 발생 - 영화ID: " + movieId + ", 오류: " + e.getMessage());
+            throw e;
         }
     }
 

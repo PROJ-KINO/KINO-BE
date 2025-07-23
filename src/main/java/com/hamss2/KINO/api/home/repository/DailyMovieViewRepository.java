@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,6 +39,11 @@ public interface DailyMovieViewRepository extends JpaRepository<DailyMovieView, 
     Optional<DailyMovieView> findByMovieAndViewDate(Movie movie, LocalDate viewDate);
 
     @Modifying
-    @Query(value = "INSERT INTO daily_movie_view (movie_id, view_date, daily_view, created_at) VALUES (:movieId, :viewDate, 1, NOW()) ON DUPLICATE KEY UPDATE daily_view = daily_view + 1", nativeQuery = true)
+    @Transactional
+    @Query(value = """
+    INSERT INTO daily_movie_view (movie_id, view_date, daily_view, created_at)
+    VALUES (:movieId, :viewDate, 1, now())
+    ON DUPLICATE KEY UPDATE daily_view = daily_view + 1
+    """, nativeQuery = true)
     void upsertDailyView(@Param("movieId") Long movieId, @Param("viewDate") LocalDate viewDate);
 }
